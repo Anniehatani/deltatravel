@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: tour
+          POSTGRES_PASSWORD: ci_only
+          POSTGRES_DB: tour_booking_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U tour -d tour_booking_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:7.4-alpine
+        ports: ['6379:6379']
+    env:
+      DATABASE_URL: postgresql://tour:ci_only@localhost:5432/tour_booking_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci_only_secret_with_at_least_32_characters
+      WEB_ORIGIN: http://localhost:3000
+      API_PUBLIC_URL: http://localhost:4000
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run db:migrate
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run docs:generate
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:integration
+      - run: npm audit --omit=dev --audit-level=high
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-metadata
+          path: |
+            package-lock.json
+            docs/VERIFICATION.md

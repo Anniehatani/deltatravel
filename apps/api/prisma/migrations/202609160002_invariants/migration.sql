@@ -1,0 +1,10 @@
+ALTER TABLE "TOUR" ADD CONSTRAINT tour_domestic CHECK ("countryCode" = 'VN');
+ALTER TABLE "TOUR" ADD CONSTRAINT tour_duration CHECK ("durationDays" BETWEEN 1 AND 60);
+ALTER TABLE "LICH_KHOI_HANH" ADD CONSTRAINT valid_inventory CHECK ("totalSeats" BETWEEN 1 AND 10000 AND "reservedSeats" >= 0 AND "reservedSeats" <= "totalSeats");
+ALTER TABLE "LICH_KHOI_HANH" ADD CONSTRAINT valid_prices CHECK ("adultPrice" BETWEEN 0 AND 99999999 AND "childPrice" BETWEEN 0 AND 99999999);
+ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT valid_party CHECK (adults BETWEEN 1 AND 100 AND children BETWEEN 0 AND 100);
+ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT valid_total CHECK ("totalAmount" BETWEEN 0 AND 9999999999 AND currency='VND');
+ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT exact_hold CHECK ("expiresAt" = "createdAt" + INTERVAL '15 minutes');
+ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT release_matches_cancel CHECK ((status='CANCELLED') = ("seatsReleasedAt" IS NOT NULL));
+ALTER TABLE "CHI_TIET_DAT_TOUR" ADD CONSTRAINT valid_detail CHECK (quantity>0 AND "unitPrice">=0 AND "lineTotal"=quantity*"unitPrice");
+ALTER TABLE "THANH_TOAN" ADD CONSTRAINT valid_payment_amount CHECK (amount BETWEEN 0 AND 9999999999 AND currency='VND');

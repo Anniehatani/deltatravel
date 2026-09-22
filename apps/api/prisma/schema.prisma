@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+enum Role {
+  CUSTOMER
+  OPERATIONS
+  ADMIN
+}
+enum TourStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+}
+enum ScheduleStatus {
+  OPEN
+  CLOSED
+}
+enum BookingStatus {
+  PENDING_PAYMENT
+  PAID
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+enum TravelerKind {
+  ADULT
+  CHILD
+}
+enum PaymentProvider {
+  VNPAY
+  MOMO
+  ZALOPAY
+}
+enum PaymentStatus {
+  INITIATED
+  SUCCEEDED
+  FAILED
+  REFUND_REQUIRED
+  REFUNDED
+}
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email String @unique @db.VarChar(254)
+  name String @db.VarChar(100)
+  passwordHash String
+  role Role @default(CUSTOMER)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  sessions RefreshSession[]
+  bookings Booking[]
+  @@map("NGUOI_DUNG")
+}
+model RefreshSession {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  tokenHash String @unique
+  familyId String @db.Uuid
+  expiresAt DateTime @db.Timestamptz(3)
+  revokedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([userId,familyId])
+}
+model Tour {
+  id String @id @default(uuid()) @db.Uuid
+  slug String @unique @db.VarChar(150)
+  title String @db.VarChar(150)
+  description String
+  destination String @db.VarChar(100)
+  countryCode String @default("VN") @db.Char(2)
+  durationDays Int
+  status TourStatus @default(DRAFT)
+  deletedAt DateTime? @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  schedules Schedule[]
+  @@index([status,destination])
+  @@map("TOUR")
+}
+model Schedule {
+  id String @id @default(uuid()) @db.Uuid
+  tourId String @db.Uuid
+  tour Tour @relation(fields:[tourId],references:[id],onDelete:Restrict)
+  departureAt DateTime @db.Timestamptz(3)
+  totalSeats Int
+  reservedSeats Int @default(0)
+  adultPrice BigInt
+  childPrice BigInt
+  status ScheduleStatus @default(OPEN)
+  bookings Booking[]
+  @@index([tourId,departureAt])
+  @@map("LICH_KHOI_HANH")
+}
+model Booking {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+  scheduleId String @db.Uuid
+  schedule Schedule @relation(fields:[scheduleId],references:[id],onDelete:Restrict)
+  idempotencyKey String @db.Uuid
+  requestHash String
+  status BookingStatus @default(PENDING_PAYMENT)
+  adults Int
+  children Int
+  totalAmount BigInt
+  currency String @default("VND") @db.Char(3)
+  tourTitle String
+  contactName String
+  contactEmail String
+  contactPhone String
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  paidAt DateTime? @db.Timestamptz(3)
+  cancelledAt DateTime? @db.Timestamptz(3)
+  cancelReason String?
+  seatsReleasedAt DateTime? @db.Timestamptz(3)
+  timeoutEnqueuedAt DateTime? @db.Timestamptz(3)
+  details BookingDetail[]
+  payment Payment?
+  @@unique([userId,idempotencyKey])
+  @@index([status,expiresAt])
+  @@index([scheduleId,status])
+  @@map("DON_DAT_TOUR")
+}
+model BookingDetail {
+  id String @id @default(uuid()) @db.Uuid
+  bookingId String @db.Uuid
+  booking Booking @relation(fields:[bookingId],references:[id],onDelete:Restrict)
+  kind TravelerKind
+  quantity Int
+  unitPrice BigInt
+  lineTotal BigInt
+  @@unique([bookingId,kind])
+  @@map("CHI_TIET_DAT_TOUR")
+}
+model Payment {
+  id String @id @default(uuid()) @db.Uuid
+  bookingId String @unique @db.Uuid
+  booking Booking @relation(fields:[bookingId],references:[id],onDelete:Restrict)
+  provider PaymentProvider
+  providerReference String @unique
+  transactionId String?
+  amount BigInt
+  currency String @default("VND") @db.Char(3)
+  status PaymentStatus @default(INITIATED)
+  checkoutUrl String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  refundedAt DateTime? @db.Timestamptz(3)
+  refundReference String?
+  @@unique([provider,transactionId])
+  @@map("THANH_TOAN")
+}
+model AuditLog {
+  id String @id @default(uuid()) @db.Uuid
+  actorId String? @db.Uuid
+  action String
+  entityId String
+  metadata Json @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([entityId,createdAt])
+}

@@ -1,0 +1,39 @@
+{
+  "name": "tour-booking",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.14 <25"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "npm run build -w @tour/shared && concurrently -n API,WEB \"npm run dev -w @tour/api\" \"npm run dev -w @tour/web\"",
+    "build": "npm run build -w @tour/shared && npm run db:generate && npm run build -w @tour/api && npm run build -w @tour/web",
+    "typecheck": "npm run build -w @tour/shared && npm run db:generate && npm run typecheck -w @tour/api && npm run typecheck -w @tour/web",
+    "test": "npm run build -w @tour/shared && npm run db:generate && npm run build -w @tour/api && npm run test -w @tour/api",
+    "test:integration": "npm run build -w @tour/shared && npm run test:integration -w @tour/api",
+    "db:generate": "npm run db:generate -w @tour/api",
+    "db:migrate": "npm run db:migrate -w @tour/api",
+    "db:seed": "npm run db:seed -w @tour/api",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "docs:generate": "npm run build -w @tour/shared && node scripts/generate-contract.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.1"
+  },
+  "overrides": {
+    "multer": "2.4.0",
+    "postcss": "8.5.28",
+    "effect": "3.22.2",
+    "deepmerge-ts": "8.0.2"
+  }
+}
