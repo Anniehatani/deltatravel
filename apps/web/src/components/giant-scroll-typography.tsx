@@ -9,54 +9,62 @@ interface GiantScrollTypographyProps {
   className?: string;
   outline?: boolean;
   repeat?: number;
-  baseOffset?: number;
 }
 
 export function GiantScrollTypography({
   text,
   direction = 'left',
-  speed = 0.9,
+  speed = 0.8,
   className = '',
   outline = true,
-  repeat = 12,
-  baseOffset,
+  repeat = 16,
 }: GiantScrollTypographyProps) {
-  // Appropriate base offset depending on direction so text fills screen throughout scroll
-  const resolvedBaseOffset =
-    baseOffset !== undefined
-      ? baseOffset
-      : direction === 'right'
-        ? -4200
-        : -800;
-
+  const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const currentPos = useRef(resolvedBaseOffset);
-  const targetPos = useRef(resolvedBaseOffset);
+  const pos = useRef(0);
+  const scrollOffset = useRef(0);
+  const lastScrollY = useRef(0);
   const animFrameId = useRef<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;
+    lastScrollY.current = window.scrollY || window.pageYOffset || 0;
 
     const handleScroll = () => {
-      const scrollY = window.scrollY || window.pageYOffset || 0;
-      targetPos.current = resolvedBaseOffset + scrollY * speed * (direction === 'left' ? -1 : 1);
+      const currentScrollY = window.scrollY || window.pageYOffset || 0;
+      const delta = currentScrollY - lastScrollY.current;
+      lastScrollY.current = currentScrollY;
+      // Scroll adds momentum in direction of motion
+      scrollOffset.current += delta * speed * (direction === 'left' ? -1 : 1);
     };
 
     const render = () => {
       if (!isMounted) return;
-      // Snappier, buttery smooth lerp damping for immediate mouse scroll responsiveness
-      const diff = targetPos.current - currentPos.current;
-      currentPos.current += diff * 0.16;
+
+      // Base continuous smooth glide speed (always running!)
+      const baseGlide = direction === 'left' ? -1.2 : 1.2;
+
+      // Decay scroll momentum smoothly
+      pos.current += baseGlide + scrollOffset.current * 0.15;
+      scrollOffset.current *= 0.85; // Damping
 
       if (textRef.current) {
-        textRef.current.style.transform = `translate3d(${currentPos.current.toFixed(2)}px, 0, 0)`;
+        // Infinite seamless modulo wrapping
+        const width = textRef.current.scrollWidth / 2;
+        if (width > 0) {
+          if (pos.current < -width) {
+            pos.current += width;
+          } else if (pos.current > 0) {
+            pos.current -= width;
+          }
+        }
+        textRef.current.style.transform = `translate3d(${pos.current.toFixed(2)}px, 0, 0)`;
       }
 
       animFrameId.current = requestAnimationFrame(render);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
     animFrameId.current = requestAnimationFrame(render);
 
     return () => {
@@ -64,20 +72,20 @@ export function GiantScrollTypography({
       window.removeEventListener('scroll', handleScroll);
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
     };
-  }, [direction, speed, resolvedBaseOffset]);
+  }, [direction, speed]);
 
-  // Clean repeat items without star icon, softer elegant translucent opacity
+  // Clean repeat items with elegant translucent visibility
   const items = Array.from({ length: repeat }, (_, i) => (
-    <span key={i} className="inline-flex items-center mx-12 shrink-0 select-none">
+    <span key={i} className="inline-flex items-center mx-10 shrink-0 select-none">
       <span
         style={
           outline
             ? {
-                WebkitTextStroke: '1.5px rgba(0, 0, 0, 0.08)',
+                WebkitTextStroke: '1.5px rgba(0, 0, 0, 0.12)',
                 color: 'transparent',
               }
             : {
-                color: 'rgba(0, 0, 0, 0.04)',
+                color: 'rgba(0, 0, 0, 0.05)',
               }
         }
         className="font-black tracking-wider uppercase select-none"
@@ -89,13 +97,13 @@ export function GiantScrollTypography({
 
   return (
     <div
+      ref={containerRef}
       aria-hidden="true"
       className={`pointer-events-none select-none overflow-hidden whitespace-nowrap will-change-transform z-0 ${className}`}
     >
       <div
         ref={textRef}
         className="giant-typography-dynamic inline-flex items-center text-[11vw] sm:text-[9vw] lg:text-[7.5vw] font-black leading-none will-change-transform"
-        style={{ transform: `translate3d(${resolvedBaseOffset}px, 0, 0)` }}
       >
         {items}
       </div>

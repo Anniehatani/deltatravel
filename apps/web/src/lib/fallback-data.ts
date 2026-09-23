@@ -231,7 +231,10 @@ export function getLocalizedTour<T extends Tour | ExtendedTour>(tour: T, lang: '
   } as T;
 }
 
-export function getFallbackSchedules(tourId: string): Schedule[] {
+export function getFallbackSchedules(tourId?: string): Schedule[] {
+  if (!tourId) {
+    return FALLBACK_TOURS.flatMap((t) => getFallbackSchedules(t.id));
+  }
   const tour = FALLBACK_TOURS.find((t) => t.id === tourId || t.slug === tourId) || FALLBACK_TOURS[0];
   const tourIdx = FALLBACK_TOURS.findIndex((t) => t.id === tour.id);
   const tourHex = (tourIdx >= 0 ? tourIdx + 1 : 1).toString().padStart(4, '0');

@@ -41,7 +41,7 @@ const email = z
   .max(254)
   .transform((v) => v.toLowerCase());
 export const RegisterSchema = z
-  .object({ name, email, password: z.string().min(12).max(128) })
+  .object({ name, email, password: z.string().min(6).max(128) })
   .strict();
 export const LoginSchema = z.object({ email, password: z.string().min(1).max(128) }).strict();
 export const EmptySchema = z.object({}).strict();

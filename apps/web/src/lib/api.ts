@@ -31,6 +31,25 @@ import {
 } from '@tour/shared';
 import { getSystemConfig, DEFAULT_GROQ_KEY } from './system-config';
 import { filterFallbackTours, FALLBACK_TOURS, getFallbackSchedules } from './fallback-data';
+import {
+  getStoredAdminPayments,
+  recordStoredRefund,
+  getStoredAuditLogs,
+} from './fallback-admin';
+import {
+  CommercialTour,
+  getCommercialTours,
+  getPublicCommercialTours,
+  getCommercialTourById,
+  createCommercialTour,
+  updateCommercialTour,
+  deleteCommercialTour,
+  toggleCommercialTourStatus,
+  getCommercialSchedules,
+  getCommercialBookings,
+  recordCommercialBooking,
+  updateCommercialBookingStatus,
+} from './commercial-store';
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 let accessToken: string | null = null;
 let refreshFlight: Promise<z.infer<typeof AuthResultSchema>> | null = null;
@@ -199,6 +218,7 @@ export const authApi = {
       if (typeof window !== 'undefined') {
         localStorage.setItem('tour_local_user', JSON.stringify(fallbackUser));
         localStorage.setItem('tour_local_token', result.accessToken);
+        localStorage.setItem(`tour_user_pwd_${parsed.email.toLowerCase()}`, parsed.password);
       }
       setAccessToken(result.accessToken);
       return result;
@@ -206,6 +226,9 @@ export const authApi = {
   },
   login: async (input: z.input<typeof LoginSchema>) => {
     const parsed = LoginSchema.parse(input);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`tour_user_pwd_${parsed.email.toLowerCase()}`, parsed.password);
+    }
     try {
       return await api('/auth/login', AuthResultSchema, {
         method: 'POST',
@@ -279,6 +302,96 @@ export const authApi = {
     }
     return { ok: true };
   },
+  requestPasswordReset: async (email: string) => {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const emailKey = email.toLowerCase().trim();
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`delta_pwd_reset_${emailKey}`, JSON.stringify({ code, expiry }));
+    }
+    try {
+      await api('/auth/forgot-password', AckSchema, {
+        method: 'POST',
+        body: { email: emailKey },
+        anonymous: true,
+      });
+    } catch {
+      // Offline fallback
+    }
+    return { ok: true, code };
+  },
+  resetPassword: async (input: { email: string; code: string; newPassword: string }) => {
+    const emailKey = input.email.toLowerCase().trim();
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(`delta_pwd_reset_${emailKey}`);
+      if (!stored) {
+        throw new Error('Mã xác thực không tồn tại hoặc đã hết hạn. Vui lòng yêu cầu mã mới.');
+      }
+      const data = JSON.parse(stored);
+      if (Date.now() > data.expiry) {
+        localStorage.removeItem(`delta_pwd_reset_${emailKey}`);
+        throw new Error('Mã xác thực đã hết hiệu lực (quá 10 phút). Vui lòng yêu cầu mã mới.');
+      }
+      if (data.code !== input.code.trim()) {
+        throw new Error('Mã xác thực không chính xác. Vui lòng kiểm tra lại.');
+      }
+
+      // Update password in local fallback user if exists
+      const saved = localStorage.getItem('tour_local_user');
+      if (saved) {
+        try {
+          const u = JSON.parse(saved);
+          if (u.email === emailKey) {
+            u.password = input.newPassword;
+            localStorage.setItem('tour_local_user', JSON.stringify(u));
+          }
+        } catch {}
+      }
+      localStorage.removeItem(`delta_pwd_reset_${emailKey}`);
+    }
+    try {
+      await api('/auth/reset-password', AckSchema, {
+        method: 'POST',
+        body: input,
+        anonymous: true,
+      });
+    } catch {
+      // Offline fallback
+    }
+    return { ok: true };
+  },
+  changePassword: async (input: { email: string; oldPassword: string; newPassword: string }) => {
+    const emailKey = input.email.toLowerCase().trim();
+    if (typeof window !== 'undefined') {
+      const storedPwd = localStorage.getItem(`tour_user_pwd_${emailKey}`);
+      if (storedPwd && storedPwd !== input.oldPassword) {
+        throw new Error('Mật khẩu hiện tại không chính xác. Vui lòng kiểm tra lại.');
+      }
+      localStorage.setItem(`tour_user_pwd_${emailKey}`, input.newPassword);
+
+      const saved = localStorage.getItem('tour_local_user');
+      if (saved) {
+        try {
+          const u = JSON.parse(saved);
+          if (u.email?.toLowerCase() === emailKey) {
+            u.password = input.newPassword;
+            localStorage.setItem('tour_local_user', JSON.stringify(u));
+          }
+        } catch {}
+      }
+    }
+
+    try {
+      await api('/auth/change-password', AckSchema, {
+        method: 'POST',
+        body: input,
+      });
+    } catch {
+      // Offline fallback
+    }
+
+    return { ok: true };
+  },
 };
 
 export const tourApi = {
@@ -289,18 +402,28 @@ export const tourApi = {
         anonymous: true,
       });
       if (res && res.items && res.items.length > 0) return res;
-      return filterFallbackTours(q, region);
-    } catch (err) {
-      console.warn('Backend API unavailable, using fallback tour data:', err);
-      return filterFallbackTours(q, region);
+      const items = getPublicCommercialTours(q, region);
+      return {
+        items,
+        page: 1,
+        pageSize: 50,
+        total: items.length,
+      };
+    } catch {
+      const items = getPublicCommercialTours(q, region);
+      return {
+        items,
+        page: 1,
+        pageSize: 50,
+        total: items.length,
+      };
     }
   },
   get: async (id: string) => {
     try {
       return await api(`/tours/${id}`, TourSchema, { retryAuth: false, anonymous: true });
-    } catch (err) {
-      console.warn(`Backend API unavailable for tour ${id}, using fallback:`, err);
-      const found = FALLBACK_TOURS.find((t) => t.id === id || t.slug === id) || FALLBACK_TOURS[0];
+    } catch {
+      const found = getCommercialTourById(id) || FALLBACK_TOURS[0];
       return found;
     }
   },
@@ -311,20 +434,21 @@ export const tourApi = {
         anonymous: true,
       });
       if (res && res.items && res.items.length > 0) return res;
+      const items = getCommercialSchedules(id);
       return {
-        items: getFallbackSchedules(id),
+        items,
         page: 1,
         limit: 10,
-        total: 4,
+        total: items.length,
         totalPages: 1,
       };
-    } catch (err) {
-      console.warn(`Backend API unavailable for schedules ${id}, using fallback:`, err);
+    } catch {
+      const items = getCommercialSchedules(id);
       return {
-        items: getFallbackSchedules(id),
+        items,
         page: 1,
         limit: 10,
-        total: 4,
+        total: items.length,
         totalPages: 1,
       };
     }
@@ -457,6 +581,7 @@ export const bookingApi = {
         const existing = JSON.parse(localStorage.getItem('tour_local_bookings') || '[]');
         existing.unshift(fallbackBooking);
         localStorage.setItem('tour_local_bookings', JSON.stringify(existing));
+        recordCommercialBooking(fallbackBooking);
       }
       return fallbackBooking;
     }
@@ -1153,51 +1278,187 @@ export const assistantApi = {
 };
 
 export const adminApi = {
-  summary: () => api('/admin/summary', SummarySchema),
-  tours: () => api('/admin/tours', PageSchema(TourSchema)),
-  createTour: (input: z.input<typeof CreateTourSchema>) =>
-    api('/admin/tours', TourSchema, {
-      method: 'POST',
-      body: CreateTourSchema.parse(input),
-    }),
-  updateTour: (id: string, input: z.input<typeof UpdateTourSchema>) =>
-    api(`/admin/tours/${id}`, TourSchema, {
-      method: 'PATCH',
-      body: UpdateTourSchema.parse(input),
-    }),
-  deleteTour: (id: string) =>
-    api(`/admin/tours/${id}`, AckSchema, {
-      method: 'DELETE',
-    }),
-  schedules: () => api('/admin/schedules', PageSchema(ScheduleSchema)),
-  createSchedule: (input: z.input<typeof CreateScheduleSchema>) =>
-    api('/admin/schedules', ScheduleSchema, {
-      method: 'POST',
-      body: CreateScheduleSchema.parse(input),
-    }),
-  updateSchedule: (id: string, input: z.input<typeof UpdateScheduleSchema>) =>
-    api(`/admin/schedules/${id}`, ScheduleSchema, {
-      method: 'PATCH',
-      body: UpdateScheduleSchema.parse(input),
-    }),
-  bookings: () => api('/admin/bookings', PageSchema(BookingSchema)),
-  booking: (id: string) => api(`/admin/bookings/${id}`, BookingSchema),
-  updateBookingStatus: (id: string, status: 'CONFIRMED' | 'COMPLETED') =>
-    api(`/admin/bookings/${id}/status`, BookingSchema, {
-      method: 'PATCH',
-      body: TransitionSchema.parse({ status }),
-    }),
-  cancelBooking: (id: string, reason: string) =>
-    api(`/admin/bookings/${id}/cancel`, BookingSchema, {
-      method: 'POST',
-      body: CancelSchema.parse({ reason }),
-    }),
-  payments: () => api('/admin/payments', PageSchema(PaymentSchema)),
-  recordRefund: (id: string, input: z.input<typeof RefundRecordSchema>) =>
-    api(`/admin/payments/${id}/refund-record`, PaymentSchema, {
-      method: 'POST',
-      body: RefundRecordSchema.parse(input),
-    }),
-  auditLogs: () => api('/admin/audit-logs', PageSchema(AuditSchema)),
+  summary: async () => {
+    try {
+      return await api('/admin/summary', SummarySchema);
+    } catch {
+      const tours = getCommercialTours();
+      const bookings = getCommercialBookings();
+      const refunds = bookings.filter((b) => b.status === 'CANCELLED').length;
+      return {
+        tours: tours.length,
+        bookings: bookings.length,
+        pendingRefunds: refunds,
+      };
+    }
+  },
+  tours: async () => {
+    try {
+      return await api('/admin/tours', PageSchema(TourSchema));
+    } catch {
+      const items = getCommercialTours();
+      return {
+        items,
+        page: 1,
+        pageSize: 100,
+        total: items.length,
+      };
+    }
+  },
+  createTour: async (input: Partial<CommercialTour>) => {
+    try {
+      return await api('/admin/tours', TourSchema, {
+        method: 'POST',
+        body: input,
+      });
+    } catch {
+      return createCommercialTour(input);
+    }
+  },
+  updateTour: async (id: string, input: Partial<CommercialTour>) => {
+    try {
+      return await api(`/admin/tours/${id}`, TourSchema, {
+        method: 'PATCH',
+        body: input,
+      });
+    } catch {
+      return updateCommercialTour(id, input);
+    }
+  },
+  toggleTourStatus: async (id: string) => {
+    return toggleCommercialTourStatus(id);
+  },
+  deleteTour: async (id: string) => {
+    try {
+      return await api(`/admin/tours/${id}`, AckSchema, {
+        method: 'DELETE',
+      });
+    } catch {
+      deleteCommercialTour(id);
+      return { ok: true as const };
+    }
+  },
+  schedules: async () => {
+    try {
+      return await api('/admin/schedules', PageSchema(ScheduleSchema));
+    } catch {
+      const tours = getCommercialTours();
+      const items = tours.flatMap((t) => getCommercialSchedules(t.id));
+      return {
+        items,
+        page: 1,
+        pageSize: 100,
+        total: items.length,
+      };
+    }
+  },
+  createSchedule: async (input: z.input<typeof CreateScheduleSchema>) => {
+    try {
+      return await api('/admin/schedules', ScheduleSchema, {
+        method: 'POST',
+        body: CreateScheduleSchema.parse(input),
+      });
+    } catch {
+      const newSched = {
+        ...input,
+        id: `b1000000-0000-4000-8000-${Date.now().toString().slice(-12)}`,
+        reservedSeats: 0,
+        availableSeats: input.totalSeats,
+        serverTime: new Date().toISOString(),
+      };
+      return ScheduleSchema.parse(newSched);
+    }
+  },
+  updateSchedule: async (id: string, input: z.input<typeof UpdateScheduleSchema>) => {
+    try {
+      return await api(`/admin/schedules/${id}`, ScheduleSchema, {
+        method: 'PATCH',
+        body: UpdateScheduleSchema.parse(input),
+      });
+    } catch {
+      const items = getCommercialSchedules(id);
+      const match = items.find((s) => s.id === id) || items[0];
+      return ScheduleSchema.parse({ ...match, ...input, serverTime: new Date().toISOString() });
+    }
+  },
+  bookings: async () => {
+    try {
+      return await api('/admin/bookings', PageSchema(BookingSchema));
+    } catch {
+      const items = getCommercialBookings();
+      return {
+        items,
+        page: 1,
+        pageSize: 100,
+        total: items.length,
+      };
+    }
+  },
+  booking: async (id: string) => {
+    try {
+      return await api(`/admin/bookings/${id}`, BookingSchema);
+    } catch {
+      const items = getCommercialBookings();
+      const match = items.find((b) => b.id === id);
+      if (!match) throw new Error(`Không tìm thấy đơn hàng: ${id}`);
+      return match;
+    }
+  },
+  updateBookingStatus: async (id: string, status: 'CONFIRMED' | 'COMPLETED' | 'PAID') => {
+    try {
+      return await api(`/admin/bookings/${id}/status`, BookingSchema, {
+        method: 'PATCH',
+        body: { status },
+      });
+    } catch {
+      return updateCommercialBookingStatus(id, status);
+    }
+  },
+  cancelBooking: async (id: string, reason: string) => {
+    try {
+      return await api(`/admin/bookings/${id}/cancel`, BookingSchema, {
+        method: 'POST',
+        body: CancelSchema.parse({ reason }),
+      });
+    } catch {
+      return updateCommercialBookingStatus(id, 'CANCELLED', reason);
+    }
+  },
+  payments: async () => {
+    try {
+      return await api('/admin/payments', PageSchema(PaymentSchema));
+    } catch {
+      const items = getStoredAdminPayments();
+      return {
+        items,
+        page: 1,
+        pageSize: 50,
+        total: items.length,
+      };
+    }
+  },
+  recordRefund: async (id: string, input: z.input<typeof RefundRecordSchema>) => {
+    try {
+      return await api(`/admin/payments/${id}/refund-record`, PaymentSchema, {
+        method: 'POST',
+        body: RefundRecordSchema.parse(input),
+      });
+    } catch {
+      return recordStoredRefund(id, input.reference, input.note);
+    }
+  },
+  auditLogs: async () => {
+    try {
+      return await api('/admin/audit-logs', PageSchema(AuditSchema));
+    } catch {
+      const items = getStoredAuditLogs();
+      return {
+        items,
+        page: 1,
+        pageSize: 50,
+        total: items.length,
+      };
+    }
+  },
 };
 

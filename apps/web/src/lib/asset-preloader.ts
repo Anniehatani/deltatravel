@@ -174,11 +174,7 @@ export function preloadCriticalAssets(
 /**
  * Fallback background runner if any frame was skipped
  */
-export function startBackgroundFramePreload() {
+export function startBackgroundFramePreload(onFrameLoaded?: (current: number, total: number) => void) {
   if (typeof window === 'undefined') return;
-  for (let i = 1; i <= TOTAL_FRAMES; i++) {
-    if (!frameCache.has(i)) {
-      preloadFrame(i).catch(() => {});
-    }
-  }
+  preloadAllFramesConcurrent(12, onFrameLoaded).catch(() => {});
 }

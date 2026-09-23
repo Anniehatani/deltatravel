@@ -6,13 +6,20 @@ import { useRouter } from 'next/navigation';
 import { ArrowDown, MapPin, Sparkles } from 'lucide-react';
 import NextImage from 'next/image';
 import { useLanguage } from '@/providers/language-provider';
-import { frameCache, getFramePath, preloadFrame, TOTAL_FRAMES } from '@/lib/asset-preloader';
+import {
+  frameCache,
+  getFramePath,
+  preloadFrame,
+  startBackgroundFramePreload,
+  TOTAL_FRAMES,
+} from '@/lib/asset-preloader';
 
 export function Scroll3DHero() {
   const router = useRouter();
   const { t } = useLanguage();
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Smooth lerp state
@@ -23,12 +30,90 @@ export function Scroll3DHero() {
 
   const [uiProgress, setUiProgress] = useState<number>(0);
 
+  // Draw frame on canvas with aspect-ratio cover
+  const drawFrame = (frame: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Check if frame is cached
+    let img = frameCache.get(frame);
+
+    // If target frame not loaded, find closest available cached frame so animation never halts
+    if (!img || !img.complete || img.naturalWidth === 0) {
+      preloadFrame(frame).then((loaded) => {
+        if (Math.abs(lastDrawnFrame.current - frame) <= 2) {
+          drawFrame(frame);
+        }
+      }).catch(() => {});
+
+      // Fallback to nearest loaded frame
+      for (let delta = 1; delta <= 15; delta++) {
+        const prev = frameCache.get(frame - delta);
+        if (prev && prev.complete && prev.naturalWidth > 0) {
+          img = prev;
+          break;
+        }
+        const next = frameCache.get(frame + delta);
+        if (next && next.complete && next.naturalWidth > 0) {
+          img = next;
+          break;
+        }
+      }
+      if (!img || !img.complete) {
+        img = frameCache.get(1);
+      }
+    }
+
+    if (!img || !img.complete || img.naturalWidth === 0) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const clientW = canvas.clientWidth || window.innerWidth;
+    const clientH = canvas.clientHeight || window.innerHeight;
+
+    if (canvas.width !== clientW * dpr || canvas.height !== clientH * dpr) {
+      canvas.width = clientW * dpr;
+      canvas.height = clientH * dpr;
+    }
+
+    const cWidth = canvas.width;
+    const cHeight = canvas.height;
+    const imgRatio = img.naturalWidth / img.naturalHeight;
+    const canvasRatio = cWidth / cHeight;
+
+    let drawW = cWidth;
+    let drawH = cHeight;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    if (canvasRatio > imgRatio) {
+      drawH = cWidth / imgRatio;
+      offsetY = (cHeight - drawH) / 2;
+    } else {
+      drawW = cHeight * imgRatio;
+      offsetX = (cWidth - drawW) / 2;
+    }
+
+    ctx.clearRect(0, 0, cWidth, cHeight);
+    ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+    lastDrawnFrame.current = frame;
+
+    // Keep fallback img in sync
+    if (imgRef.current && img.src) {
+      imgRef.current.src = img.src;
+    }
+  };
+
   // Continuous buttery 60fps lerp animation loop for inertial scroll
   useEffect(() => {
     isRunning.current = true;
 
-    // Immediately ensure frame 1 is loaded
-    preloadFrame(1);
+    // Immediately trigger background preload of all 150 frames
+    startBackgroundFramePreload();
+    preloadFrame(1).then(() => {
+      drawFrame(1);
+    });
 
     const renderLoop = () => {
       if (!isRunning.current) return;
@@ -36,16 +121,12 @@ export function Scroll3DHero() {
       const diff = targetProgress.current - currentProgress.current;
 
       if (Math.abs(diff) > 0.0001) {
-        currentProgress.current += diff * 0.22; // Snappy 60fps damping
+        currentProgress.current += diff * 0.25; // Snappy 60fps damping
         const rawFrame = Math.round(currentProgress.current * (TOTAL_FRAMES - 1)) + 1;
         const frame = Math.min(TOTAL_FRAMES, Math.max(1, rawFrame));
 
         if (frame !== lastDrawnFrame.current) {
-          lastDrawnFrame.current = frame;
-          if (imgRef.current) {
-            const cached = frameCache.get(frame);
-            imgRef.current.src = cached ? cached.src : getFramePath(frame);
-          }
+          drawFrame(frame);
         }
         setUiProgress(currentProgress.current);
       } else if (currentProgress.current !== targetProgress.current) {
@@ -54,11 +135,7 @@ export function Scroll3DHero() {
         const frame = Math.min(TOTAL_FRAMES, Math.max(1, rawFrame));
 
         if (frame !== lastDrawnFrame.current) {
-          lastDrawnFrame.current = frame;
-          if (imgRef.current) {
-            const cached = frameCache.get(frame);
-            imgRef.current.src = cached ? cached.src : getFramePath(frame);
-          }
+          drawFrame(frame);
         }
         setUiProgress(currentProgress.current);
       }
@@ -71,21 +148,28 @@ export function Scroll3DHero() {
     const onScroll = () => {
       const container = containerRef.current;
       if (!container) return;
+      const rect = container.getBoundingClientRect();
       const scrollable = container.offsetHeight - window.innerHeight;
       if (scrollable <= 0) return;
 
-      const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
-      const progress = Math.max(0, Math.min(1, scrollTop / scrollable));
+      const scrolledPastTop = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolledPastTop / scrollable));
       targetProgress.current = progress;
     };
 
+    const onResize = () => {
+      drawFrame(lastDrawnFrame.current);
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
     onScroll();
 
     return () => {
       isRunning.current = false;
       cancelAnimationFrame(animId);
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -93,12 +177,18 @@ export function Scroll3DHero() {
     <div id="hero-3d-section" ref={containerRef} className="relative w-full h-[360vh] bg-black text-white">
       {/* Sticky Fullscreen Scrubber covering 100% viewport */}
       <div className="sticky top-0 h-screen min-h-[100dvh] w-full overflow-hidden flex items-center justify-center bg-black">
-        {/* Native Hardware-Accelerated 3D Image Flipbook (WebP ~45KB/frame) */}
+        {/* Hardware-Accelerated 60fps HTML5 Canvas Engine */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+        />
+
+        {/* Fallback Native Image Layer */}
         <img
           ref={imgRef}
           src="/frames/ezgif-frame-001.webp"
           alt="DELTA 3D Experience"
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none -z-10"
         />
 
         {/* Minimal Vignette for Contrast without washing out 3D */}

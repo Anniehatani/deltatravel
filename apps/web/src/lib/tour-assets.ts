@@ -623,7 +623,10 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
   ],
 };
 
-export function getTourImage(tour: Tour | { slug?: string; destination?: string }): string {
+export function getTourImage(tour: Tour | { slug?: string; destination?: string; imageUrl?: string }): string {
+  if ('imageUrl' in tour && tour.imageUrl && typeof tour.imageUrl === 'string' && tour.imageUrl.trim().length > 0) {
+    return tour.imageUrl.trim();
+  }
   if (tour.slug && TOUR_IMAGES[tour.slug]) {
     return TOUR_IMAGES[tour.slug];
   }

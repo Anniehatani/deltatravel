@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import type { User as AuthUser } from '@tour/shared';
+import { getInitials } from '@/lib/format';
 
 interface GlassUserMenuProps {
   user: AuthUser | null;
@@ -34,15 +35,23 @@ export function GlassUserMenu({
         {/* Login Button with Liquid Glass Border & Inner Light */}
         <Link
           href="/login"
-          className="relative z-10 rounded-full px-4 py-1.5 text-[12px] font-bold tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20 bg-neutral-900/85 text-white hover:bg-black shadow-md backdrop-blur-xl"
+          className={`relative z-10 rounded-full px-3.5 py-1.5 text-[12px] font-bold tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 ${
+            isTransparent
+              ? 'border border-white/30 bg-white/[0.08] text-white hover:bg-white/[0.18] hover:border-white/60 shadow-[0_2px_12px_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(255,255,255,0.4)] backdrop-blur-xl'
+              : 'border border-black/[0.08] bg-white/70 text-neutral-800 hover:bg-white hover:text-black shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1.5px_rgba(255,255,255,0.9)] backdrop-blur-xl'
+          }`}
         >
           {loginLabel}
         </Link>
 
-        {/* Register Button with Golden Radiance */}
+        {/* Register Button with Solid Radiance */}
         <Link
           href="/register"
-          className="relative z-10 rounded-full px-4 py-1.5 text-[12px] font-black tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 bg-amber-400 text-stone-950 hover:bg-amber-300 shadow-md"
+          className={`relative z-10 rounded-full px-4 py-1.5 text-[12px] font-black tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 ${
+            isTransparent
+              ? 'bg-white text-black hover:bg-neutral-100 shadow-[0_4px_20px_rgba(255,255,255,0.35)]'
+              : 'bg-black text-white hover:bg-neutral-800 shadow-[0_4px_14px_rgba(0,0,0,0.15)]'
+          }`}
         >
           {registerLabel}
         </Link>
@@ -67,11 +76,11 @@ export function GlassUserMenu({
         <div className="absolute inset-x-2 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/80 to-transparent pointer-events-none" />
 
         {/* User Avatar with Golden Rim */}
-        <div className="relative h-6 w-6 rounded-full overflow-hidden border border-amber-300 bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center text-white font-black text-xs shadow-sm group-hover:scale-105 transition-transform shrink-0">
+        <div className="relative h-6 w-6 rounded-full overflow-hidden border border-amber-300 bg-gradient-to-tr from-amber-400 to-amber-600 flex items-center justify-center text-white font-black text-[10px] tracking-wider uppercase shadow-sm group-hover:scale-105 transition-transform shrink-0 select-none">
           {userAvatar ? (
             <img src={userAvatar} alt={user.name} className="h-full w-full object-cover" />
           ) : (
-            <span>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
+            <span>{getInitials(user.name)}</span>
           )}
         </div>
 

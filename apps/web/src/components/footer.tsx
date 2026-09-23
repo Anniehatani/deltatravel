@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { ShieldCheck, Clock, Award, Phone, Mail, MapPin } from 'lucide-react';
 import { useLanguage } from '@/providers/language-provider';
 
 export function SiteFooter() {
+  const pathname = usePathname();
   const { t } = useLanguage();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-black/10 bg-white text-black mt-24">

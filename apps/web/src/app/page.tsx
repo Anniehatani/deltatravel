@@ -30,6 +30,9 @@ import {
 // Apple-Grade Liquid Glass Tour Cards
 function TourCardsGrid({ tours, t, lang }: { tours: Tour[]; t: (k: string) => string; lang: 'vi' | 'en' }) {
   const getTourPrice = (tour: Tour): number => {
+    if ('adultPrice' in tour && typeof (tour as any).adultPrice === 'number' && (tour as any).adultPrice > 0) {
+      return (tour as any).adultPrice;
+    }
     const match = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
     return match ? match.adultPrice : 2450000;
   };
@@ -186,19 +189,23 @@ function HomeContent() {
 
   useEffect(() => {
     let active = true;
-    tourApi
-      .list()
-      .then((res) => {
-        if (active && res.items.length > 0) {
-          setAllTours(res.items);
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+    const fetchTours = () => {
+      tourApi
+        .list()
+        .then((res) => {
+          if (active) {
+            setAllTours(res.items);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchTours();
+    window.addEventListener('delta_tours_updated', fetchTours);
+
     return () => {
       active = false;
+      window.removeEventListener('delta_tours_updated', fetchTours);
     };
   }, []);
 
@@ -219,6 +226,9 @@ function HomeContent() {
 
   const displayedTours = activeTab
     ? allTours.filter((tour) => {
+        if ('region' in tour && (tour as any).region) {
+          return (tour as any).region === activeTab;
+        }
         const fb = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
         return fb ? fb.region === activeTab : true;
       })
@@ -323,6 +333,16 @@ function HomeContent() {
           text="HAUTE EXPEDITIONS"
           direction="right"
           speed={0.85}
+          outline={false}
+        />
+      </div>
+
+      {/* ─── Giant Parallax Typography 2 ─── */}
+      <div className="relative pt-6 pb-2 pointer-events-none -z-0">
+        <GiantScrollTypography
+          text="HAUTE EXPEDITIONS"
+          direction="right"
+          speed={0.8}
           outline={false}
         />
       </div>

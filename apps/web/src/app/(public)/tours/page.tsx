@@ -65,6 +65,12 @@ function ToursListContent() {
     const reg = searchParams.get('region') || '';
     setActiveRegion(reg);
     fetchTours(reg);
+
+    const onUpdate = () => {
+      fetchTours(reg);
+    };
+    window.addEventListener('delta_tours_updated', onUpdate);
+    return () => window.removeEventListener('delta_tours_updated', onUpdate);
   }, [searchParams, lang]);
 
   const handleRegionChange = (regId: string) => {
@@ -74,8 +80,11 @@ function ToursListContent() {
     router.push(`/tours${regId ? `?region=${regId}` : ''}`);
   };
 
-  // Helper to get pricing from fallback data if available
+  // Helper to get pricing from commercial tour data
   const getTourPrice = (tour: Tour): number => {
+    if ('adultPrice' in tour && typeof (tour as any).adultPrice === 'number' && (tour as any).adultPrice > 0) {
+      return (tour as any).adultPrice;
+    }
     const match = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
     return match ? match.adultPrice : 2450000;
   };

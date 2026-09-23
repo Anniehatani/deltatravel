@@ -17,7 +17,6 @@ function NavContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const region = searchParams.get('region') || '';
-
   const { user, logout } = useAuth();
   const { lang, setLang, t } = useLanguage();
 
@@ -33,10 +32,10 @@ function NavContent() {
   useEffect(() => {
     const updateAvatar = () => {
       if (typeof window !== 'undefined' && user) {
-        const stored =
-          localStorage.getItem(`tour_avatar_${user.email}`) ||
-          localStorage.getItem('tour_avatar') ||
-          '';
+        // Purge legacy global key that caused all accounts to share one photo
+        localStorage.removeItem('tour_avatar');
+        const emailKey = user.email?.toLowerCase().trim();
+        const stored = emailKey ? localStorage.getItem(`tour_avatar_${emailKey}`) || '' : '';
         setUserAvatar(stored);
       }
     };
@@ -97,6 +96,11 @@ function NavContent() {
     },
     [pathname, region],
   );
+
+  // Do NOT render customer navbar inside Admin portal (Admin is purely for operations)
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>
@@ -183,6 +187,13 @@ function NavContent() {
 }
 
 export function Nav() {
+  const pathname = usePathname();
+
+  // Do NOT render customer navbar inside Admin portal
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <Suspense fallback={<div className="h-16 w-full" />}>
       <NavContent />

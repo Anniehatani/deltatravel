@@ -46,10 +46,9 @@ export default function AssistantPage() {
   useEffect(() => {
     const updateAvatar = () => {
       if (typeof window !== 'undefined') {
-        const stored =
-          (user?.email && localStorage.getItem(`tour_avatar_${user.email}`)) ||
-          localStorage.getItem('tour_avatar') ||
-          '';
+        localStorage.removeItem('tour_avatar');
+        const emailKey = user?.email?.toLowerCase().trim();
+        const stored = (emailKey && localStorage.getItem(`tour_avatar_${emailKey}`)) || '';
         setUserAvatar(stored);
       }
     };
