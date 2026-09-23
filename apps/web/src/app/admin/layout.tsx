@@ -10,10 +10,12 @@ import {
   Ticket,
   CreditCard,
   FileText,
+  Cpu,
 } from 'lucide-react';
 
 const ADMIN_NAV_LINKS = [
   { href: '/admin', label: 'Tổng quan', icon: LayoutDashboard },
+  { href: '/admin/system', label: 'Lệnh Tối Cao & AI', icon: Cpu },
   { href: '/admin/tours', label: 'Tour', icon: Compass },
   { href: '/admin/schedules', label: 'Lịch khởi hành', icon: Calendar },
   { href: '/admin/bookings', label: 'Đơn đặt', icon: Ticket },

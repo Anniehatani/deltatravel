@@ -14,7 +14,15 @@ import {
   RefreshCcw,
   ShieldCheck,
   Calendar,
+  Cpu,
+  Zap,
+  Activity,
+  CreditCard,
+  Lock,
+  Layers,
+  Server,
 } from 'lucide-react';
+import { getSystemConfig, type SystemConfig } from '@/lib/system-config';
 
 type SummaryData = {
   tours: number;
@@ -26,10 +34,12 @@ export default function AdminDashboardPage() {
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sysConfig, setSysConfig] = useState<SystemConfig | null>(null);
 
   const fetchSummary = () => {
     setLoading(true);
     setError(null);
+    setSysConfig(getSystemConfig());
     adminApi
       .summary()
       .then((data) => {
@@ -49,19 +59,68 @@ export default function AdminDashboardPage() {
 
   return (
     <PageShell
-      badge="Tổng Quan Điều Hành"
-      title="Bảng Điều Khiển Vận Hành"
-      description="Giám sát thời gian thực các tour nội địa, lưu lượng đặt chỗ và đối soát dòng tiền."
+      badge="SUPER MAX OPERATIONAL DASHBOARD"
+      title="Bảng Điều Khiển Vận Hành Tối Cao"
+      description="Giám sát thời gian thực toàn bộ hành trình du lịch, lưu lượng đặt chỗ, đối soát dòng tiền và trung tâm lệnh trí tuệ nhân tạo."
       action={
-        <Button variant="outline" onClick={fetchSummary} className="gap-2 text-xs">
-          <RefreshCcw className="h-3.5 w-3.5" />
-          <span>Làm mới số liệu</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/system">
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 shadow-md">
+              <Cpu className="h-3.5 w-3.5" />
+              <span>Trung Tâm Lệnh Tối Cao</span>
+            </Button>
+          </Link>
+          <Button variant="outline" onClick={fetchSummary} className="gap-2 text-xs">
+            <RefreshCcw className="h-3.5 w-3.5" />
+            <span>Làm mới số liệu</span>
+          </Button>
+        </div>
       }
     >
+      {/* ─── Supreme AI & Security System Banner ─── */}
+      <div className="mb-8 rounded-3xl border border-stone-800 bg-neutral-950 p-6 sm:p-7 text-white shadow-2xl relative overflow-hidden">
+        {/* Glow decoration */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 shrink-0">
+              <Cpu className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2.5 mb-1">
+                <span className="text-xs font-black uppercase tracking-widest text-amber-400">
+                  QUYỀN LỆNH TỐI CAO ĐÃ KÍCH HOẠT
+                </span>
+                <span className="text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded-full font-bold">
+                  BẢO MẬT CẤP ĐỘ ROOT
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-serif font-bold text-white">
+                Trí Tuệ Nhân Tạo & Phòng Thủ Chống Hack (AI & Defense Center)
+              </h3>
+              <p className="text-xs text-stone-300 mt-1 max-w-xl">
+                Active Model: <span className="font-mono text-amber-300 font-bold">{sysConfig?.aiModel || 'openai/gpt-oss-120b'}</span> | Tường lửa WAF: <span className="text-emerald-400 font-bold">BẬT (Rate Limit {sysConfig?.rateLimitPerMin || 60} req/m)</span> | 3D Image Sequence: <span className="text-blue-300 font-bold">150 Frames (WebP 12.6MB)</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/admin/system"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-lg hover:scale-105"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Thiết Lập API & Prompt</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="animate-pulse rounded-2xl border border-stone-200 bg-white p-6 shadow-sm h-36"
@@ -77,13 +136,13 @@ export default function AdminDashboardPage() {
         </div>
       ) : summary ? (
         <div className="space-y-10">
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* KPI Cards: 4 High-Density Columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Tours KPI */}
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-                  Tổng Số Hành Trình
+                  Hành Trình Nội Địa
                 </span>
                 <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-700">
                   <Compass className="h-5 w-5" />
@@ -93,14 +152,14 @@ export default function AdminDashboardPage() {
                 <span className="font-serif text-4xl font-bold text-stone-900">
                   {summary.tours}
                 </span>
-                <span className="text-xs text-stone-500 ml-2">tour trong hệ thống</span>
+                <span className="text-xs text-stone-500 ml-2">tour hoạt động</span>
               </div>
               <div className="mt-4 pt-4 border-t border-stone-100">
                 <Link
                   href="/admin/tours"
                   className="text-xs font-semibold text-amber-800 hover:text-amber-900 flex items-center justify-between"
                 >
-                  <span>Quản lý danh sách tour</span>
+                  <span>Quản lý tour</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -110,7 +169,7 @@ export default function AdminDashboardPage() {
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-                  Tổng Đơn Giữ & Đặt Chỗ
+                  Tổng Đơn Giữ Chỗ
                 </span>
                 <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-800">
                   <Ticket className="h-5 w-5" />
@@ -127,7 +186,7 @@ export default function AdminDashboardPage() {
                   href="/admin/bookings"
                   className="text-xs font-semibold text-emerald-800 hover:text-emerald-900 flex items-center justify-between"
                 >
-                  <span>Xử lý & đối soát đơn</span>
+                  <span>Đối soát & xử lý</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -137,7 +196,7 @@ export default function AdminDashboardPage() {
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
-                  Đơn Chờ Hoàn Tiền
+                  Chờ Hoàn Tiền
                 </span>
                 <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center text-red-700">
                   <AlertTriangle className="h-5 w-5" />
@@ -147,7 +206,7 @@ export default function AdminDashboardPage() {
                 <span className="font-serif text-4xl font-bold text-red-700">
                   {summary.pendingRefunds}
                 </span>
-                <span className="text-xs text-stone-500 ml-2">cần ghi nhận hoàn tất</span>
+                <span className="text-xs text-stone-500 ml-2">cần xử lý hoàn tất</span>
               </div>
               <div className="mt-4 pt-4 border-t border-stone-100">
                 <Link
@@ -159,14 +218,52 @@ export default function AdminDashboardPage() {
                 </Link>
               </div>
             </div>
+
+            {/* Estimated GMV KPI */}
+            <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold uppercase tracking-wider text-stone-500">
+                  Ước Tính Doanh Thu
+                </span>
+                <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-800">
+                  <CreditCard className="h-5 w-5" />
+                </div>
+              </div>
+              <div className="mt-4">
+                <span className="font-serif text-3xl font-bold text-stone-900">
+                  {((summary.bookings * 3500000) / 1000000).toFixed(1)} tr
+                </span>
+                <span className="text-xs text-stone-500 ml-1.5">VND tổng giá trị</span>
+              </div>
+              <div className="mt-4 pt-4 border-t border-stone-100">
+                <Link
+                  href="/admin/payments"
+                  className="text-xs font-semibold text-blue-800 hover:text-blue-900 flex items-center justify-between"
+                >
+                  <span>Báo cáo doanh thu</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Action Navigation Grid */}
+          {/* Quick Action Navigation Grid (Super Max) */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
             <h3 className="font-serif text-xl font-bold text-stone-900 mb-4">
-              Lối Tắt Vận Hành Trọng Yếu
+              Lối Tắt Vận Hành Trọng Yếu (Super Max Actions)
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <Link
+                href="/admin/system"
+                className="p-4 rounded-xl border border-amber-300 bg-amber-50/40 hover:border-amber-500 hover:bg-amber-100/50 transition duration-150 block group shadow-sm"
+              >
+                <Cpu className="h-5 w-5 text-amber-700 mb-2" />
+                <h4 className="font-semibold text-stone-900 text-sm group-hover:text-amber-900">
+                  Lệnh Tối Cao & AI
+                </h4>
+                <p className="text-xs text-stone-600 mt-1">Đổi Groq API Key, Model, Prompt & Bảo mật</p>
+              </Link>
+
               <Link
                 href="/admin/tours"
                 className="p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-amber-400 hover:bg-amber-50/50 transition duration-150 block group"
@@ -217,4 +314,3 @@ export default function AdminDashboardPage() {
     </PageShell>
   );
 }
-

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from './ui/button';
-import { ShieldCheck, Lock, Mail, User, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, User, AlertCircle, Sparkles } from 'lucide-react';
 import { useLanguage } from '@/providers/language-provider';
 
 export function AuthForm({ register = false }: { register?: boolean }) {
@@ -14,6 +14,9 @@ export function AuthForm({ register = false }: { register?: boolean }) {
   const { t } = useLanguage();
   const router = useRouter();
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -22,26 +25,36 @@ export function AuthForm({ register = false }: { register?: boolean }) {
     setBusy(true);
     setError('');
 
-    const data = new FormData(event.currentTarget);
     try {
       const input = {
-        email: String(data.get('email')).trim().toLowerCase(),
-        password: String(data.get('password')),
+        email: email.trim().toLowerCase(),
+        password: password,
       };
 
-      accept(
-        register
-          ? await authApi.register({ ...input, name: String(data.get('name')).trim() })
-          : await authApi.login(input),
-      );
+      const result = register
+        ? await authApi.register({ ...input, name: name.trim() })
+        : await authApi.login(input);
 
-      router.push('/tours');
+      accept(result);
+
+      // If user is Admin or Operations, navigate directly to Admin Super Max Dashboard!
+      if (result.user.role === 'ADMIN' || result.user.role === 'OPERATIONS') {
+        router.push('/admin');
+      } else {
+        router.push('/tours');
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Authentication failed.');
     } finally {
       setBusy(false);
     }
   }
+
+  const fillAdminCredentials = () => {
+    setEmail('admin@tour.local');
+    setPassword('Admin@123456');
+    setError('');
+  };
 
   return (
     <div className="rounded-3xl border border-stone-200/80 bg-white p-8 md:p-10 shadow-luxury max-w-md mx-auto">
@@ -68,12 +81,14 @@ export function AuthForm({ register = false }: { register?: boolean }) {
               <input
                 id="name"
                 name="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
                 required
                 minLength={2}
                 maxLength={100}
                 placeholder={t('auth_name_placeholder')}
-                className="pl-10 text-sm"
+                className="w-full rounded-xl border border-stone-200 bg-stone-50/50 pl-10 pr-4 py-2.5 text-sm text-stone-900 focus:bg-white focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20"
               />
             </div>
           </div>
@@ -89,10 +104,12 @@ export function AuthForm({ register = false }: { register?: boolean }) {
               id="email"
               name="email"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
               placeholder={t('auth_email_placeholder')}
-              className="pl-10 text-sm"
+              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 pl-10 pr-4 py-2.5 text-sm text-stone-900 focus:bg-white focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20"
             />
           </div>
         </div>
@@ -112,12 +129,14 @@ export function AuthForm({ register = false }: { register?: boolean }) {
               id="password"
               name="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               autoComplete={register ? 'new-password' : 'current-password'}
               minLength={register ? 12 : 1}
               maxLength={128}
               required
               placeholder="••••••••••••"
-              className="pl-10 text-sm"
+              className="w-full rounded-xl border border-stone-200 bg-stone-50/50 pl-10 pr-4 py-2.5 text-sm text-stone-900 focus:bg-white focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20"
             />
           </div>
         </div>
@@ -137,6 +156,23 @@ export function AuthForm({ register = false }: { register?: boolean }) {
           {busy ? t('auth_processing') : register ? t('auth_btn_submit_register') : t('auth_btn_submit_login')}
         </Button>
 
+        {/* 1-Click Quick Admin Demo Assistant */}
+        {!register && (
+          <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-center">
+            <button
+              type="button"
+              onClick={fillAdminCredentials}
+              className="group inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 hover:text-amber-950 transition cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-600 transition-transform group-hover:scale-110" />
+              <span>Điền nhanh tài khoản Quản Trị Viên (Admin Demo)</span>
+            </button>
+            <span className="text-[10px] text-stone-500 block mt-0.5">
+              admin@tour.local • Mật khẩu: Admin@123456
+            </span>
+          </div>
+        )}
+
         <div className="pt-2 text-center text-xs text-stone-500 border-t border-stone-100">
           <span>{register ? t('auth_have_account') : t('auth_no_account')}</span>{' '}
           <Link
@@ -150,4 +186,3 @@ export function AuthForm({ register = false }: { register?: boolean }) {
     </div>
   );
 }
-

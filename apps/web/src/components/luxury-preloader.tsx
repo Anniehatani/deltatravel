@@ -64,10 +64,12 @@ export function LuxuryPreloader() {
     if (!isVisible) return;
     document.body.style.overflow = 'hidden';
 
-    // Start video playback immediately
+    // Start video playback when ready or immediately
     const video = videoRef.current;
     if (video) {
-      video.play().catch(() => {});
+      if (video.readyState >= 2) {
+        video.play().catch(() => {});
+      }
     }
 
     // High-precision smooth progress counter interpolation loop
@@ -136,6 +138,13 @@ export function LuxuryPreloader() {
     };
   }, [isVisible, completePreloader, t]);
 
+  const handleCanPlay = () => {
+    const video = videoRef.current;
+    if (video && !isTerminatedRef.current && video.paused) {
+      video.play().catch(() => {});
+    }
+  };
+
   const handleTimeUpdate = () => {
     const video = videoRef.current;
     if (video && video.duration) {
@@ -188,6 +197,7 @@ export function LuxuryPreloader() {
         muted
         playsInline
         preload="auto"
+        onCanPlay={handleCanPlay}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleVideoEnded}
         className="absolute inset-0 w-full h-full object-cover z-0"

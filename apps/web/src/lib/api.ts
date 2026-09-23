@@ -29,6 +29,7 @@ import {
   RefundRecordSchema,
   AuditSchema,
 } from '@tour/shared';
+import { getSystemConfig, DEFAULT_GROQ_KEY } from './system-config';
 import { filterFallbackTours, FALLBACK_TOURS, getFallbackSchedules } from './fallback-data';
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
 let accessToken: string | null = null;
@@ -654,9 +655,11 @@ async function callGroqAssistant(
   history?: { role: 'user' | 'assistant'; content: string }[],
   lang: 'vi' | 'en' = 'vi',
 ): Promise<z.infer<typeof AssistantResultSchema>> {
+  const sysConfig = typeof window !== 'undefined' ? getSystemConfig() : null;
   const GROQ_KEY =
+    sysConfig?.groqApiKey ||
     process.env.NEXT_PUBLIC_GROQ_API_KEY ||
-    ['g' + 's' + 'k' + '_', 'VQb54WEr', 'qu0Nw73F', '95IeWGdy', 'b3FYQBFS', 'IhaAygfL', '5Opjif8k', 'z8Tk'].join('');
+    DEFAULT_GROQ_KEY;
 
   // Automatically detect if query is in English if lang is not set to en
   const isEnglishQuery =
@@ -666,7 +669,9 @@ async function callGroqAssistant(
     );
   const effectiveLang: 'vi' | 'en' = isEnglishQuery ? 'en' : 'vi';
 
-  const systemPrompt = buildGroqSystemPrompt(effectiveLang);
+  const systemPrompt = sysConfig?.systemPrompt
+    ? `${sysConfig.systemPrompt}\n\nLanguage to respond: ${effectiveLang === 'en' ? 'ENGLISH' : 'VIETNAMESE'}.\nReturn EXACT JSON format: { "reply": string, "isOffTopic": boolean, "actions": [], "sources": [] }`
+    : buildGroqSystemPrompt(effectiveLang);
 
   const messagesPayload = [
     { role: 'system', content: systemPrompt },
@@ -674,7 +679,13 @@ async function callGroqAssistant(
     { role: 'user', content: message },
   ];
 
-  const models = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b'];
+  const primaryModel = sysConfig?.aiModel || 'openai/gpt-oss-120b';
+  const models = [primaryModel, 'openai/gpt-oss-120b', 'qwen/qwen3.8-27b'].filter(
+    (m, i, arr) => arr.indexOf(m) === i
+  );
+
+  const configuredTemp = typeof sysConfig?.temperature === 'number' ? sysConfig.temperature : 0.2;
+  const configuredMaxTokens = sysConfig?.maxTokens || 1024;
 
   for (const model of models) {
     try {
@@ -688,8 +699,8 @@ async function callGroqAssistant(
           model,
           messages: messagesPayload,
           response_format: { type: 'json_object' },
-          temperature: 0.2,
-          max_tokens: 1024,
+          temperature: configuredTemp,
+          max_tokens: configuredMaxTokens,
         }),
         signal: AbortSignal.timeout(12000),
       });
