@@ -9,10 +9,11 @@ import type { Tour } from '@tour/shared';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/providers/language-provider';
-import { filterFallbackTours, FALLBACK_TOURS } from '@/lib/fallback-data';
+import { filterFallbackTours, FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { formatVND } from '@/lib/format';
+import { LiquidGlassBadge } from '@/components/ui/liquid-glass-badge';
 import {
   MapPin,
   Calendar,
@@ -25,21 +26,22 @@ import {
 } from 'lucide-react';
 
 function ToursListContent() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialRegion = searchParams.get('region') || '';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
-  const [tours, setTours] = useState<Tour[]>(() => filterFallbackTours('', initialRegion).items);
+  const [tours, setTours] = useState<Tour[]>(() => filterFallbackTours('', initialRegion, lang).items);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
   const REGION_TABS = [
-    { id: '', label: 'Tất Cả Hành Trình', subtitle: '9 Điểm Đến' },
-    { id: 'bac', label: 'Miền Bắc', subtitle: 'Kỳ Quan & Di Sản' },
-    { id: 'trung', label: 'Miền Trung', subtitle: 'Hoàng Cung & Biển Xanh' },
-    { id: 'nam', label: 'Miền Nam', subtitle: 'Đảo Ngọc & Sông Nước' },
+    { id: '', label: t('tours_tab_all'), subtitle: t('tours_tab_all_sub') },
+    { id: 'bac', label: t('reg_bac_name'), subtitle: t('tours_tab_bac_sub') },
+    { id: 'trung', label: t('reg_trung_name'), subtitle: t('tours_tab_trung_sub') },
+    { id: 'nam', label: t('reg_nam_name'), subtitle: t('tours_tab_nam_sub') },
   ];
 
   const fetchTours = (region: string) => {
@@ -48,11 +50,11 @@ function ToursListContent() {
     tourApi
       .list('', region)
       .then((res) => {
-        setTours(res.items.length > 0 ? res.items : filterFallbackTours('', region).items);
+        setTours(res.items.length > 0 ? res.items : filterFallbackTours('', region, lang).items);
       })
       .catch(() => {
         // Use rich fallback tours with proper filtering
-        setTours(filterFallbackTours('', region).items);
+        setTours(filterFallbackTours('', region, lang).items);
       })
       .finally(() => {
         setLoading(false);
@@ -63,7 +65,7 @@ function ToursListContent() {
     const reg = searchParams.get('region') || '';
     setActiveRegion(reg);
     fetchTours(reg);
-  }, [searchParams]);
+  }, [searchParams, lang]);
 
   const handleRegionChange = (regId: string) => {
     setActiveRegion(regId);
@@ -85,7 +87,7 @@ function ToursListContent() {
         <GiantScrollTypography
           text="CURATED ODYSSEY"
           direction="left"
-          speed={0.28}
+          speed={0.95}
           outline={true}
         />
       </div>
@@ -128,14 +130,14 @@ function ToursListContent() {
           <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse shadow-[0_0_8px_#edcb8e]" />
           <span className="text-xs font-black uppercase tracking-[0.2em] text-neutral-800">
             {activeRegion
-              ? `BỘ SƯU TẬP ${REGION_TABS.find((r) => r.id === activeRegion)?.label.toUpperCase()} • ${tours.length} HÀNH TRÌNH TINH HOA`
-              : `BỘ SƯU TẬP KIỆT TÁC • 09 HÀNH TRÌNH ĐỘC BẢN`}
+              ? `${t('tours_counter_prefix')} ${REGION_TABS.find((r) => r.id === activeRegion)?.label.toUpperCase()} • ${tours.length} ${t('tours_counter_suffix')}`
+              : t('tours_counter_all')}
           </span>
         </div>
 
         <div className="flex items-center gap-2 text-[11px] font-bold text-neutral-600">
           <Shield className="h-3.5 w-3.5 text-amber-600" />
-          <span>Cam kết dịch vụ 5 sao & bảo hiểm du lịch trọn gói</span>
+          <span>{t('tours_guarantee_text')}</span>
         </div>
       </div>
 
@@ -163,31 +165,34 @@ function ToursListContent() {
             className="inline-flex items-center gap-2 rounded-full border border-black hover:bg-black hover:text-white text-xs font-bold uppercase px-6 py-2.5"
           >
             <RefreshCcw className="h-4 w-4 text-current" />
-            <span>Tải Lại Hành Trình</span>
+            <span>{lang === 'en' ? 'Reload Voyages' : 'Tải Lại Hành Trình'}</span>
           </Button>
         </div>
       ) : tours.length === 0 ? (
         <div className="liquid-glass-card rounded-3xl p-16 text-center max-w-xl mx-auto">
           <Compass className="mx-auto h-12 w-12 text-black/60 mb-4" />
           <h3 className="text-xl font-black text-black uppercase tracking-tight">
-            Chưa có hành trình mở bán
+            {lang === 'en' ? 'No Open Voyages in this Region' : 'Chưa có hành trình mở bán'}
           </h3>
           <p className="mt-2 text-xs font-medium text-neutral-600 max-w-md mx-auto leading-relaxed">
-            Hiện khu vực này đang được nâng cấp lịch trình mùa cao điểm. Quý khách vui lòng chọn phân vùng khác.
+            {lang === 'en'
+              ? 'This realm is currently undergoing high-season itinerary curation. Please select another realm.'
+              : 'Hiện khu vực này đang được nâng cấp lịch trình mùa cao điểm. Quý khách vui lòng chọn phân vùng khác.'}
           </p>
           <Button
             variant="outline"
             onClick={() => handleRegionChange('')}
             className="mt-6 text-xs font-bold rounded-full border border-black hover:bg-black hover:text-white uppercase px-6 py-2.5"
           >
-            Xem Toàn Bộ Tuyệt Tác
+            {lang === 'en' ? 'View All Masterpieces' : 'Xem Toàn Bộ Tuyệt Tác'}
           </Button>
         </div>
       ) : (
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tours.map((tour, index) => {
+          {tours.map((rawTour, index) => {
+            const tour = getLocalizedTour(rawTour, lang);
             const price = getTourPrice(tour);
-            const luxuryTag = getTourLuxuryTag(tour);
+            const luxuryTag = getTourLuxuryTag(tour, lang);
             const heroImage = getTourImage(tour);
 
             return (
@@ -214,31 +219,43 @@ function ToursListContent() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
 
                   {/* Top-Left: Luxury Curated Tag */}
-                  <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full liquid-glass-badge px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg">
-                    <Sparkles className="h-3 w-3 text-amber-300" />
-                    <span>{luxuryTag}</span>
+                  <div className="absolute top-4 left-4 z-10">
+                    <LiquidGlassBadge
+                      variant="luxury"
+                      icon={<Sparkles className="h-3 w-3 text-amber-300" />}
+                    >
+                      {luxuryTag}
+                    </LiquidGlassBadge>
                   </div>
 
                   {/* Top-Right: Duration Liquid Glass Badge */}
-                  <div className="absolute top-4 right-4 inline-flex items-center gap-1.5 rounded-full liquid-glass-badge px-3 py-1 text-[11px] font-bold text-white shadow-lg">
-                    <Calendar className="h-3 w-3 text-white" />
-                    <span>
-                      {tour.durationDays}N{Math.max(1, tour.durationDays - 1)}Đ
-                    </span>
+                  <div className="absolute top-4 right-4 z-10">
+                    <LiquidGlassBadge
+                      variant="duration"
+                      icon={<Calendar className="h-3 w-3 text-white" />}
+                    >
+                      {tour.durationDays}{lang === 'en' ? 'D' : 'N'}{Math.max(1, tour.durationDays - 1)}{lang === 'en' ? 'N' : 'Đ'}
+                    </LiquidGlassBadge>
                   </div>
 
                   {/* Bottom-Left: Location Pin Label */}
-                  <div className="absolute bottom-3.5 left-4 inline-flex items-center gap-1.5 text-white">
-                    <MapPin className="h-3.5 w-3.5 text-amber-300 drop-shadow-md" />
-                    <span className="text-xs font-black tracking-wide drop-shadow-md uppercase">
+                  <div className="absolute bottom-3.5 left-4 z-10">
+                    <LiquidGlassBadge
+                      variant="destination"
+                      icon={<MapPin className="h-3.5 w-3.5 text-amber-300 drop-shadow-md" />}
+                    >
                       {tour.destination}
-                    </span>
+                    </LiquidGlassBadge>
                   </div>
 
                   {/* Bottom-Right: 5-Star Rating Pill */}
-                  <div className="absolute bottom-3.5 right-4 inline-flex items-center gap-1 text-[10px] font-black text-amber-300 liquid-glass-badge px-2.5 py-0.5 rounded-full">
-                    <Star className="h-3 w-3 fill-amber-300" />
-                    <span>5.0 Hạng Sang</span>
+                  <div className="absolute bottom-3.5 right-4 z-10">
+                    <LiquidGlassBadge
+                      variant="rating"
+                      icon={<Star className="h-3 w-3 fill-amber-300 text-amber-300" />}
+                    >
+                      {t('card_badge_luxury')}
+                    </LiquidGlassBadge>
                   </div>
                 </div>
 
@@ -258,16 +275,16 @@ function ToursListContent() {
                   <div className="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-black uppercase text-neutral-600 block tracking-wider">
-                        Đặc Quyền Từ
+                        {t('card_price_from')}
                       </span>
                       <span className="text-sm font-black text-black tracking-tight">
                         {formatVND(price)}
-                        <span className="text-[10px] font-medium text-neutral-600 ml-1">/ khách</span>
+                        <span className="text-[10px] font-medium text-neutral-600 ml-1">{t('card_per_guest')}</span>
                       </span>
                     </div>
 
                     <span className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-[11px] font-black text-white group-hover:bg-neutral-800 transition-all duration-300 group-hover:gap-2.5 shadow-sm">
-                      <span>Chiêm Ngưỡng</span>
+                      <span>{t('card_view_action')}</span>
                       <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1 text-amber-300" />
                     </span>
                   </div>
@@ -283,7 +300,7 @@ function ToursListContent() {
         <GiantScrollTypography
           text="SANCTUARY RETREAT"
           direction="right"
-          speed={0.22}
+          speed={0.85}
           outline={false}
         />
       </div>
@@ -292,13 +309,15 @@ function ToursListContent() {
 }
 
 export default function Page() {
+  const { t, lang } = useLanguage();
+
   return (
     <PageShell
-      badge="DELTA PRIVÉ • BỘ SƯU TẬP 2026"
-      title="NHỮNG HÀNH TRÌNH ĐỘC BẢN"
-      description="Tuyển tập những kiệt tác du lịch và nghỉ dưỡng thượng lưu khắp Việt Nam. Chuẩn mực dịch vụ tinh hoa, lịch trình độc quyền và trải nghiệm cá nhân hóa trọn vẹn."
+      badge={t('tours_header_badge')}
+      title={t('tours_header_title')}
+      description={t('tours_header_desc')}
     >
-      <Suspense fallback={<div className="p-16 text-center text-xs font-black text-black uppercase tracking-widest">Đang tải bộ sưu tập tinh hoa...</div>}>
+      <Suspense fallback={<div className="p-16 text-center text-xs font-black text-black uppercase tracking-widest">{lang === 'en' ? 'Loading curated collection...' : 'Đang tải bộ sưu tập tinh hoa...'}</div>}>
         <ToursListContent />
       </Suspense>
     </PageShell>

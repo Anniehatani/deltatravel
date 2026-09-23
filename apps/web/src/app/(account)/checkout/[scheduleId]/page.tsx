@@ -14,6 +14,7 @@ type QuoteResult = z.infer<typeof QuoteResultSchema>;
 
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/providers/language-provider';
 import {
   Calendar,
   Users,
@@ -29,6 +30,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
+  const { t, lang } = useLanguage();
 
   const initialAdults = Math.max(1, parseInt(searchParams.get('adults') || '2', 10));
   const initialChildren = Math.max(0, parseInt(searchParams.get('children') || '0', 10));
@@ -82,7 +84,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
       .catch((err) => {
         if (active) {
           setQuote(null);
-          setQuoteError(err instanceof Error ? err.message : 'Không thể tính toán chi phí.');
+          setQuoteError(err instanceof Error ? err.message : (lang === 'en' ? 'Unable to calculate quote.' : 'Không thể tính toán chi phí.'));
         }
       })
       .finally(() => {
@@ -92,7 +94,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
     return () => {
       active = false;
     };
-  }, [scheduleId, adults, childrenCount]);
+  }, [scheduleId, adults, childrenCount, lang]);
 
   const handleSubmitBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +120,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
       setSubmitError(
         err instanceof Error
           ? err.message
-          : 'Không thể tạo đơn giữ chỗ. Cậu vui lòng kiểm tra lại thông tin.',
+          : (lang === 'en' ? 'Unable to create reservation. Please review your details.' : 'Không thể tạo đơn giữ chỗ. Quý khách vui lòng kiểm tra lại thông tin.'),
       );
     } finally {
       setSubmitting(false);
@@ -137,14 +139,14 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
           <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
             <h2 className="font-serif text-xl font-bold text-stone-900 mb-6 flex items-center gap-2 pb-4 border-b border-stone-100">
               <Users className="h-5 w-5 text-amber-700" />
-              <span>Số Lượng Hành Khách</span>
+              <span>{t('chk_passenger_section')}</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-stone-900 block text-sm">Người lớn</span>
-                  <span className="text-xs text-stone-500">Từ 12 tuổi trở lên</span>
+                  <span className="font-semibold text-stone-900 block text-sm">{t('bk_adult_unit')}</span>
+                  <span className="text-xs text-stone-500">{t('chk_adult_desc')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -169,8 +171,8 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 
               <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-stone-900 block text-sm">Trẻ em</span>
-                  <span className="text-xs text-stone-500">Dưới 12 tuổi</span>
+                  <span className="font-semibold text-stone-900 block text-sm">{t('bk_child_unit')}</span>
+                  <span className="text-xs text-stone-500">{t('chk_child_desc')}</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
@@ -196,9 +198,9 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 
             {/* Realtime availability badge */}
             <div className="mt-6 flex items-center justify-between text-xs px-1">
-              <span className="text-stone-500">Kho chỗ khả dụng thời gian thực:</span>
+              <span className="text-stone-500">{t('chk_realtime_seats')}</span>
               {availabilityError ? (
-                <span className="font-medium text-amber-700">Chưa kiểm tra được chỗ</span>
+                <span className="font-medium text-amber-700">{t('chk_cant_check_seats')}</span>
               ) : schedule ? (
                 <span
                   className={`font-semibold ${
@@ -206,17 +208,17 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
                   }`}
                 >
                   {schedule.availableSeats > 0
-                    ? `Còn lại ${schedule.availableSeats} chỗ trống`
-                    : 'Đã hết chỗ'}
+                    ? `${t('chk_remaining_seats')} ${schedule.availableSeats} ${t('chk_seats_unit')}`
+                    : t('chk_sold_out')}
                 </span>
               ) : (
-                <span className="text-stone-400">Đang kiểm tra kho chỗ...</span>
+                <span className="text-stone-400">{t('chk_checking_seats')}</span>
               )}
             </div>
 
             {isSeatExceeded && (
               <p role="alert" className="mt-2 text-xs text-red-600 font-medium">
-                Số lượng khách ({totalGuests} người) vượt quá số chỗ khả dụng ({schedule?.availableSeats} chỗ). Vui lòng giảm số người.
+                {t('chk_seat_exceeded_detail')}
               </p>
             )}
           </div>
@@ -224,22 +226,22 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
           {/* Contact Information Form */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
             <h2 className="font-serif text-xl font-bold text-stone-900 mb-2">
-              Thông Tin Đại Diện Đặt Tour
+              {t('chk_contact_section')}
             </h2>
             <p className="text-xs text-stone-500 mb-6">
-              Hệ thống sẽ gửi xác nhận đặt chỗ và mã vé điện tử tới email và số điện thoại này.
+              {t('chk_contact_sub')}
             </p>
 
             <div className="space-y-5">
               <div>
-                <label htmlFor="contactName">Họ và tên người đại diện *</label>
+                <label htmlFor="contactName">{t('chk_rep_name_label')}</label>
                 <input
                   id="contactName"
                   type="text"
                   required
                   minLength={2}
                   maxLength={100}
-                  placeholder="Ví dụ: Nguyễn Minh Anh"
+                  placeholder={lang === 'en' ? 'e.g. John Doe' : 'Ví dụ: Nguyễn Minh Anh'}
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
                 />
@@ -247,30 +249,30 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="contactEmail">Địa chỉ Email *</label>
+                  <label htmlFor="contactEmail">{t('chk_rep_email_label')}</label>
                   <input
                     id="contactEmail"
                     type="email"
                     required
-                    placeholder="minhanh@example.com"
+                    placeholder="guest@example.com"
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="contactPhone">Số điện thoại liên hệ *</label>
+                  <label htmlFor="contactPhone">{t('chk_rep_phone_label')}</label>
                   <input
                     id="contactPhone"
                     type="tel"
                     required
                     pattern="^(?:\+84|0)[0-9]{9,10}$"
-                    placeholder="0912345678 hoặc +84912345678"
+                    placeholder="0912345678"
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
                   />
                   <span className="text-[11px] text-stone-400 mt-1 block">
-                    Định dạng Việt Nam: 09... hoặc +84... (10 số)
+                    {t('chk_phone_format_hint')}
                   </span>
                 </div>
               </div>
@@ -288,7 +290,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
             <div className="flex items-center gap-2 text-xs text-stone-500">
               <Lock className="h-4 w-4 text-stone-400" />
-              <span>Bảo mật dữ liệu cá nhân & Giao dịch Serializable</span>
+              <span>{t('chk_security_note')}</span>
             </div>
 
             <Button
@@ -304,7 +306,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
               }
               className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-xl shadow-md text-sm font-semibold"
             >
-              {submitting ? 'Đang khởi tạo đơn...' : 'Xác nhận giữ chỗ (15 phút)'}
+              {submitting ? t('chk_holding') : t('chk_btn_hold')}
             </Button>
           </div>
         </form>
@@ -314,7 +316,7 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
       <div className="lg:col-span-1">
         <div className="sticky top-24 rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury">
           <h3 className="font-serif text-xl font-bold text-stone-900 pb-4 border-b border-stone-100">
-            Tóm Tắt Giữ Chỗ
+            {t('chk_summary_section')}
           </h3>
 
           <div className="mt-5 space-y-4 text-xs">
@@ -323,10 +325,10 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
                 <Calendar className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold text-stone-900 block text-sm">
-                    Khởi hành: {formatDate(schedule.departureAt)}
+                    {t('chk_departure_prefix')} {formatDate(schedule.departureAt)}
                   </span>
                   <span className="text-stone-500 mt-0.5 block">
-                    Xuất phát tại Việt Nam
+                    {t('chk_dep_location')}
                   </span>
                 </div>
               </div>
@@ -334,16 +336,16 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 
             <div className="space-y-2 py-3 border-y border-stone-100 text-stone-600">
               <div className="flex justify-between">
-                <span>Người lớn ({adults} khách):</span>
+                <span>{t('bk_ticket_adult')} ({adults} {t('chk_seats_unit')}):</span>
                 <span className="font-medium text-stone-900">
-                  {quote ? formatVND(adults * quote.adultPrice) : '...'}
+                  {formatVND(adults * (quote?.adultPrice ?? schedule?.adultPrice ?? 0))}
                 </span>
               </div>
               {childrenCount > 0 && (
                 <div className="flex justify-between">
-                  <span>Trẻ em ({childrenCount} khách):</span>
+                  <span>{t('bk_ticket_child')} ({childrenCount} {t('chk_seats_unit')}):</span>
                   <span className="font-medium text-stone-900">
-                    {quote ? formatVND(childrenCount * quote.childPrice) : '...'}
+                    {formatVND(childrenCount * (quote?.childPrice ?? schedule?.childPrice ?? 0))}
                   </span>
                 </div>
               )}
@@ -351,11 +353,17 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 
             <div className="pt-2 flex items-baseline justify-between">
               <div>
-                <span className="font-semibold text-stone-900 block text-sm">Tổng thanh toán</span>
-                <span className="text-[10px] text-stone-400">Đã bao gồm thuế & bảo hiểm</span>
+                <span className="font-semibold text-stone-900 block text-sm">{t('bk_total_summary')}</span>
+                <span className="text-[10px] text-stone-400">{t('chk_tax_included')}</span>
               </div>
               <span className="font-serif text-2xl font-bold text-amber-900">
-                {quoteLoading ? 'Đang tính...' : quote ? formatVND(quote.totalAmount) : '—'}
+                {quoteLoading
+                  ? t('chk_calculating')
+                  : quote
+                  ? formatVND(quote.totalAmount)
+                  : schedule
+                  ? formatVND(adults * schedule.adultPrice + childrenCount * schedule.childPrice)
+                  : '—'}
               </span>
             </div>
 
@@ -364,10 +372,10 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
             <div className="mt-6 rounded-xl bg-amber-50/60 border border-amber-200/60 p-4 space-y-2 text-stone-600">
               <div className="flex items-center gap-1.5 font-semibold text-amber-900 text-xs">
                 <Clock className="h-3.5 w-3.5" />
-                <span>Quy định giữ chỗ 15 phút</span>
+                <span>{t('chk_hold_rule_title')}</span>
               </div>
               <p className="text-[11px] leading-relaxed">
-                Sau khi nhấn nút xác nhận, hệ thống sẽ cấp mã đơn và giữ chỗ trong vòng 15 phút để bạn chọn cổng thanh toán an toàn.
+                {t('chk_hold_rule_desc')}
               </p>
             </div>
           </div>
@@ -380,14 +388,15 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
 export default function CheckoutPage({ params }: { params: Promise<{ scheduleId: string }> }) {
   const resolvedParams = use(params);
   const scheduleId = resolvedParams.scheduleId;
+  const { t } = useLanguage();
 
   return (
     <PageShell
-      badge="Khóa Chỗ An Toàn"
-      title="Thông Tin Đặt Chỗ"
-      description="Kiểm tra thông tin hành khách và người đại diện để hoàn tất giữ chỗ 15 phút."
+      badge={t('chk_shell_badge')}
+      title={t('chk_shell_title')}
+      description={t('chk_shell_desc')}
     >
-      <Suspense fallback={<div className="p-12 text-center text-sm text-stone-500">Đang chuẩn bị trang đặt tour...</div>}>
+      <Suspense fallback={<div className="p-12 text-center text-sm text-stone-500">{t('chk_loading_page')}</div>}>
         <CheckoutContent scheduleId={scheduleId} />
       </Suspense>
     </PageShell>

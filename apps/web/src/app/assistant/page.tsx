@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import Link from 'next/link';
 import type { AssistantResult } from '@tour/shared';
 import { assistantApi } from '@/lib/api';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/providers/auth-provider';
+import { useLanguage } from '@/providers/language-provider';
 import {
   Sparkles,
   Send,
@@ -24,18 +26,37 @@ type MessageItem = {
   result?: AssistantResult;
 };
 
-const SUGGESTED_QUESTIONS = [
-  'Gợi ý tour du lịch biển nghỉ dưỡng cao cấp?',
-  'Chính sách hủy và thời hạn 72 giờ như thế nào?',
-  'Quy trình giữ chỗ 15 phút và thanh toán ra sao?',
-  'Có những hành trình di sản miền Trung nào?',
-];
-
 export default function AssistantPage() {
+  const { user } = useAuth();
+  const { t, lang } = useLanguage();
+  const [userAvatar, setUserAvatar] = useState<string>('');
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  const suggestedQuestions = [
+    t('asst_q1'),
+    t('asst_q2'),
+    t('asst_q3'),
+    t('asst_q4'),
+  ];
+
+  // Sync avatar in real time with AccountModal and Navbar
+  useEffect(() => {
+    const updateAvatar = () => {
+      if (typeof window !== 'undefined') {
+        const stored =
+          (user?.email && localStorage.getItem(`tour_avatar_${user.email}`)) ||
+          localStorage.getItem('tour_avatar') ||
+          '';
+        setUserAvatar(stored);
+      }
+    };
+    updateAvatar();
+    window.addEventListener('tour_avatar_updated', updateAvatar);
+    return () => window.removeEventListener('tour_avatar_updated', updateAvatar);
+  }, [user]);
 
   const sendQuery = async (queryText: string) => {
     if (!queryText.trim() || busy) return;
@@ -59,6 +80,7 @@ export default function AssistantPage() {
       const res = await assistantApi.chat({
         message: userMsg,
         history: historyPayload,
+        lang,
       });
 
       setMessages([
@@ -70,7 +92,7 @@ export default function AssistantPage() {
         },
       ]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Chưa thể kết nối tới dịch vụ trợ lý.');
+      setError(e instanceof Error ? e.message : t('asst_connect_error'));
     } finally {
       setBusy(false);
     }
@@ -83,9 +105,9 @@ export default function AssistantPage() {
 
   return (
     <PageShell
-      badge="Tư Vấn Du Lịch"
-      title="Hỏi Đáp & Tư Vấn Du Lịch"
-      description="Tìm kiếm hành trình 3 miền, tra cứu quy định hoặc kiểm tra đơn đặt của bạn một cách nhanh chóng."
+      badge={t('asst_badge')}
+      title={t('asst_title')}
+      description={t('asst_desc')}
     >
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Quick Suggestion Chips */}
@@ -93,10 +115,10 @@ export default function AssistantPage() {
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury">
             <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-800 mb-3 flex items-center gap-1.5">
               <Sparkles className="h-4 w-4 text-amber-600" />
-              <span>Gợi ý câu hỏi thường gặp</span>
+              <span>{t('asst_suggestions_title')}</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {SUGGESTED_QUESTIONS.map((q) => (
+              {suggestedQuestions.map((q) => (
                 <button
                   key={q}
                   type="button"
@@ -137,9 +159,13 @@ export default function AssistantPage() {
                 {item.role === 'assistant' && item.result && (
                   <div className="flex items-center justify-between pb-2 border-b border-stone-100 text-[10px] text-stone-400 uppercase tracking-wider">
                     <span>
-                      {item.result.mode === 'GEMINI' ? 'Trợ lý thông minh' : 'Hệ thống tra cứu'}
+                      {item.result.mode === 'GROQ'
+                        ? t('asst_groq_badge')
+                        : item.result.mode === 'GEMINI'
+                          ? t('asst_smart_badge')
+                          : t('asst_rule_badge')}
                     </span>
-                    <span className="text-emerald-700 font-semibold lowercase">đã xác thực</span>
+                    <span className="text-emerald-700 font-semibold lowercase">{t('asst_verified')}</span>
                   </div>
                 )}
 
@@ -167,7 +193,7 @@ export default function AssistantPage() {
                 {/* Verified Sources */}
                 {item.result && item.result.sources.length > 0 && (
                   <div className="pt-2 border-t border-stone-100 text-[11px] text-stone-500">
-                    <span className="font-semibold text-stone-600 block mb-1">Cơ sở dữ liệu trích xuất:</span>
+                    <span className="font-semibold text-stone-600 block mb-1">{t('asst_sources_title')}</span>
                     <ul className="list-disc list-inside space-y-0.5 text-stone-500">
                       {item.result.sources.map((s) => (
                         <li key={`${s.type}-${s.id}`}>{s.label}</li>
@@ -178,8 +204,18 @@ export default function AssistantPage() {
               </div>
 
               {item.role === 'user' && (
-                <div className="h-9 w-9 rounded-full bg-stone-200 flex items-center justify-center text-stone-700 shrink-0 mt-1">
-                  <User className="h-5 w-5" />
+                <div className="h-9 w-9 rounded-full overflow-hidden shrink-0 mt-1 border border-black/10 shadow-sm bg-neutral-900 flex items-center justify-center">
+                  {userAvatar ? (
+                    <img
+                      src={userAvatar}
+                      alt={user?.name || 'User'}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-stone-200 flex items-center justify-center text-stone-700">
+                      <User className="h-5 w-5" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -191,7 +227,7 @@ export default function AssistantPage() {
                 <Bot className="h-5 w-5 animate-pulse" />
               </div>
               <div className="rounded-2xl bg-white border border-stone-200/80 p-4 shadow-sm text-stone-500 italic">
-                Trợ lý đang truy xuất dữ liệu tour và chính sách...
+                {t('asst_waiting')}
               </div>
             </div>
           )}
@@ -210,7 +246,7 @@ export default function AssistantPage() {
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="Hỏi về địa điểm, giá vé trẻ em, lịch khởi hành hoặc chính sách hủy..."
+              placeholder={t('asst_placeholder')}
               maxLength={2000}
               required
               disabled={busy}
@@ -222,14 +258,14 @@ export default function AssistantPage() {
               className="bg-stone-900 hover:bg-stone-800 text-white px-5 rounded-xl gap-1.5 shadow-sm"
             >
               <Send className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Gửi</span>
+              <span className="hidden sm:inline">{t('asst_send')}</span>
             </Button>
           </form>
 
           <p className="mt-3 text-[11px] text-stone-400 flex items-center gap-1.5 px-1">
             <Info className="h-3.5 w-3.5 shrink-0" />
             <span>
-              Trợ lý dựa trên quy chuẩn tour thật. Các giao dịch đặt tour, giữ chỗ và thanh toán luôn cần bạn xác nhận trực tiếp tại trang checkout tương ứng.
+              {t('asst_disclaimer')}
             </span>
           </p>
         </div>

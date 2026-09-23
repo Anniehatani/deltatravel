@@ -15,15 +15,23 @@ interface GiantScrollTypographyProps {
 export function GiantScrollTypography({
   text,
   direction = 'left',
-  speed = 0.25,
+  speed = 0.9,
   className = '',
   outline = true,
-  repeat = 8,
-  baseOffset = -1200,
+  repeat = 12,
+  baseOffset,
 }: GiantScrollTypographyProps) {
+  // Appropriate base offset depending on direction so text fills screen throughout scroll
+  const resolvedBaseOffset =
+    baseOffset !== undefined
+      ? baseOffset
+      : direction === 'right'
+        ? -4200
+        : -800;
+
   const textRef = useRef<HTMLDivElement>(null);
-  const currentPos = useRef(baseOffset);
-  const targetPos = useRef(baseOffset);
+  const currentPos = useRef(resolvedBaseOffset);
+  const targetPos = useRef(resolvedBaseOffset);
   const animFrameId = useRef<number | null>(null);
 
   useEffect(() => {
@@ -31,14 +39,14 @@ export function GiantScrollTypography({
 
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      targetPos.current = baseOffset + scrollY * speed * (direction === 'left' ? -1 : 1);
+      targetPos.current = resolvedBaseOffset + scrollY * speed * (direction === 'left' ? -1 : 1);
     };
 
     const render = () => {
       if (!isMounted) return;
-      // Smooth lerp damping for buttery smooth motion
+      // Snappier, buttery smooth lerp damping for immediate mouse scroll responsiveness
       const diff = targetPos.current - currentPos.current;
-      currentPos.current += diff * 0.12;
+      currentPos.current += diff * 0.16;
 
       if (textRef.current) {
         textRef.current.style.transform = `translate3d(${currentPos.current.toFixed(2)}px, 0, 0)`;
@@ -56,7 +64,7 @@ export function GiantScrollTypography({
       window.removeEventListener('scroll', handleScroll);
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
     };
-  }, [direction, speed, baseOffset]);
+  }, [direction, speed, resolvedBaseOffset]);
 
   // Clean repeat items without star icon, softer elegant translucent opacity
   const items = Array.from({ length: repeat }, (_, i) => (
@@ -86,8 +94,8 @@ export function GiantScrollTypography({
     >
       <div
         ref={textRef}
-        className="inline-flex items-center text-[11vw] sm:text-[9vw] lg:text-[7.5vw] font-black leading-none will-change-transform"
-        style={{ transform: `translate3d(${baseOffset}px, 0, 0)` }}
+        className="giant-typography-dynamic inline-flex items-center text-[11vw] sm:text-[9vw] lg:text-[7.5vw] font-black leading-none will-change-transform"
+        style={{ transform: `translate3d(${resolvedBaseOffset}px, 0, 0)` }}
       >
         {items}
       </div>

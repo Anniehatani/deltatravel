@@ -228,4 +228,16 @@ export class BookingsService {
       await expireLocked(tx, b.scheduleId, await dbNow(tx));
     });
   }
+  async delete(id: string, actorId: string) {
+    await this.db.booking.findFirstOrThrow({
+      where: { id, userId: actorId },
+      select: { id: true, status: true },
+    });
+    await this.db.$transaction([
+      this.db.payment.deleteMany({ where: { bookingId: id } }),
+      this.db.bookingDetail.deleteMany({ where: { bookingId: id } }),
+      this.db.booking.delete({ where: { id } }),
+    ]);
+    return { ok: true };
+  }
 }

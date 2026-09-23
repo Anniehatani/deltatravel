@@ -110,6 +110,7 @@ export const AssistantRequestSchema = z
       )
       .max(8)
       .default([]),
+    lang: z.enum(['vi', 'en']).optional(),
   })
   .strict();
 
@@ -186,7 +187,7 @@ export const PaymentSchema = z.object({
 });
 export const AssistantResultSchema = z.object({
   reply: z.string(),
-  mode: z.enum(['GEMINI', 'RULE_BASED']),
+  mode: z.enum(['GEMINI', 'RULE_BASED', 'GROQ']),
   actions: z.array(
     z.object({
       label: z.string(),

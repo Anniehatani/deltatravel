@@ -1,8 +1,13 @@
+'use client';
+
 import { AuthForm } from '@/components/auth-form';
 import { PageShell } from '@/components/page-shell';
+import { useLanguage } from '@/providers/language-provider';
+
 export default function Page() {
+  const { t } = useLanguage();
   return (
-    <PageShell title="Tạo tài khoản" description="Quản lý các hành trình của bạn tại một nơi.">
+    <PageShell title={t('register_page_title')} description={t('register_page_desc')}>
       <AuthForm register />
     </PageShell>
   );

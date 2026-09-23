@@ -3,16 +3,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowDown, MapPin } from 'lucide-react';
+import { ArrowDown, MapPin, Sparkles } from 'lucide-react';
 import NextImage from 'next/image';
 import { useLanguage } from '@/providers/language-provider';
-
-const TOTAL_FRAMES = 150;
-
-function getFramePath(idx: number): string {
-  const pad = idx.toString().padStart(3, '0');
-  return `/frames/ezgif-frame-${pad}.png`;
-}
+import { frameCache, getFramePath, TOTAL_FRAMES } from '@/lib/asset-preloader';
 
 export function Scroll3DHero() {
   const router = useRouter();
@@ -28,37 +22,6 @@ export function Scroll3DHero() {
   const isRunning = useRef<boolean>(true);
 
   const [uiProgress, setUiProgress] = useState<number>(0);
-
-  // Preload frames in background to populate browser cache
-  useEffect(() => {
-    // 1. Fast initial preload for frames 1-30
-    for (let i = 1; i <= 30; i++) {
-      const img = new Image();
-      img.src = getFramePath(i);
-    }
-
-    // 2. Preload key milestones across the entire 150-frame journey
-    const milestones = [45, 60, 75, 90, 105, 120, 135, 150];
-    milestones.forEach((m) => {
-      const img = new Image();
-      img.src = getFramePath(m);
-    });
-
-    // 3. Rapid sequential preload for all remaining frames
-    let cur = 31;
-    const preloadRest = () => {
-      for (let j = 0; j < 6 && cur <= TOTAL_FRAMES; j++, cur++) {
-        const img = new Image();
-        img.src = getFramePath(cur);
-      }
-      if (cur <= TOTAL_FRAMES) {
-        setTimeout(preloadRest, 20);
-      }
-    };
-    const timer = setTimeout(preloadRest, 60);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Continuous buttery 60fps lerp animation loop for inertial scroll
   useEffect(() => {
@@ -77,7 +40,8 @@ export function Scroll3DHero() {
         if (frame !== lastDrawnFrame.current) {
           lastDrawnFrame.current = frame;
           if (imgRef.current) {
-            imgRef.current.src = getFramePath(frame);
+            const cached = frameCache.get(frame);
+            imgRef.current.src = cached ? cached.src : getFramePath(frame);
           }
         }
         setUiProgress(currentProgress.current);
@@ -89,7 +53,8 @@ export function Scroll3DHero() {
         if (frame !== lastDrawnFrame.current) {
           lastDrawnFrame.current = frame;
           if (imgRef.current) {
-            imgRef.current.src = getFramePath(frame);
+            const cached = frameCache.get(frame);
+            imgRef.current.src = cached ? cached.src : getFramePath(frame);
           }
         }
         setUiProgress(currentProgress.current);
@@ -197,46 +162,57 @@ export function Scroll3DHero() {
                 : 'opacity-0 translate-y-6 pointer-events-none hidden'
             }`}
           >
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-black/40 bg-white/90 backdrop-blur-sm px-3.5 py-1 text-xs font-bold text-black mb-3">
-              <span>{t('hero_stage3_tag')}</span>
+            {/* Top pill badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/50 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-white shadow-lg mb-4">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              <span className="tracking-wider uppercase">{t('hero_stage3_tag')}</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-black drop-shadow-[0_1px_6px_rgba(255,255,255,0.9)] max-w-2xl mx-auto leading-tight uppercase">
+
+            {/* Title: crisp white with deep dark cinematic drop-shadow, no ugly white blur */}
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)] max-w-2xl mx-auto leading-tight uppercase tracking-tight">
               {t('hero_stage3_title')}
             </h2>
-            <p className="mt-2.5 text-xs sm:text-sm font-bold text-black drop-shadow-[0_1px_4px_rgba(255,255,255,0.9)] max-w-md mx-auto">
+
+            {/* Subtitle: elegant white/95 with dark drop-shadow */}
+            <p className="mt-3 text-xs sm:text-sm font-medium text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] max-w-md mx-auto leading-relaxed">
               {t('hero_stage3_desc')}
             </p>
 
-            {/* Quick 3-Region Liquid Glass Pills */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {/* Quick 3-Region Ultra-Refined Liquid Glass Pills */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
               <Link
                 href="/tours?region=bac"
-                className="liquid-glass-pill px-5 py-2.5 text-xs font-bold text-black hover:scale-105 transition-all duration-300 shadow-sm flex items-center gap-1.5"
+                className="group rounded-full bg-white/20 hover:bg-white/35 backdrop-blur-2xl border border-white/50 hover:border-white text-white px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.7),0_10px_25px_-5px_rgba(0,0,0,0.4)] flex items-center gap-2"
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 group-hover:scale-125 transition-transform" />
                 <span>{t('btn_tour_north')}</span>
               </Link>
+
               <Link
                 href="/tours?region=trung"
-                className="liquid-glass-pill px-5 py-2.5 text-xs font-bold text-black hover:scale-105 transition-all duration-300 shadow-sm flex items-center gap-1.5"
+                className="group rounded-full bg-white/20 hover:bg-white/35 backdrop-blur-2xl border border-white/50 hover:border-white text-white px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.7),0_10px_25px_-5px_rgba(0,0,0,0.4)] flex items-center gap-2"
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 group-hover:scale-125 transition-transform" />
                 <span>{t('btn_tour_central')}</span>
               </Link>
+
               <Link
                 href="/tours?region=nam"
-                className="liquid-glass-pill px-5 py-2.5 text-xs font-bold text-black hover:scale-105 transition-all duration-300 shadow-sm flex items-center gap-1.5"
+                className="group rounded-full bg-white/20 hover:bg-white/35 backdrop-blur-2xl border border-white/50 hover:border-white text-white px-6 py-2.5 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.7),0_10px_25px_-5px_rgba(0,0,0,0.4)] flex items-center gap-2"
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 group-hover:scale-125 transition-transform" />
                 <span>{t('btn_tour_south')}</span>
               </Link>
             </div>
 
-            {/* Main Luxury Call to Action */}
-            <div className="mt-5 flex items-center justify-center">
+            {/* Main Luxury Liquid Glass Call to Action */}
+            <div className="mt-6 flex items-center justify-center">
               <Link
                 href="/tours"
-                className="group inline-flex items-center gap-2.5 rounded-full bg-black/90 hover:bg-black text-white px-7 py-3 text-xs font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.3)] border border-white/20 backdrop-blur-md"
+                className="group inline-flex items-center gap-3 rounded-full bg-black/75 hover:bg-black text-white px-8 py-3.5 text-xs font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_15px_35px_-5px_rgba(0,0,0,0.6)] border border-white/30 hover:border-amber-400/80 backdrop-blur-2xl"
               >
-                <span>Khám Phá Toàn Bộ Hành Trình</span>
-                <span className="text-amber-300 transition-transform duration-300 group-hover:translate-x-1">→</span>
+                <span>{t('hero_btn_explore_all')}</span>
+                <span className="text-amber-300 transition-transform duration-300 group-hover:translate-x-1 font-bold">→</span>
               </Link>
             </div>
           </div>

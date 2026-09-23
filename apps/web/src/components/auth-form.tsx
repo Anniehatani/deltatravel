@@ -7,9 +7,11 @@ import { authApi } from '@/lib/api';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from './ui/button';
 import { ShieldCheck, Lock, Mail, User, AlertCircle } from 'lucide-react';
+import { useLanguage } from '@/providers/language-provider';
 
 export function AuthForm({ register = false }: { register?: boolean }) {
   const { accept } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   const [error, setError] = useState('');
@@ -35,7 +37,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
 
       router.push('/tours');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Không thể hoàn tất xác thực.');
+      setError(e instanceof Error ? e.message : 'Authentication failed.');
     } finally {
       setBusy(false);
     }
@@ -45,15 +47,13 @@ export function AuthForm({ register = false }: { register?: boolean }) {
     <div className="rounded-3xl border border-stone-200/80 bg-white p-8 md:p-10 shadow-luxury max-w-md mx-auto">
       <div className="text-center mb-8">
         <span className="text-[10px] font-bold uppercase tracking-widest text-amber-800 block mb-1">
-          Hệ Thống Thành Viên
+          {t('auth_member_system')}
         </span>
         <h2 className="font-serif text-2xl font-bold text-stone-900">
-          {register ? 'Đăng Ký Tài Khoản' : 'Chào Mừng Trở Lại'}
+          {register ? t('auth_create_account') : t('auth_welcome_back')}
         </h2>
         <p className="mt-1.5 text-xs text-stone-500">
-          {register
-            ? 'Tạo tài khoản để quản lý đơn đặt tour và hưởng ưu đãi dành riêng.'
-            : 'Đăng nhập để tra cứu lịch sử hành trình và tiếp tục giữ chỗ.'}
+          {register ? t('auth_register_sub') : t('auth_login_sub')}
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         {register && (
           <div>
             <label htmlFor="name" className="text-xs font-semibold text-stone-700">
-              Họ và tên của bạn *
+              {t('auth_name_label')}
             </label>
             <div className="relative mt-1">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
@@ -72,7 +72,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
                 required
                 minLength={2}
                 maxLength={100}
-                placeholder="Ví dụ: Lê Văn An"
+                placeholder={t('auth_name_placeholder')}
                 className="pl-10 text-sm"
               />
             </div>
@@ -81,7 +81,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
 
         <div>
           <label htmlFor="email" className="text-xs font-semibold text-stone-700">
-            Địa chỉ Email *
+            {t('auth_email_label')}
           </label>
           <div className="relative mt-1">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
@@ -91,7 +91,7 @@ export function AuthForm({ register = false }: { register?: boolean }) {
               type="email"
               autoComplete="email"
               required
-              placeholder="example@domain.vn"
+              placeholder={t('auth_email_placeholder')}
               className="pl-10 text-sm"
             />
           </div>
@@ -100,10 +100,10 @@ export function AuthForm({ register = false }: { register?: boolean }) {
         <div>
           <div className="flex justify-between items-center mb-1">
             <label htmlFor="password" className="text-xs font-semibold text-stone-700">
-              Mật khẩu *
+              {t('auth_pwd_label')}
             </label>
             {register && (
-              <span className="text-[10px] text-stone-400">Tối thiểu 12 ký tự</span>
+              <span className="text-[10px] text-stone-400">{t('auth_pwd_min')}</span>
             )}
           </div>
           <div className="relative">
@@ -134,16 +134,16 @@ export function AuthForm({ register = false }: { register?: boolean }) {
           disabled={busy}
           className="w-full bg-stone-900 hover:bg-stone-800 text-white py-3 rounded-xl shadow-md text-sm font-semibold"
         >
-          {busy ? 'Đang xử lý...' : register ? 'Tạo tài khoản ngay' : 'Đăng nhập'}
+          {busy ? t('auth_processing') : register ? t('auth_btn_submit_register') : t('auth_btn_submit_login')}
         </Button>
 
         <div className="pt-2 text-center text-xs text-stone-500 border-t border-stone-100">
-          <span>{register ? 'Đã có tài khoản?' : 'Chưa có tài khoản thành viên?'}</span>{' '}
+          <span>{register ? t('auth_have_account') : t('auth_no_account')}</span>{' '}
           <Link
             href={register ? '/login' : '/register'}
             className="font-semibold text-amber-800 hover:underline"
           >
-            {register ? 'Đăng nhập tại đây' : 'Đăng ký miễn phí'}
+            {register ? t('auth_link_login') : t('auth_link_register')}
           </Link>
         </div>
       </form>
