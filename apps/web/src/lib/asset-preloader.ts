@@ -43,7 +43,6 @@ export function preloadSingleImage(src: string): Promise<HTMLImageElement> {
     }
 
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     img.src = src;
 
     if (img.complete) {

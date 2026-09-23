@@ -27,50 +27,17 @@ import {
   Compass,
 } from 'lucide-react';
 
-// Apple-Grade Liquid Glass Tour Cards with scroll-triggered staggered animations
+// Apple-Grade Liquid Glass Tour Cards
 function TourCardsGrid({ tours, t, lang }: { tours: Tour[]; t: (k: string) => string; lang: 'vi' | 'en' }) {
-  const gridRef = useRef<HTMLDivElement>(null);
-  const [visibleSet, setVisibleSet] = useState<Set<number>>(() => new Set());
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.idx);
-            if (!isNaN(idx)) {
-              setVisibleSet((prev) => {
-                const next = new Set(prev);
-                next.add(idx);
-                return next;
-              });
-            }
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -30px 0px' },
-    );
-
-    const cards = grid.querySelectorAll('[data-idx]');
-    cards.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, [tours]);
-
   const getTourPrice = (tour: Tour): number => {
     const match = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
     return match ? match.adultPrice : 2450000;
   };
 
   return (
-    <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {tours.map((rawTour, i) => {
         const tour = getLocalizedTour(rawTour, lang);
-        const isVisible = visibleSet.has(i);
         const price = getTourPrice(tour);
         const luxuryTag = getTourLuxuryTag(tour, lang);
         const heroImage = getTourImage(tour);
@@ -79,13 +46,7 @@ function TourCardsGrid({ tours, t, lang }: { tours: Tour[]; t: (k: string) => st
           <Link
             key={tour.id}
             href={`/tours/${tour.id}`}
-            data-idx={i}
-            className="group relative flex flex-col rounded-[26px] overflow-hidden liquid-glass-card hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.14)] transition-all duration-500"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(40px) scale(0.97)',
-              transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 0.08}s, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${i * 0.08}s`,
-            }}
+            className="group relative flex flex-col rounded-[26px] overflow-hidden liquid-glass-card hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.14)] transition-all duration-300"
           >
             {/* Hero Image with Cinematic Zoom Effect */}
             <div className="relative h-60 w-full overflow-hidden bg-neutral-900">

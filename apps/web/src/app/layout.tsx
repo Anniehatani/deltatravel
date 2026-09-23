@@ -30,7 +30,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi" className={beVietnamPro.variable}>
       <body className="min-h-screen flex flex-col bg-white text-black selection:bg-black selection:text-white">
-        <Script src="/scripts/liquidGL.js" strategy="afterInteractive" />
         <LanguageProvider>
           <AuthProvider>
             <Nav />

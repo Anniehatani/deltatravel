@@ -34,23 +34,15 @@ export function GlassUserMenu({
         {/* Login Button with Liquid Glass Border & Inner Light */}
         <Link
           href="/login"
-          className={`relative z-10 rounded-full px-3.5 py-1.5 text-[12px] font-bold tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 ${
-            isTransparent
-              ? 'border border-white/30 bg-white/[0.08] text-white hover:bg-white/[0.18] hover:border-white/60 shadow-[0_2px_12px_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(255,255,255,0.4)] backdrop-blur-xl'
-              : 'border border-black/[0.08] bg-white/70 text-neutral-800 hover:bg-white hover:text-black shadow-[0_2px_8px_rgba(0,0,0,0.04),inset_0_1px_1.5px_rgba(255,255,255,0.9)] backdrop-blur-xl'
-          }`}
+          className="relative z-10 rounded-full px-4 py-1.5 text-[12px] font-bold tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20 bg-neutral-900/85 text-white hover:bg-black shadow-md backdrop-blur-xl"
         >
           {loginLabel}
         </Link>
 
-        {/* Register Button with Solid Radiance */}
+        {/* Register Button with Golden Radiance */}
         <Link
           href="/register"
-          className={`relative z-10 rounded-full px-4 py-1.5 text-[12px] font-black tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 ${
-            isTransparent
-              ? 'bg-white text-black hover:bg-neutral-100 shadow-[0_4px_20px_rgba(255,255,255,0.35)]'
-              : 'bg-black text-white hover:bg-neutral-800 shadow-[0_4px_14px_rgba(0,0,0,0.15)]'
-          }`}
+          className="relative z-10 rounded-full px-4 py-1.5 text-[12px] font-black tracking-tight transition-all duration-300 hover:scale-105 active:scale-95 bg-amber-400 text-stone-950 hover:bg-amber-300 shadow-md"
         >
           {registerLabel}
         </Link>

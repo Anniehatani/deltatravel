@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowDown, MapPin, Sparkles } from 'lucide-react';
@@ -13,85 +13,22 @@ export function Scroll3DHero() {
   const { t } = useLanguage();
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   // Smooth lerp state
   const targetProgress = useRef<number>(0);
   const currentProgress = useRef<number>(0);
-  const lastDrawnFrame = useRef<number>(-1);
+  const lastDrawnFrame = useRef<number>(1);
   const isRunning = useRef<boolean>(true);
 
   const [uiProgress, setUiProgress] = useState<number>(0);
 
-  // High-performance canvas draw function with 'object-fit: cover' behavior
-  const drawFrame = useCallback((frameIdx: number) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return;
-
-    // Get preloaded image from cache
-    let img = frameCache.get(frameIdx);
-
-    // If frame is still loading, fallback to nearest available frame to avoid blank flickers
-    if (!img || !img.complete) {
-      if (lastDrawnFrame.current > 0 && frameCache.has(lastDrawnFrame.current)) {
-        img = frameCache.get(lastDrawnFrame.current);
-      } else {
-        // Trigger load in background
-        preloadFrame(frameIdx);
-        return;
-      }
-    }
-
-    if (!img || !img.complete) return;
-
-    const cw = canvas.width;
-    const ch = canvas.height;
-    const iw = img.naturalWidth || 1920;
-    const ih = img.naturalHeight || 1080;
-
-    // Calculate 'cover' crop coordinates
-    const scale = Math.max(cw / iw, ch / ih);
-    const nw = iw * scale;
-    const nh = ih * scale;
-    const cx = (cw - nw) / 2;
-    const cy = (ch - nh) / 2;
-
-    ctx.drawImage(img, cx, cy, nw, nh);
-    lastDrawnFrame.current = frameIdx;
-  }, []);
-
-  // Handle canvas sizing for crisp display across Retina / 4K / mobile displays
-  const handleResize = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for optimal GPU memory
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
-    if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-    }
-
-    // Force redraw current frame on resize
-    const rawFrame = Math.round(currentProgress.current * (TOTAL_FRAMES - 1)) + 1;
-    const frame = Math.min(TOTAL_FRAMES, Math.max(1, rawFrame));
-    drawFrame(frame);
-  }, [drawFrame]);
-
   // Continuous buttery 60fps lerp animation loop for inertial scroll
   useEffect(() => {
     isRunning.current = true;
-    handleResize();
 
-    // Draw initial frame 1 as soon as available
-    preloadFrame(1).then(() => {
-      drawFrame(1);
-    });
+    // Immediately ensure frame 1 is loaded
+    preloadFrame(1);
 
     const renderLoop = () => {
       if (!isRunning.current) return;
@@ -104,7 +41,11 @@ export function Scroll3DHero() {
         const frame = Math.min(TOTAL_FRAMES, Math.max(1, rawFrame));
 
         if (frame !== lastDrawnFrame.current) {
-          drawFrame(frame);
+          lastDrawnFrame.current = frame;
+          if (imgRef.current) {
+            const cached = frameCache.get(frame);
+            imgRef.current.src = cached ? cached.src : getFramePath(frame);
+          }
         }
         setUiProgress(currentProgress.current);
       } else if (currentProgress.current !== targetProgress.current) {
@@ -113,7 +54,11 @@ export function Scroll3DHero() {
         const frame = Math.min(TOTAL_FRAMES, Math.max(1, rawFrame));
 
         if (frame !== lastDrawnFrame.current) {
-          drawFrame(frame);
+          lastDrawnFrame.current = frame;
+          if (imgRef.current) {
+            const cached = frameCache.get(frame);
+            imgRef.current.src = cached ? cached.src : getFramePath(frame);
+          }
         }
         setUiProgress(currentProgress.current);
       }
@@ -135,25 +80,24 @@ export function Scroll3DHero() {
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
     onScroll();
 
     return () => {
       isRunning.current = false;
       cancelAnimationFrame(animId);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', handleResize);
     };
-  }, [drawFrame, handleResize]);
+  }, []);
 
   return (
     <div id="hero-3d-section" ref={containerRef} className="relative w-full h-[360vh] bg-black text-white">
       {/* Sticky Fullscreen Scrubber covering 100% viewport */}
       <div className="sticky top-0 h-screen min-h-[100dvh] w-full overflow-hidden flex items-center justify-center bg-black">
-        {/* Hardware-accelerated GPU Canvas for 60fps stutter-free 3D playback */}
-        <canvas
-          ref={canvasRef}
-          aria-label="DELTA 3D Interactive Experience"
+        {/* Native Hardware-Accelerated 3D Image Flipbook (WebP ~45KB/frame) */}
+        <img
+          ref={imgRef}
+          src="/frames/ezgif-frame-001.webp"
+          alt="DELTA 3D Experience"
           className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
         />
 
