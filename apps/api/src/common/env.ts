@@ -9,6 +9,7 @@ const schema = z.object({
   DATABASE_URL: z.string().url(),
   REDIS_URL: z.string().url(),
   WEB_ORIGIN: z.string().url().default('http://localhost:3000'),
+  WEB_ORIGINS: optionalString(z.string().min(1)),
   API_PUBLIC_URL: z.string().url(),
   JWT_SECRET: z.string().min(32),
   CASH_HOLD_MINUTES: z.coerce.number().int().min(15).max(10080).default(1440),
@@ -45,9 +46,15 @@ export function validateEnv(value: Record<string, unknown>) {
   };
   const e = schema.parse(normalized);
 
+  const webOrigins = (e.WEB_ORIGINS || e.WEB_ORIGIN)
+    .split(',')
+    .map((origin: string) => origin.trim())
+    .filter(Boolean);
+
   if (
     e.NODE_ENV === 'production' &&
-    (!e.WEB_ORIGIN.startsWith('https://') || !e.API_PUBLIC_URL.startsWith('https://'))
+    (!webOrigins.every((origin: string) => origin.startsWith('https://')) ||
+      !e.API_PUBLIC_URL.startsWith('https://'))
   ) {
     throw new Error('Production requires HTTPS');
   }

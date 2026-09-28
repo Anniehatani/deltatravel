@@ -213,6 +213,149 @@ export const PaymentSchema = z.object({
   checkoutUrl: z.string().url().nullable(),
   createdAt: IsoDateSchema,
 });
+export const AgentPlanStatusSchema = z.enum([
+  'NEEDS_INPUT',
+  'NO_MATCH',
+  'READY_FOR_APPROVAL',
+  'REAPPROVAL_REQUIRED',
+  'EXECUTING',
+  'PAYMENT_RETRY_REQUIRED',
+  'ACTION_REQUIRED',
+  'COMPLETED',
+  'DECLINED',
+]);
+export const AgentStepStateSchema = z.enum([
+  'DONE',
+  'READY',
+  'WAITING_APPROVAL',
+  'BLOCKED',
+  'ACTION_REQUIRED',
+]);
+export const AgentMissingFieldSchema = z.enum([
+  'PARTY',
+  'CONTACT_PHONE',
+  'PAYMENT_METHOD',
+  'TOUR_OR_SCHEDULE',
+]);
+export const AgentPlanRequestSchema = z
+  .object({
+    message: z.string().trim().min(1).max(2000),
+    lang: z.enum(['vi', 'en']).default('vi'),
+    adults: z.number().int().min(1).max(100).optional(),
+    children: z.number().int().min(0).max(100).optional(),
+    budgetVnd: MoneySchema.optional(),
+    destination: z.string().trim().min(2).max(100).optional(),
+    durationDays: z.number().int().min(1).max(60).optional(),
+    departureFrom: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    departureTo: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    contactPhone: z
+      .string()
+      .regex(/^(?:\+84|0)[0-9]{9,10}$/)
+      .optional(),
+    provider: ProviderSchema.optional(),
+    scheduleId: IdSchema.optional(),
+  })
+  .strict();
+export const AgentPlanUpdateSchema = AgentPlanRequestSchema.omit({ message: true, lang: true })
+  .partial()
+  .strict();
+export const AgentApprovalSchema = z
+  .object({
+    approved: z.literal(true),
+    version: z.number().int().positive(),
+  })
+  .strict();
+export const AgentDeclineSchema = z
+  .object({ reason: z.string().trim().min(3).max(500).optional() })
+  .strict();
+
+export const AgentCandidateSchema = z.object({
+  tourId: IdSchema,
+  tourTitle: z.string(),
+  destination: z.string(),
+  durationDays: z.number().int(),
+  scheduleId: IdSchema,
+  departureAt: IsoDateSchema,
+  availableSeats: z.number().int().min(0),
+  adultPrice: MoneySchema,
+  childPrice: MoneySchema,
+  totalAmount: MoneySchema,
+  currency: z.literal('VND'),
+});
+export const AgentPlanStepSchema = z.object({
+  id: z.enum([
+    'UNDERSTAND',
+    'SEARCH',
+    'VERIFY',
+    'APPROVAL',
+    'CREATE_BOOKING',
+    'CREATE_PAYMENT',
+    'VERIFY_RESULT',
+  ]),
+  label: z.string(),
+  state: AgentStepStateSchema,
+  detail: z.string().optional(),
+});
+export const AgentPaymentOptionSchema = z.object({
+  provider: ProviderSchema,
+  available: z.boolean(),
+  label: z.string(),
+  requiresExternalAuthorization: z.boolean(),
+});
+export const AgentCheckpointSchema = z.object({
+  title: z.string(),
+  summary: z.string(),
+  effects: z.array(z.string()).max(8),
+  requiresExplicitApproval: z.literal(true),
+  version: z.number().int().positive(),
+});
+export const AgentNextActionSchema = z
+  .object({
+    type: z.enum(['OPEN_PAYMENT', 'OPEN_BOOKING']),
+    label: z.string(),
+    href: z.string(),
+  })
+  .nullable();
+export const AgentPlanSchema = z.object({
+  id: IdSchema,
+  version: z.number().int().positive(),
+  status: AgentPlanStatusSchema,
+  mode: z.enum(['GROQ', 'GEMINI', 'RULE_BASED']),
+  createdAt: IsoDateSchema,
+  expiresAt: IsoDateSchema,
+  summary: z.string(),
+  rationale: z.string(),
+  constraints: z.object({
+    destination: z.string().nullable(),
+    adults: z.number().int().min(1).max(100).nullable(),
+    children: z.number().int().min(0).max(100),
+    budgetVnd: MoneySchema.nullable(),
+    durationDays: z.number().int().min(1).max(60).nullable(),
+    departureFrom: z.string().nullable(),
+    departureTo: z.string().nullable(),
+    contactName: z.string(),
+    contactEmail: z.string().email(),
+    contactPhone: z.string().nullable(),
+    provider: ProviderSchema.nullable(),
+  }),
+  missingFields: z.array(AgentMissingFieldSchema),
+  candidates: z.array(AgentCandidateSchema).max(5),
+  selectedScheduleId: IdSchema.nullable(),
+  paymentOptions: z.array(AgentPaymentOptionSchema),
+  steps: z.array(AgentPlanStepSchema),
+  checkpoint: AgentCheckpointSchema.nullable(),
+  booking: BookingSchema.nullable(),
+  payment: PaymentSchema.nullable(),
+  nextAction: AgentNextActionSchema,
+  lastError: z.string().nullable(),
+});
+
 export const AssistantBookingProposalResultSchema = z.object({
   proposalId: IdSchema,
   kind: z.literal('CREATE_BOOKING'),
@@ -310,6 +453,9 @@ export type Booking = z.infer<typeof BookingSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type AuthResult = z.infer<typeof AuthResultSchema>;
 export type AssistantResult = z.infer<typeof AssistantResultSchema>;
+export type AgentPlan = z.infer<typeof AgentPlanSchema>;
+export type AgentPlanRequest = z.infer<typeof AgentPlanRequestSchema>;
+export type AgentPlanUpdate = z.infer<typeof AgentPlanUpdateSchema>;
 export type CreateBookingInput = z.infer<typeof CreateBookingSchema>;
 export type QuoteInput = z.infer<typeof QuoteSchema>;
 export type Page<T> = { items: T[]; page: number; pageSize: number; total: number };

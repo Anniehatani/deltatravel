@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { AssistantResult } from '@tour/shared';
 import { assistantApi } from '@/lib/api';
 import { PageShell } from '@/components/page-shell';
+import { AgentBookingPanel } from '@/components/agent-booking-panel';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/providers/auth-provider';
 import { useLanguage } from '@/providers/language-provider';
@@ -85,7 +86,16 @@ export default function AssistantPage() {
 
   return (
     <PageShell badge={t('asst_badge')} title={t('asst_title')} description={t('asst_desc')}>
-      <div className="mx-auto max-w-4xl space-y-8">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <AgentBookingPanel />
+
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-stone-200" />
+          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">
+            Hoặc chat tư vấn như bình thường
+          </span>
+          <div className="h-px flex-1 bg-stone-200" />
+        </div>
         {/* Quick Suggestion Chips */}
         {messages.length === 0 && (
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury">

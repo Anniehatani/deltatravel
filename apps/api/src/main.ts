@@ -12,8 +12,13 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
   app.use(requestId);
+  const webOrigins = (c.get<string>('WEB_ORIGINS') || c.getOrThrow<string>('WEB_ORIGIN'))
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: c.getOrThrow<string>('WEB_ORIGIN'),
+    origin: webOrigins,
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'X-CSRF-Protection'],
     exposedHeaders: ['X-Request-Id'],
