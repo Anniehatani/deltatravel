@@ -323,7 +323,8 @@ function responseExample(name, path) {
       cancelledAt: now,
       cancelReason: 'Thay đổi kế hoạch cá nhân',
     };
-  if (path.endsWith('/status')) sample = { ...booking, status: 'CONFIRMED', paidAt: now };
+  if (path === '/admin/bookings/{id}/status')
+    sample = { ...booking, status: 'CONFIRMED', paidAt: now };
   if (path.endsWith('/refund-record'))
     sample = { ...payment, status: 'REFUNDED', checkoutUrl: null };
   if (path.endsWith('/cash-receipt'))
