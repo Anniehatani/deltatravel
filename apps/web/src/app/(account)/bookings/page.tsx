@@ -347,48 +347,6 @@ export default function BookingsListPage() {
         </div>
       )}
 
-      {/* Delete Modal Confirmation */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-[20000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-white p-7 sm:p-8 shadow-2xl border border-stone-200 animate-fade-in-scale text-center">
-            <div className="mx-auto h-12 w-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
-              <Trash2 className="h-6 w-6" />
-            </div>
-            <h3 className="font-serif text-xl font-bold text-stone-900 mb-2">
-              {t('bk_delete_modal_title')}
-            </h3>
-            <p className="text-xs text-neutral-600 mb-6 leading-relaxed">
-              {t('bk_delete_modal_desc')}
-            </p>
-
-            {deleteError && (
-              <div className="mb-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="flex justify-center gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDeleteTarget(null)}
-                disabled={deleting}
-                className="text-xs rounded-full px-5"
-              >
-                {t('bk_cancel_btn_close')}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleConfirmDelete}
-                disabled={deleting}
-                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-full px-6 shadow-md"
-              >
-                {deleting ? t('bk_deleting') : t('bk_btn_delete')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </PageShell>
   );
 }
