@@ -11,6 +11,7 @@ import {
   BookingSchema,
   PaymentSchema,
   PaymentProviderStatusSchema,
+  IntegrationStatusSchema,
   PageSchema,
   QuoteResultSchema,
   AssistantResultSchema,
@@ -41,8 +42,7 @@ import {
   AgentApprovalSchema,
   AgentDeclineSchema,
 } from '@tour/shared';
-import type { CommercialTour } from './commercial-store';
-import { FALLBACK_TOURS } from './fallback-data';
+import { inferTourRegion } from './fallback-data';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://delta-travel-api.onrender.com/api/v1';
 const REQUEST_TIMEOUT_MS = 65000;
@@ -241,11 +241,7 @@ export const authApi = {
 };
 
 function belongsToRegion(tour: z.infer<typeof TourSchema>, region: string) {
-  if (!region) return true;
-  const metadata = FALLBACK_TOURS.find(
-    (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
-  );
-  return metadata?.region === region;
+  return !region || inferTourRegion(tour) === region;
 }
 
 export const tourApi = {
@@ -335,19 +331,6 @@ export const paymentApi = {
 
   get: (id: string) => api(`/payments/${id}`, PaymentSchema),
 };
-
-const IntegrationStatusSchema = z.object({
-  mailProvider: z.string(),
-  aiProvider: z.string().nullable(),
-  aiConfigured: z.boolean(),
-  avatarStorageConfigured: z.boolean(),
-  payments: z.object({
-    cashConfigured: z.boolean(),
-    vnpayConfigured: z.boolean(),
-    momoConfigured: z.boolean(),
-    zalopayConfigured: z.boolean(),
-  }),
-});
 
 export const systemApi = {
   integrations: () =>
@@ -453,7 +436,7 @@ export const profileApi = {
   },
 };
 
-function tourPayload(input: Partial<CommercialTour>) {
+function tourPayload(input: Partial<z.infer<typeof TourSchema>>) {
   return {
     title: input.title,
     slug: input.slug,
@@ -470,13 +453,13 @@ export const adminApi = {
 
   tours: () => api('/admin/tours?page=1&pageSize=100', PageSchema(TourSchema)),
 
-  createTour: (input: Partial<CommercialTour>) =>
+  createTour: (input: Partial<z.infer<typeof TourSchema>>) =>
     api('/admin/tours', TourSchema, {
       method: 'POST',
       body: CreateTourSchema.parse(tourPayload(input)),
     }),
 
-  updateTour: (id: string, input: Partial<CommercialTour>) => {
+  updateTour: (id: string, input: Partial<z.infer<typeof TourSchema>>) => {
     const candidate = Object.fromEntries(
       Object.entries(tourPayload(input)).filter(([, value]) => value !== undefined),
     );

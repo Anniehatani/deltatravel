@@ -1,0 +1,28 @@
+name: Staging Mutation E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_mutation:
+        description: Type RUN to allow creation and cleanup of synthetic staging data
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    if: inputs.confirm_mutation == 'RUN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm run verify:staging
+        env:
+          VERIFY_API_URL: https://delta-travel-api.onrender.com/api/v1
+          VERIFY_ORIGIN: https://delta-travel-web.onrender.com
+          VERIFY_ALLOW_MUTATIONS: 'true'

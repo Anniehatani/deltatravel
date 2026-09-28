@@ -50,7 +50,7 @@ function Result() {
     return (
       <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-luxury max-w-lg mx-auto">
         <AlertCircle className="mx-auto h-12 w-12 text-stone-400 mb-3" />
-        <h3 className="font-serif text-xl font-bold text-stone-900">Mã đơn không hợp lệ</h3>
+        <h2 className="font-serif text-xl font-bold text-stone-900">Mã đơn không hợp lệ</h2>
         <p className="mt-2 text-xs text-stone-500 mb-6">
           Đường dẫn không chứa mã đơn hoặc định dạng mã không đúng chuẩn hệ thống.
         </p>
@@ -64,7 +64,8 @@ function Result() {
   if (!loading && !user) {
     return (
       <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-luxury max-w-lg mx-auto">
-        <p className="text-sm text-stone-700 mb-4">
+        <h2 className="font-serif text-xl font-bold text-stone-900">Cần đăng nhập để đối soát</h2>
+        <p className="mt-2 text-sm text-stone-700 mb-4">
           Vui lòng đăng nhập tài khoản để đối soát thông tin đơn.
         </p>
         <Button asChild className="bg-stone-900 text-white text-xs">

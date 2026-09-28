@@ -118,6 +118,7 @@ export default function BookingsListPage() {
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
+    AWAITING_CASH: 'bk_status_cash_label',
     PAID: 'bk_status_paid_label',
     CONFIRMED: 'bk_status_confirmed_label',
     COMPLETED: 'bk_status_completed_label',

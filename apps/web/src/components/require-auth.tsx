@@ -16,6 +16,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
   if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 select-none">
+        <h1 className="sr-only">{t('auth_checking')}</h1>
         <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-black animate-spin mb-4" />
         <p className="text-xs font-bold text-neutral-500 tracking-wider uppercase">
           {t('auth_checking')}
@@ -44,10 +45,10 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           </div>
 
           {/* Title & Description */}
-          <h2 className="text-2xl sm:text-[26px] font-black text-black tracking-tight uppercase">
+          <h1 className="text-2xl sm:text-[26px] font-black text-black tracking-tight uppercase">
             {t('auth_login_required')}
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-normal leading-relaxed">
+          </h1>
+          <p className="mt-3 text-xs sm:text-sm text-black font-medium leading-relaxed">
             {t('auth_login_desc')}
           </p>
 
@@ -74,7 +75,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           <div className="mt-6 pt-5 border-t border-neutral-100">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-black transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-black hover:text-neutral-700 transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>{t('auth_back_home')}</span>
@@ -92,7 +93,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
             <ShieldAlert className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-bold text-stone-900">{t('auth_forbidden_title')}</h3>
+          <h1 className="text-xl font-bold text-stone-900">{t('auth_forbidden_title')}</h1>
           <p className="mt-2 text-xs text-stone-600">{t('auth_forbidden_desc')}</p>
           <div className="mt-6">
             <Link

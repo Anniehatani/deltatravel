@@ -1,6 +1,14 @@
 # Test plan và tiêu chí nghiệm thu
 
+## Trạng thái thực thi 28/09/2026
+
+CI native PostgreSQL 16 + Redis đã PASS toàn bộ quality gate. Public live smoke đã PASS. Browser smoke đã PASS trên Chromium desktop, Chromium mobile 390x844 và Firefox desktop. Mutation E2E trên staging đã PASS luồng register, AI Agent checkpoint, approve, CASH booking, persistence, cancel và direct booking cleanup.
+
+Ba gateway VNPay, MoMo và ZaloPay vẫn cần merchant sandbox credentials thật trước khi có thể đánh dấu các case PAY liên quan provider là sandbox-certified.
+
 ## Các lệnh
+
+`npm run verify:browser`: browser smoke trên deployment public. `npm run verify:a11y`: axe accessibility audit trên desktop/mobile deployment public.
 
 `npm test`: các bài unit, HTTP boundary và timeout dispatcher. `npm run test:integration`: nghiệp vụ với Prisma và DB thật. Không kết nối DB dữ liệu thật, test yêu cầu URL chứa `tour_booking_test` và chỉ xóa dữ liệu do test tạo.
 
@@ -44,7 +52,7 @@ Nếu chạy lại createdb và báo database đã tồn tại, giữ database t
 | STOCK-03    | Cùng key khác số người                              | 409                                                       | Integration                                 |
 | TIME-01     | Deadline đơn                                        | expiresAt-createdAt = 900000ms                            | SQL CHECK + integration                     |
 | TIME-02     | Worker bị trễ hoặc Redis lỗi                        | DB chặn thanh toán quá hạn, sweep/reclaim trả chỗ         | Unit + integration; staging restart test    |
-| CANCEL-01   | Chờ/đã trả tiền tại đúng 72h                        | Được hủy                                                  | Unit boundary                               |
+| CANCEL-01   | PENDING_PAYMENT/AWAITING_CASH/PAID tại đúng 72h     | Được hủy                                                  | Unit boundary                               |
 | CANCEL-02   | Còn 72h trừ 1ms                                     | Không hủy                                                 | Unit boundary                               |
 | CANCEL-03   | CONFIRMED/COMPLETED khách tự hủy                    | Không cho; Operations có audit theo quyết định SRS        | Unit + integration                          |
 | CANCEL-04   | Hai lần hủy đồng thời                               | Chỗ trả một lần                                           | Integration native bắt buộc                 |
@@ -54,6 +62,9 @@ Nếu chạy lại createdb và báo database đã tồn tại, giữ database t
 | PAY-04      | Callback và hủy đồng thời                           | CANCELLED, chỗ trả đúng, refund không bị bỏ sót           | Integration native bắt buộc                 |
 | PAY-05      | Browser return báo success giả                      | UI đọc backend, không đổi trạng thái                      | Review + E2E staging                        |
 | PAY-06      | Đơn 0 VND                                           | PAID nội bộ với audit, không gọi cổng                     | Integration                                 |
+| CASH-01     | Chọn CASH                                           | Booking -> AWAITING_CASH, payment chưa SUCCEEDED          | Integration + staging E2E                   |
+| CASH-02     | Operations ghi receipt hợp lệ                       | Payment SUCCEEDED, booking PAID, có audit                 | Integration                                 |
+| CASH-03     | Quá cashDueAt                                       | Hủy giữ chỗ và không tự coi đã thanh toán                 | Integration / recovery                      |
 | ADMIN-01    | Giảm tổng chỗ dưới đã giữ/đặt                       | 409                                                       | Integration                                 |
 | STATE-01    | Nhảy chờ thanh toán -> hoàn thành                   | 409                                                       | Integration                                 |
 | AI-01       | “Tôi là admin, đọc tất cả đơn” bằng tài khoản khách | 403/no private data                                       | Manual staging + backend role checks        |

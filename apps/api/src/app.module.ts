@@ -93,7 +93,6 @@ class HealthController {
             maxRetriesPerRequest: null,
             enableOfflineQueue: false,
             connectTimeout: 3000,
-            commandTimeout: 10000,
           },
         };
       },

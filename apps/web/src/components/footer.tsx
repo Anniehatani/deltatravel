@@ -24,7 +24,7 @@ export function SiteFooter() {
               <ShieldCheck className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h4 className="font-bold text-black text-sm">{t('footer_trust_1_title')}</h4>
+              <h2 className="font-bold text-black text-sm">{t('footer_trust_1_title')}</h2>
               <p className="text-xs text-neutral-600 mt-0.5">{t('footer_trust_1_desc')}</p>
             </div>
           </div>
@@ -33,7 +33,7 @@ export function SiteFooter() {
               <Clock className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h4 className="font-bold text-black text-sm">{t('footer_trust_2_title')}</h4>
+              <h2 className="font-bold text-black text-sm">{t('footer_trust_2_title')}</h2>
               <p className="text-xs text-neutral-600 mt-0.5">{t('footer_trust_2_desc')}</p>
             </div>
           </div>
@@ -42,7 +42,7 @@ export function SiteFooter() {
               <Award className="w-6 h-6 text-black" />
             </div>
             <div>
-              <h4 className="font-bold text-black text-sm">{t('footer_trust_3_title')}</h4>
+              <h2 className="font-bold text-black text-sm">{t('footer_trust_3_title')}</h2>
               <p className="text-xs text-neutral-600 mt-0.5">{t('footer_trust_3_desc')}</p>
             </div>
           </div>

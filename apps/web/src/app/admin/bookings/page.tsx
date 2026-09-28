@@ -496,7 +496,7 @@ export default function AdminBookingsPage() {
                   <tr key={booking.id} className="hover:bg-stone-50/70 transition">
                     <td className="py-4 px-4 sm:px-6 max-w-xs">
                       <Link
-                        href={`/bookings/${booking.id}`}
+                        href={`/admin/bookings/${booking.id}`}
                         className="font-bold text-stone-900 hover:text-amber-800 transition block truncate text-xs"
                       >
                         {booking.tourTitle}

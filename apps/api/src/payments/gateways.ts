@@ -50,6 +50,89 @@ export const momoCanonical = (accessKey: string, p: Record<string, string>) =>
 @Injectable()
 export class Gateways {
   constructor(private readonly config: ConfigService) {}
+
+  private configured(provider: Provider) {
+    if (provider === 'CASH') return true;
+    const keys = {
+      VNPAY: ['VNPAY_TMN_CODE', 'VNPAY_HASH_SECRET'],
+      MOMO: ['MOMO_PARTNER_CODE', 'MOMO_ACCESS_KEY', 'MOMO_SECRET_KEY'],
+      ZALOPAY: ['ZALOPAY_APP_ID', 'ZALOPAY_KEY1', 'ZALOPAY_KEY2'],
+    }[provider];
+    return keys.every((key) => Boolean(this.config.get<string>(key)));
+  }
+
+  private gatewayUrl(provider: Exclude<Provider, 'CASH'>) {
+    if (provider === 'VNPAY')
+      return (
+        this.config.get<string>('VNPAY_URL') || 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
+      );
+    if (provider === 'MOMO')
+      return (
+        this.config.get<string>('MOMO_URL') || 'https://test-payment.momo.vn/v2/gateway/api/create'
+      );
+    return this.config.get<string>('ZALOPAY_URL') || 'https://sb-openapi.zalopay.vn/v2/create';
+  }
+
+  private environment(provider: Provider) {
+    if (provider === 'CASH') return 'INTERNAL' as const;
+    if (!this.configured(provider)) return 'UNCONFIGURED' as const;
+    const host = new URL(this.gatewayUrl(provider)).hostname.toLowerCase();
+    return /(^|[.-])(sandbox|test|sb)([.-]|$)/.test(host)
+      ? ('SANDBOX' as const)
+      : ('PRODUCTION' as const);
+  }
+
+  returnOrigin() {
+    return (
+      this.config.get<string>('PAYMENT_RETURN_ORIGIN') ||
+      this.config.getOrThrow<string>('WEB_ORIGIN')
+    );
+  }
+
+  status() {
+    const rows = [
+      {
+        provider: 'CASH' as const,
+        label: 'Thanh toán tiền mặt',
+        kind: 'OFFLINE' as const,
+        requiresExternalAuthorization: false,
+      },
+      {
+        provider: 'VNPAY' as const,
+        label: 'VNPay',
+        kind: 'GATEWAY' as const,
+        requiresExternalAuthorization: true,
+      },
+      {
+        provider: 'MOMO' as const,
+        label: 'Ví MoMo',
+        kind: 'WALLET' as const,
+        requiresExternalAuthorization: true,
+      },
+      {
+        provider: 'ZALOPAY' as const,
+        label: 'Ví ZaloPay',
+        kind: 'WALLET' as const,
+        requiresExternalAuthorization: true,
+      },
+    ];
+    return {
+      providers: rows.map((row) => {
+        const available = this.configured(row.provider);
+        return {
+          ...row,
+          available,
+          environment: this.environment(row.provider),
+          reason:
+            available || row.provider === 'CASH'
+              ? null
+              : 'Merchant credentials chưa được cấu hình trên server.',
+        };
+      }),
+      returnOrigin: this.returnOrigin(),
+    };
+  }
+
   private secret(key: string) {
     const value = this.config.get<string>(key);
     if (!value) fail(503, 'PROVIDER_NOT_CONFIGURED', `Chưa cấu hình ${key}`);
@@ -79,7 +162,7 @@ export class Gateways {
   async checkout(p: Payment, expiresAt: Date, ip: string): Promise<string> {
     if (p.provider === 'CASH')
       fail(409, 'CASH_NO_CHECKOUT', 'Thanh toán tiền mặt không có checkout URL');
-    const returnUrl = `${this.config.getOrThrow<string>('WEB_ORIGIN')}/payments/return?bookingId=${p.bookingId}`;
+    const returnUrl = `${this.returnOrigin()}/payments/return?bookingId=${p.bookingId}`;
     const api = this.config.getOrThrow<string>('API_PUBLIC_URL');
     if (p.provider === 'VNPAY') {
       const fields: Record<string, string> = {
@@ -98,7 +181,7 @@ export class Gateways {
         vnp_ExpireDate: vietnamDate(expiresAt),
       };
       const query = vnpCanonical(fields);
-      return `${this.config.get('VNPAY_URL') || 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'}?${query}&vnp_SecureHash=${hmac('sha512', this.secret('VNPAY_HASH_SECRET'), query)}`;
+      return `${this.gatewayUrl('VNPAY')}?${query}&vnp_SecureHash=${hmac('sha512', this.secret('VNPAY_HASH_SECRET'), query)}`;
     }
     if (p.provider === 'MOMO') {
       const data = {
@@ -115,10 +198,10 @@ export class Gateways {
         autoCapture: true,
       };
       const raw = `accessKey=${this.secret('MOMO_ACCESS_KEY')}&amount=${data.amount}&extraData=&ipnUrl=${data.ipnUrl}&orderId=${data.orderId}&orderInfo=${data.orderInfo}&partnerCode=${data.partnerCode}&redirectUrl=${data.redirectUrl}&requestId=${data.requestId}&requestType=${data.requestType}`;
-      const response = await this.post(
-        this.config.get('MOMO_URL') || 'https://test-payment.momo.vn/v2/gateway/api/create',
-        { ...data, signature: hmac('sha256', this.secret('MOMO_SECRET_KEY'), raw) },
-      );
+      const response = await this.post(this.gatewayUrl('MOMO'), {
+        ...data,
+        signature: hmac('sha256', this.secret('MOMO_SECRET_KEY'), raw),
+      });
       const r = z
         .object({
           resultCode: z.literal(0),
@@ -167,10 +250,10 @@ export class Gateways {
       data.embed_data,
       data.item,
     ].join('|');
-    const response = await this.post(
-      this.config.get('ZALOPAY_URL') || 'https://sb-openapi.zalopay.vn/v2/create',
-      { ...data, mac: hmac('sha256', this.secret('ZALOPAY_KEY1'), raw) },
-    );
+    const response = await this.post(this.gatewayUrl('ZALOPAY'), {
+      ...data,
+      mac: hmac('sha256', this.secret('ZALOPAY_KEY1'), raw),
+    });
     const r = z.object({ return_code: z.literal(1), order_url: z.string().url() }).parse(response);
     return this.safeUrl(r.order_url, 'zalopay.vn');
   }

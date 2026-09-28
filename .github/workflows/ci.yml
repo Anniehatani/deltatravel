@@ -30,17 +30,23 @@ jobs:
       API_PUBLIC_URL: http://localhost:4000
       NODE_ENV: test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run scan:secrets
       - run: npm run db:generate
       - run: npm run db:migrate
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm run docs:generate
+      - run: npm run verify:contract
+      - name: Verify generated contract is committed
+        run: |
+          npx prettier --write docs/API_CONTRACT.md docs/openapi.json
+          git diff --exit-code -- docs/API_CONTRACT.md docs/openapi.json
       - run: npm test
       - run: npm run build
       - run: npm run test:integration

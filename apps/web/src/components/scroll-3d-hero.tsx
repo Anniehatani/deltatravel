@@ -216,11 +216,11 @@ export function Scroll3DHero() {
             <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/50 backdrop-blur-sm px-3.5 py-1 text-xs font-bold text-white shadow-sm mb-4">
               <span>{t('hero_tag')}</span>
             </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] max-w-3xl mx-auto leading-tight uppercase">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] max-w-3xl mx-auto leading-tight uppercase">
               {t('hero_title_1')}
               <br />
               <span className="underline decoration-2 underline-offset-8">{t('hero_title_2')}</span>
-            </h1>
+            </h2>
             <p className="mt-5 text-sm sm:text-base font-medium text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] max-w-xl mx-auto leading-relaxed">
               {t('hero_desc')}
             </p>

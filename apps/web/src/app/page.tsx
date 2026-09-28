@@ -9,7 +9,7 @@ import type { Tour } from '@tour/shared';
 import { Scroll3DHero } from '@/components/scroll-3d-hero';
 import { formatVND } from '@/lib/format';
 import { useLanguage } from '@/providers/language-provider';
-import { FALLBACK_TOURS, filterFallbackTours, getLocalizedTour } from '@/lib/fallback-data';
+import { getLocalizedTour, inferTourRegion } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { LuxuryPreloader } from '@/components/luxury-preloader';
@@ -33,21 +33,14 @@ function TourCardsGrid({
   tours,
   t,
   lang,
+  livePrices,
 }: {
   tours: Tour[];
   t: (k: string) => string;
   lang: 'vi' | 'en';
+  livePrices: Record<string, number | null>;
 }) {
-  const getTourPrice = (tour: Tour): number | null => {
-    if (
-      'adultPrice' in tour &&
-      typeof (tour as any).adultPrice === 'number' &&
-      (tour as any).adultPrice > 0
-    ) {
-      return (tour as any).adultPrice;
-    }
-    return null;
-  };
+  const getTourPrice = (tour: Tour): number | null => livePrices[tour.id] ?? null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -172,6 +165,7 @@ function HomeContent() {
 
   const [activeTab, setActiveTab] = useState<string>(urlRegion);
   const [allTours, setAllTours] = useState<Tour[]>([]);
+  const [livePrices, setLivePrices] = useState<Record<string, number | null>>({});
   const [loading, setLoading] = useState(true);
   const [tourLoadError, setTourLoadError] = useState('');
 
@@ -245,6 +239,36 @@ function HomeContent() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    if (!allTours.length) {
+      setLivePrices({});
+      return () => {
+        active = false;
+      };
+    }
+
+    void Promise.all(
+      allTours.map(async (tour) => {
+        try {
+          const page = await tourApi.schedules(tour.id);
+          const prices = page.items
+            .filter((schedule) => schedule.status === 'OPEN' && schedule.availableSeats > 0)
+            .map((schedule) => schedule.adultPrice);
+          return [tour.id, prices.length ? Math.min(...prices) : null] as const;
+        } catch {
+          return [tour.id, null] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (active) setLivePrices(Object.fromEntries(entries));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [allTours]);
+
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     router.push(tabId ? `/?region=${tabId}` : '/', { scroll: false });
@@ -261,13 +285,7 @@ function HomeContent() {
   };
 
   const displayedTours = activeTab
-    ? allTours.filter((tour) => {
-        if ('region' in tour && (tour as any).region) {
-          return (tour as any).region === activeTab;
-        }
-        const fb = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
-        return fb ? fb.region === activeTab : true;
-      })
+    ? allTours.filter((tour) => inferTourRegion(tour) === activeTab)
     : allTours;
 
   return (
@@ -287,9 +305,9 @@ function HomeContent() {
                 <Sparkles className="h-4 w-4" />
                 DELTA AI AGENT • PRIMARY EXPERIENCE
               </div>
-              <h2 className="mt-4 max-w-3xl text-2xl font-black tracking-tight text-white sm:text-4xl">
+              <h1 className="mt-4 max-w-3xl text-2xl font-black tracking-tight text-white sm:text-4xl">
                 Nói chuyến đi bạn muốn. AI tự tìm, lập kế hoạch và đặt tour cùng bạn.
-              </h2>
+              </h1>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75">
                 AI kiểm tra tour, ngày khởi hành, ngân sách và số chỗ thật. Trước mọi hành động tạo
                 booking hoặc thanh toán, hệ thống dừng ở checkpoint để bạn quyết định Cho phép hoặc
@@ -514,7 +532,7 @@ function HomeContent() {
               Chưa có tour production phù hợp với bộ lọc hiện tại.
             </div>
           ) : (
-            <TourCardsGrid tours={displayedTours} t={t} lang={lang} />
+            <TourCardsGrid tours={displayedTours} t={t} lang={lang} livePrices={livePrices} />
           )}
 
           <div className="mt-12 text-center">
@@ -531,7 +549,7 @@ function HomeContent() {
         {/* ─── Iconic Destinations Showcase Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Compass className="h-3.5 w-3.5 text-amber-500" />
               {t('dest_showcase_tag')}
             </span>
@@ -623,7 +641,7 @@ function HomeContent() {
         {/* ─── Signature Experiences & Activities Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
               {t('exp_tag')}
             </span>
@@ -700,7 +718,7 @@ function HomeContent() {
         {/* ─── Brand Guarantees — Apple Liquid Glass Prism Cards ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Crown className="h-3 w-3 text-amber-500" />
               {t('phil_tag')}
             </span>
@@ -760,7 +778,7 @@ function HomeContent() {
         {/* ─── 4-Step Seamless Booking Process Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Clock className="h-3.5 w-3.5 text-amber-500" />
               {t('proc_tag')}
             </span>
@@ -800,7 +818,7 @@ function HomeContent() {
                 className="relative liquid-glass-card rounded-[26px] p-7 transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between"
               >
                 <div>
-                  <span className="text-3xl font-black text-amber-400/90 font-mono block mb-4">
+                  <span className="text-3xl font-black text-amber-700 font-mono block mb-4">
                     {item.step}
                   </span>
                   <h3 className="text-base font-black text-black leading-snug tracking-tight">
@@ -851,7 +869,7 @@ function HomeContent() {
         {/* ─── Guest Testimonials & Reviews Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
               {t('rev_tag')}
             </span>
@@ -921,7 +939,7 @@ function HomeContent() {
 
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
                   <Sparkles className="h-3.5 w-3.5 text-amber-500" />
                   {t('bespoke_tag')}
                 </span>
