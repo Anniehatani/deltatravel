@@ -68,6 +68,47 @@ const me = await request('/auth/me', { token });
 if (me.email !== email) throw new Error('auth/me returned a different user');
 pass('auth/me');
 
+const png = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Zl1sAAAAASUVORK5CYII=',
+  'base64',
+);
+const avatarTicket = await request('/profile/avatar/upload-url', {
+  method: 'POST',
+  token,
+  body: { contentType: 'image/png', sizeBytes: png.length },
+});
+if (!avatarTicket?.signedUrl || !avatarTicket?.uploadId) {
+  throw new Error('avatar upload ticket missing signedUrl/uploadId');
+}
+const avatarForm = new FormData();
+avatarForm.append('cacheControl', '3600');
+avatarForm.append('', new Blob([png], { type: 'image/png' }), 'avatar.png');
+const avatarUpload = await fetch(avatarTicket.signedUrl, {
+  method: 'PUT',
+  headers: { 'x-upsert': 'false' },
+  body: avatarForm,
+});
+if (!avatarUpload.ok) {
+  throw new Error(`avatar storage upload -> ${avatarUpload.status}: ${(await avatarUpload.text()).slice(0, 300)}`);
+}
+const avatarUser = await request('/profile/avatar/complete', {
+  method: 'POST',
+  token,
+  body: { uploadId: avatarTicket.uploadId },
+});
+if (!avatarUser.avatarUrl) throw new Error('avatar complete did not persist avatarUrl');
+const avatarReadback = await request('/profile/me', { token });
+if (avatarReadback.avatarUrl !== avatarUser.avatarUrl) {
+  throw new Error('profile avatar readback did not match completed avatar');
+}
+pass('avatar upload + persistence', avatarUser.avatarUrl);
+
+const avatarRemoved = await request('/profile/avatar', { method: 'DELETE', token });
+if (avatarRemoved.avatarUrl || avatarRemoved.avatarId) {
+  throw new Error('avatar delete did not clear persisted avatar fields');
+}
+pass('avatar cleanup');
+
 const tours = await request('/tours?page=1&pageSize=50');
 let chosen = null;
 for (const tour of tours.items || []) {
