@@ -42,6 +42,12 @@ Full CI đã được chạy trên release tree trước khi merge vào upstream
 
 CI chứng minh build, type safety, migrations, unit tests, integration tests và dependency audit trong môi trường kiểm soát. Nó không thay thế merchant certification, penetration test độc lập hoặc SLA production.
 
+## Staging mutation E2E đã chạy
+
+Lượt kiểm chứng ngày 28/09/2026 đã tạo một customer tổng hợp, chọn lịch Hạ Long còn chỗ, tạo AI Agent plan ở mode GROQ, dừng tại trạng thái `READY_FOR_APPROVAL`, approve checkpoint, tạo booking và CASH payment, xác nhận booking persisted ở `AWAITING_CASH`, sau đó hủy booking để trả chỗ. Luồng direct booking riêng cũng được tạo và hủy cleanup thành công.
+
+Browser smoke cũng đã chạy thành công trên Chromium desktop, Chromium mobile 390x844 và Firefox desktop cho năm route công khai chính. Không phát hiện page error trong lượt chạy đó.
+
 ## Phần cần credential hoặc quyền bên ngoài
 
 VNPay, MoMo và ZaloPay chưa thể chạy giao dịch sandbox thật nếu chưa có merchant credentials do nhà cung cấp cấp. Đây là dependency bên ngoài duy nhất đang chặn full payment E2E của ba gateway.

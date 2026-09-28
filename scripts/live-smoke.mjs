@@ -13,7 +13,7 @@ async function textGet(url) {
   const response = await fetch(url, { redirect: 'follow' });
   const text = await response.text();
   if (!response.ok) throw new Error(`GET ${url} -> ${response.status}: ${text.slice(0, 400)}`);
-  return text;
+  return { response, text };
 }
 
 async function jsonRequest(url, init = {}) {
@@ -36,8 +36,22 @@ function pass(label, detail = '') {
 }
 
 for (const route of ['/', '/assistant', '/tours']) {
-  const html = await textGet(WEB + route);
+  const { response, text: html } = await textGet(WEB + route);
   if (html.length < 100) throw new Error(`Web route ${route} returned unexpectedly small HTML`);
+  if (route === '/') {
+    const expectedHeaders = {
+      'x-content-type-options': 'nosniff',
+      'x-frame-options': 'DENY',
+      'referrer-policy': 'strict-origin-when-cross-origin',
+    };
+    for (const [name, expected] of Object.entries(expectedHeaders)) {
+      const actual = response.headers.get(name);
+      if (actual !== expected) {
+        throw new Error(`Security header ${name} expected ${expected}, got ${actual}`);
+      }
+    }
+    pass('web security headers');
+  }
   pass('web ' + route);
 }
 
