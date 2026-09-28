@@ -712,6 +712,13 @@ export const DICTIONARY: Translations = {
     en: '24/7 Concierge Hotline 1900 6868 for inquiries and payment assistance.',
   },
   bk_status_pending_label: { vi: 'CHỜ THANH TOÁN', en: 'PENDING PAYMENT' },
+  bk_status_cash_label: { vi: 'CHỜ THU TIỀN MẶT', en: 'AWAITING CASH' },
+  bk_status_cash_title: { vi: 'Đang Giữ Chỗ Chờ Thu Tiền Mặt', en: 'Reservation Held for Cash Payment' },
+  bk_status_cash_sub: {
+    vi: 'Đơn đã chọn thanh toán tiền mặt. Chỉ được đánh dấu đã thanh toán sau khi nhân viên thực sự nhận tiền và ghi mã biên nhận.',
+    en: 'Cash payment was selected. The booking is marked paid only after staff actually receives the money and records a receipt reference.',
+  },
+  bk_status_cash_due: { vi: 'Hạn thu tiền', en: 'Cash due' },
   bk_status_paid_label: { vi: 'ĐÃ THANH TOÁN', en: 'PAID' },
   bk_status_confirmed_label: { vi: 'ĐÃ XÁC NHẬN', en: 'CONFIRMED' },
   bk_status_completed_label: { vi: 'HOÀN THÀNH', en: 'COMPLETED' },

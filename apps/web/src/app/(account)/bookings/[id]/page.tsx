@@ -300,6 +300,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const isPending = booking.status === 'PENDING_PAYMENT';
+  const isAwaitingCash = booking.status === 'AWAITING_CASH';
   const isPaid = booking.status === 'PAID';
   const isConfirmed = booking.status === 'CONFIRMED';
   const isCancelled = booking.status === 'CANCELLED';
@@ -307,6 +308,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
+    AWAITING_CASH: 'bk_status_cash_label',
     PAID: 'bk_status_paid_label',
     CONFIRMED: 'bk_status_confirmed_label',
     COMPLETED: 'bk_status_completed_label',
@@ -378,6 +380,36 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                     </span>
                     <span className="font-mono text-2xl font-black text-amber-600">
                       {formatCountdown(timeLeftMs)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {isAwaitingCash && (
+            <div className="rounded-2xl border-2 border-blue-600 bg-blue-50/80 p-6 shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <Banknote className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black uppercase text-blue-950">
+                      {t('bk_status_cash_title')}
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-xs leading-relaxed text-blue-800">
+                      {t('bk_status_cash_sub')}
+                    </p>
+                  </div>
+                </div>
+                {booking.cashDueAt && (
+                  <div className="shrink-0 rounded-xl border border-blue-200 bg-white/80 px-4 py-3 text-right">
+                    <span className="block text-[10px] font-black uppercase tracking-wider text-blue-500">
+                      {t('bk_status_cash_due')}
+                    </span>
+                    <span className="mt-1 block text-xs font-bold text-blue-950">
+                      {formatDateTime(booking.cashDueAt)}
                     </span>
                   </div>
                 )}
