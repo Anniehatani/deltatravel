@@ -15,9 +15,7 @@
       "post": {
         "summary": "Tạo tài khoản CUSTOMER. Yêu cầu Origin và X-CSRF-Protection. Set-Cookie refresh_token.",
         "operationId": "post_auth_register",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "parameters": [
           {
@@ -35,9 +33,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -57,9 +53,7 @@
                         },
                         "expiresIn": {
                           "type": "number",
-                          "enum": [
-                            900
-                          ]
+                          "enum": [900]
                         },
                         "user": {
                           "type": "object",
@@ -77,11 +71,7 @@
                             },
                             "role": {
                               "type": "string",
-                              "enum": [
-                                "CUSTOMER",
-                                "OPERATIONS",
-                                "ADMIN"
-                              ]
+                              "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                             },
                             "avatarUrl": {
                               "type": "string",
@@ -94,22 +84,11 @@
                               "nullable": true
                             }
                           },
-                          "required": [
-                            "id",
-                            "name",
-                            "email",
-                            "role",
-                            "avatarUrl",
-                            "avatarId"
-                          ],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "accessToken",
-                        "expiresIn",
-                        "user"
-                      ],
+                      "required": ["accessToken", "expiresIn", "user"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -123,17 +102,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -281,11 +254,7 @@
                     "maxLength": 128
                   }
                 },
-                "required": [
-                  "name",
-                  "email",
-                  "password"
-                ],
+                "required": ["name", "email", "password"],
                 "additionalProperties": false
               },
               "example": {
@@ -302,9 +271,7 @@
       "post": {
         "summary": "Đăng nhập. Set-Cookie refresh_token.",
         "operationId": "post_auth_login",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "parameters": [
           {
@@ -322,9 +289,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -344,9 +309,7 @@
                         },
                         "expiresIn": {
                           "type": "number",
-                          "enum": [
-                            900
-                          ]
+                          "enum": [900]
                         },
                         "user": {
                           "type": "object",
@@ -364,11 +327,7 @@
                             },
                             "role": {
                               "type": "string",
-                              "enum": [
-                                "CUSTOMER",
-                                "OPERATIONS",
-                                "ADMIN"
-                              ]
+                              "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                             },
                             "avatarUrl": {
                               "type": "string",
@@ -381,22 +340,11 @@
                               "nullable": true
                             }
                           },
-                          "required": [
-                            "id",
-                            "name",
-                            "email",
-                            "role",
-                            "avatarUrl",
-                            "avatarId"
-                          ],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "accessToken",
-                        "expiresIn",
-                        "user"
-                      ],
+                      "required": ["accessToken", "expiresIn", "user"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -410,17 +358,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -563,10 +505,7 @@
                     "maxLength": 128
                   }
                 },
-                "required": [
-                  "email",
-                  "password"
-                ],
+                "required": ["email", "password"],
                 "additionalProperties": false
               },
               "example": {
@@ -582,9 +521,7 @@
       "post": {
         "summary": "Gửi OTP 6 số qua email nếu tài khoản tồn tại; response không trả OTP.",
         "operationId": "post_auth_forgot_password",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "parameters": [
           {
@@ -602,9 +539,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -621,14 +556,10 @@
                       "properties": {
                         "ok": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
-                      "required": [
-                        "ok"
-                      ],
+                      "required": ["ok"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -642,17 +573,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -781,9 +706,7 @@
                     "maxLength": 254
                   }
                 },
-                "required": [
-                  "email"
-                ],
+                "required": ["email"],
                 "additionalProperties": false
               },
               "example": {
@@ -798,9 +721,7 @@
       "post": {
         "summary": "Đổi mật khẩu bằng OTP còn hạn; revoke toàn bộ refresh session khi thành công.",
         "operationId": "post_auth_reset_password",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [],
         "parameters": [
           {
@@ -818,9 +739,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -837,14 +756,10 @@
                       "properties": {
                         "ok": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
-                      "required": [
-                        "ok"
-                      ],
+                      "required": ["ok"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -858,17 +773,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -1006,11 +915,7 @@
                     "maxLength": 128
                   }
                 },
-                "required": [
-                  "email",
-                  "code",
-                  "newPassword"
-                ],
+                "required": ["email", "code", "newPassword"],
                 "additionalProperties": false
               },
               "example": {
@@ -1027,9 +932,7 @@
       "post": {
         "summary": "Đổi mật khẩu khi biết mật khẩu hiện tại; revoke toàn bộ refresh session.",
         "operationId": "post_auth_change_password",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearerAuth": []
@@ -1051,9 +954,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -1070,14 +971,10 @@
                       "properties": {
                         "ok": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
-                      "required": [
-                        "ok"
-                      ],
+                      "required": ["ok"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -1091,17 +988,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -1235,10 +1126,7 @@
                     "maxLength": 128
                   }
                 },
-                "required": [
-                  "oldPassword",
-                  "newPassword"
-                ],
+                "required": ["oldPassword", "newPassword"],
                 "additionalProperties": false
               },
               "example": {
@@ -1254,9 +1142,7 @@
       "post": {
         "summary": "Rotate refresh token. Gửi cookie, Origin, X-CSRF-Protection: 1.",
         "operationId": "post_auth_refresh",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "refreshCookie": []
@@ -1278,9 +1164,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -1300,9 +1184,7 @@
                         },
                         "expiresIn": {
                           "type": "number",
-                          "enum": [
-                            900
-                          ]
+                          "enum": [900]
                         },
                         "user": {
                           "type": "object",
@@ -1320,11 +1202,7 @@
                             },
                             "role": {
                               "type": "string",
-                              "enum": [
-                                "CUSTOMER",
-                                "OPERATIONS",
-                                "ADMIN"
-                              ]
+                              "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                             },
                             "avatarUrl": {
                               "type": "string",
@@ -1337,22 +1215,11 @@
                               "nullable": true
                             }
                           },
-                          "required": [
-                            "id",
-                            "name",
-                            "email",
-                            "role",
-                            "avatarUrl",
-                            "avatarId"
-                          ],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "accessToken",
-                        "expiresIn",
-                        "user"
-                      ],
+                      "required": ["accessToken", "expiresIn", "user"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -1366,17 +1233,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -1520,9 +1381,7 @@
       "post": {
         "summary": "Thu hồi cả họ refresh token và xóa cookie. Access JWT đã phát còn tối đa 15 phút.",
         "operationId": "post_auth_logout",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "refreshCookie": []
@@ -1544,9 +1403,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "1"
-              ]
+              "enum": ["1"]
             }
           }
         ],
@@ -1563,14 +1420,10 @@
                       "properties": {
                         "ok": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
-                      "required": [
-                        "ok"
-                      ],
+                      "required": ["ok"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -1584,17 +1437,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -1729,9 +1576,7 @@
       "get": {
         "summary": "Hồ sơ hiện tại.",
         "operationId": "get_auth_me",
-        "tags": [
-          "auth"
-        ],
+        "tags": ["auth"],
         "security": [
           {
             "bearerAuth": []
@@ -1762,11 +1607,7 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": [
-                            "CUSTOMER",
-                            "OPERATIONS",
-                            "ADMIN"
-                          ]
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                         },
                         "avatarUrl": {
                           "type": "string",
@@ -1779,14 +1620,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "id",
-                        "name",
-                        "email",
-                        "role",
-                        "avatarUrl",
-                        "avatarId"
-                      ],
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -1800,17 +1634,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -1937,9 +1765,7 @@
       "get": {
         "summary": "Hồ sơ hiện tại gồm avatar bền vững theo tài khoản.",
         "operationId": "get_profile_me",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -1970,11 +1796,7 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": [
-                            "CUSTOMER",
-                            "OPERATIONS",
-                            "ADMIN"
-                          ]
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                         },
                         "avatarUrl": {
                           "type": "string",
@@ -1987,14 +1809,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "id",
-                        "name",
-                        "email",
-                        "role",
-                        "avatarUrl",
-                        "avatarId"
-                      ],
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -2008,17 +1823,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -2145,9 +1954,7 @@
       "post": {
         "summary": "Cấp signed upload URL cho Supabase Storage; chỉ JPEG/PNG/WebP tối đa 2 MiB.",
         "operationId": "post_profile_avatar_upload_url",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -2186,9 +1993,7 @@
                         },
                         "expiresIn": {
                           "type": "number",
-                          "enum": [
-                            7200
-                          ]
+                          "enum": [7200]
                         }
                       },
                       "required": [
@@ -2212,17 +2017,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -2352,11 +2151,7 @@
                 "properties": {
                   "contentType": {
                     "type": "string",
-                    "enum": [
-                      "image/jpeg",
-                      "image/png",
-                      "image/webp"
-                    ]
+                    "enum": ["image/jpeg", "image/png", "image/webp"]
                   },
                   "sizeBytes": {
                     "type": "integer",
@@ -2365,10 +2160,7 @@
                     "maximum": 2097152
                   }
                 },
-                "required": [
-                  "contentType",
-                  "sizeBytes"
-                ],
+                "required": ["contentType", "sizeBytes"],
                 "additionalProperties": false
               },
               "example": {
@@ -2384,9 +2176,7 @@
       "post": {
         "summary": "Xác minh object đã tồn tại rồi lưu avatarUrl/avatarId vào PostgreSQL.",
         "operationId": "post_profile_avatar_complete",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -2417,11 +2207,7 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": [
-                            "CUSTOMER",
-                            "OPERATIONS",
-                            "ADMIN"
-                          ]
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                         },
                         "avatarUrl": {
                           "type": "string",
@@ -2434,14 +2220,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "id",
-                        "name",
-                        "email",
-                        "role",
-                        "avatarUrl",
-                        "avatarId"
-                      ],
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -2455,17 +2234,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -2598,9 +2371,7 @@
                     "format": "uuid"
                   }
                 },
-                "required": [
-                  "uploadId"
-                ],
+                "required": ["uploadId"],
                 "additionalProperties": false
               },
               "example": {
@@ -2615,9 +2386,7 @@
       "delete": {
         "summary": "Gỡ avatar khỏi hồ sơ; cleanup object cũ theo best-effort.",
         "operationId": "delete_profile_avatar",
-        "tags": [
-          "profile"
-        ],
+        "tags": ["profile"],
         "security": [
           {
             "bearerAuth": []
@@ -2648,11 +2417,7 @@
                         },
                         "role": {
                           "type": "string",
-                          "enum": [
-                            "CUSTOMER",
-                            "OPERATIONS",
-                            "ADMIN"
-                          ]
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
                         },
                         "avatarUrl": {
                           "type": "string",
@@ -2665,14 +2430,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "id",
-                        "name",
-                        "email",
-                        "role",
-                        "avatarUrl",
-                        "avatarId"
-                      ],
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -2686,17 +2444,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -2823,9 +2575,7 @@
       "get": {
         "summary": "Chỉ ACTIVE, countryCode VN, chưa soft-delete.",
         "operationId": "get_tours",
-        "tags": [
-          "tours"
-        ],
+        "tags": ["tours"],
         "security": [],
         "parameters": [
           {
@@ -2906,9 +2656,7 @@
                               },
                               "countryCode": {
                                 "type": "string",
-                                "enum": [
-                                  "VN"
-                                ],
+                                "enum": ["VN"],
                                 "default": "VN"
                               },
                               "durationDays": {
@@ -2918,11 +2666,7 @@
                               },
                               "status": {
                                 "type": "string",
-                                "enum": [
-                                  "DRAFT",
-                                  "ACTIVE",
-                                  "INACTIVE"
-                                ],
+                                "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                                 "default": "DRAFT"
                               },
                               "id": {
@@ -2961,12 +2705,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -2980,17 +2719,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -3128,9 +2861,7 @@
       "get": {
         "summary": "Chỉ xem được tour công khai.",
         "operationId": "get_tours__id_",
-        "tags": [
-          "tours"
-        ],
+        "tags": ["tours"],
         "security": [],
         "parameters": [
           {
@@ -3176,9 +2907,7 @@
                         },
                         "countryCode": {
                           "type": "string",
-                          "enum": [
-                            "VN"
-                          ],
+                          "enum": ["VN"],
                           "default": "VN"
                         },
                         "durationDays": {
@@ -3188,11 +2917,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "DRAFT",
-                            "ACTIVE",
-                            "INACTIVE"
-                          ],
+                          "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                           "default": "DRAFT"
                         },
                         "id": {
@@ -3231,17 +2956,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -3372,9 +3091,7 @@
       "get": {
         "summary": "Các lịch OPEN trong tương lai.",
         "operationId": "get_tours__id__schedules",
-        "tags": [
-          "tours"
-        ],
+        "tags": ["tours"],
         "security": [],
         "parameters": [
           {
@@ -3449,10 +3166,7 @@
                               },
                               "status": {
                                 "type": "string",
-                                "enum": [
-                                  "OPEN",
-                                  "CLOSED"
-                                ],
+                                "enum": ["OPEN", "CLOSED"],
                                 "default": "OPEN"
                               },
                               "id": {
@@ -3494,12 +3208,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -3513,17 +3222,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -3661,9 +3364,7 @@
       "get": {
         "summary": "Đọc PostgreSQL và thu hồi hold quá hạn trước khi trả chỗ. Không cache.",
         "operationId": "get_schedules__id__availability",
-        "tags": [
-          "schedules"
-        ],
+        "tags": ["schedules"],
         "security": [],
         "parameters": [
           {
@@ -3712,10 +3413,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "OPEN",
-                            "CLOSED"
-                          ],
+                          "enum": ["OPEN", "CLOSED"],
                           "default": "OPEN"
                         },
                         "id": {
@@ -3757,17 +3455,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -3898,9 +3590,7 @@
       "post": {
         "summary": "Báo giá tham khảo, chưa giữ chỗ.",
         "operationId": "post_bookings_quote",
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "security": [],
         "parameters": [],
         "responses": {
@@ -3941,9 +3631,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "availableSeats": {
                           "type": "integer"
@@ -3977,17 +3665,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -4133,11 +3815,7 @@
                     "format": "uuid"
                   }
                 },
-                "required": [
-                  "adults",
-                  "children",
-                  "scheduleId"
-                ],
+                "required": ["adults", "children", "scheduleId"],
                 "additionalProperties": false
               },
               "example": {
@@ -4154,9 +3832,7 @@
       "post": {
         "summary": "Bắt buộc Idempotency-Key UUID. Replay cùng dữ liệu trả lại đơn cũ; khác dữ liệu trả 409.",
         "operationId": "post_bookings",
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "security": [
           {
             "bearerAuth": []
@@ -4216,9 +3892,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -4270,10 +3944,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -4291,12 +3962,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -4340,17 +4006,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -4559,9 +4219,7 @@
       "get": {
         "summary": "Chỉ đơn thuộc người đăng nhập.",
         "operationId": "get_bookings",
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "security": [
           {
             "bearerAuth": []
@@ -4638,9 +4296,7 @@
                               },
                               "currency": {
                                 "type": "string",
-                                "enum": [
-                                  "VND"
-                                ]
+                                "enum": ["VND"]
                               },
                               "contactName": {
                                 "type": "string"
@@ -4692,10 +4348,7 @@
                                   "properties": {
                                     "kind": {
                                       "type": "string",
-                                      "enum": [
-                                        "ADULT",
-                                        "CHILD"
-                                      ]
+                                      "enum": ["ADULT", "CHILD"]
                                     },
                                     "quantity": {
                                       "type": "integer",
@@ -4713,12 +4366,7 @@
                                       "maximum": 9999999999
                                     }
                                   },
-                                  "required": [
-                                    "kind",
-                                    "quantity",
-                                    "unitPrice",
-                                    "lineTotal"
-                                  ],
+                                  "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                                   "additionalProperties": false
                                 }
                               },
@@ -4762,12 +4410,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -4781,17 +4424,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -4952,9 +4589,7 @@
       "get": {
         "summary": "404 nếu đơn không thuộc người đăng nhập.",
         "operationId": "get_bookings__id_",
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "security": [
           {
             "bearerAuth": []
@@ -5014,9 +4649,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -5068,10 +4701,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -5089,12 +4719,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -5138,17 +4763,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -5302,9 +4921,7 @@
       "post": {
         "summary": "Chỉ PENDING_PAYMENT hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.",
         "operationId": "post_bookings__id__cancel",
-        "tags": [
-          "bookings"
-        ],
+        "tags": ["bookings"],
         "security": [
           {
             "bearerAuth": []
@@ -5364,9 +4981,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -5418,10 +5033,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -5439,12 +5051,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -5488,17 +5095,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -5659,9 +5260,7 @@
                     "maxLength": 500
                   }
                 },
-                "required": [
-                  "reason"
-                ],
+                "required": ["reason"],
                 "additionalProperties": false
               },
               "example": {
@@ -5676,9 +5275,7 @@
       "post": {
         "summary": "Tạo/lấy phương thức thanh toán của đơn thuộc user. VNPAY/MOMO/ZALOPAY tạo checkout; CASH chuyển sang AWAITING_CASH và tuyệt đối chưa coi là PAID.",
         "operationId": "post_payments",
-        "tags": [
-          "payments"
-        ],
+        "tags": ["payments"],
         "security": [
           {
             "bearerAuth": []
@@ -5706,12 +5303,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -5730,9 +5322,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "checkoutUrl": {
                           "type": "string",
@@ -5767,17 +5357,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -5913,18 +5497,10 @@
                   },
                   "provider": {
                     "type": "string",
-                    "enum": [
-                      "VNPAY",
-                      "MOMO",
-                      "ZALOPAY",
-                      "CASH"
-                    ]
+                    "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                   }
                 },
-                "required": [
-                  "bookingId",
-                  "provider"
-                ],
+                "required": ["bookingId", "provider"],
                 "additionalProperties": false
               },
               "example": {
@@ -5940,9 +5516,7 @@
       "get": {
         "summary": "Chỉ giao dịch của đơn thuộc user.",
         "operationId": "get_payments__id_",
-        "tags": [
-          "payments"
-        ],
+        "tags": ["payments"],
         "security": [
           {
             "bearerAuth": []
@@ -5980,12 +5554,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -6004,9 +5573,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "checkoutUrl": {
                           "type": "string",
@@ -6041,17 +5608,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -6180,9 +5741,7 @@
       "get": {
         "summary": "Thống kê cache tối đa 15 giây.",
         "operationId": "get_admin_summary",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -6210,11 +5769,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "tours",
-                        "bookings",
-                        "pendingRefunds"
-                      ],
+                      "required": ["tours", "bookings", "pendingRefunds"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -6228,17 +5783,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -6362,9 +5911,7 @@
       "get": {
         "summary": "Bao gồm DRAFT và INACTIVE, bỏ tour đã archive.",
         "operationId": "get_admin_tours",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -6449,9 +5996,7 @@
                               },
                               "countryCode": {
                                 "type": "string",
-                                "enum": [
-                                  "VN"
-                                ],
+                                "enum": ["VN"],
                                 "default": "VN"
                               },
                               "durationDays": {
@@ -6461,11 +6006,7 @@
                               },
                               "status": {
                                 "type": "string",
-                                "enum": [
-                                  "DRAFT",
-                                  "ACTIVE",
-                                  "INACTIVE"
-                                ],
+                                "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                                 "default": "DRAFT"
                               },
                               "id": {
@@ -6504,12 +6045,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -6523,17 +6059,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -6669,9 +6199,7 @@
       "post": {
         "summary": "Tạo tour nội địa.",
         "operationId": "post_admin_tours",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -6711,9 +6239,7 @@
                         },
                         "countryCode": {
                           "type": "string",
-                          "enum": [
-                            "VN"
-                          ],
+                          "enum": ["VN"],
                           "default": "VN"
                         },
                         "durationDays": {
@@ -6723,11 +6249,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "DRAFT",
-                            "ACTIVE",
-                            "INACTIVE"
-                          ],
+                          "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                           "default": "DRAFT"
                         },
                         "id": {
@@ -6766,17 +6288,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -6930,9 +6446,7 @@
                   },
                   "countryCode": {
                     "type": "string",
-                    "enum": [
-                      "VN"
-                    ],
+                    "enum": ["VN"],
                     "default": "VN"
                   },
                   "durationDays": {
@@ -6942,21 +6456,11 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "DRAFT",
-                      "ACTIVE",
-                      "INACTIVE"
-                    ],
+                    "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                     "default": "DRAFT"
                   }
                 },
-                "required": [
-                  "title",
-                  "slug",
-                  "description",
-                  "destination",
-                  "durationDays"
-                ],
+                "required": ["title", "slug", "description", "destination", "durationDays"],
                 "additionalProperties": false
               },
               "example": {
@@ -6977,9 +6481,7 @@
       "patch": {
         "summary": "Cập nhật các trường được khai báo; không thay ID.",
         "operationId": "patch_admin_tours__id_",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -7029,9 +6531,7 @@
                         },
                         "countryCode": {
                           "type": "string",
-                          "enum": [
-                            "VN"
-                          ],
+                          "enum": ["VN"],
                           "default": "VN"
                         },
                         "durationDays": {
@@ -7041,11 +6541,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "DRAFT",
-                            "ACTIVE",
-                            "INACTIVE"
-                          ],
+                          "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                           "default": "DRAFT"
                         },
                         "id": {
@@ -7084,17 +6580,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -7248,9 +6738,7 @@
                   },
                   "countryCode": {
                     "type": "string",
-                    "enum": [
-                      "VN"
-                    ],
+                    "enum": ["VN"],
                     "default": "VN"
                   },
                   "durationDays": {
@@ -7260,11 +6748,7 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "DRAFT",
-                      "ACTIVE",
-                      "INACTIVE"
-                    ],
+                    "enum": ["DRAFT", "ACTIVE", "INACTIVE"],
                     "default": "DRAFT"
                   }
                 },
@@ -7280,9 +6764,7 @@
       "delete": {
         "summary": "Soft delete; lịch sử đơn vẫn được giữ, không tự hủy đơn đã đặt.",
         "operationId": "delete_admin_tours__id_",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -7312,14 +6794,10 @@
                       "properties": {
                         "ok": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
-                      "required": [
-                        "ok"
-                      ],
+                      "required": ["ok"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -7333,17 +6811,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -7465,9 +6937,7 @@
       "get": {
         "summary": "Danh sách lịch cho vận hành.",
         "operationId": "get_admin_schedules",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -7537,10 +7007,7 @@
                               },
                               "status": {
                                 "type": "string",
-                                "enum": [
-                                  "OPEN",
-                                  "CLOSED"
-                                ],
+                                "enum": ["OPEN", "CLOSED"],
                                 "default": "OPEN"
                               },
                               "id": {
@@ -7582,12 +7049,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -7601,17 +7063,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -7747,9 +7203,7 @@
       "post": {
         "summary": "Ngày khởi hành phải ở tương lai.",
         "operationId": "post_admin_schedules",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -7792,10 +7246,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "OPEN",
-                            "CLOSED"
-                          ],
+                          "enum": ["OPEN", "CLOSED"],
                           "default": "OPEN"
                         },
                         "id": {
@@ -7837,17 +7288,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -8004,20 +7449,11 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "OPEN",
-                      "CLOSED"
-                    ],
+                    "enum": ["OPEN", "CLOSED"],
                     "default": "OPEN"
                   }
                 },
-                "required": [
-                  "tourId",
-                  "departureAt",
-                  "totalSeats",
-                  "adultPrice",
-                  "childPrice"
-                ],
+                "required": ["tourId", "departureAt", "totalSeats", "adultPrice", "childPrice"],
                 "additionalProperties": false
               },
               "example": {
@@ -8037,9 +7473,7 @@
       "patch": {
         "summary": "Tổng chỗ >= số đang giữ/đã đặt. Giá mới không sửa giá snapshot của đơn cũ. Không cho đổi ngày khởi hành trên endpoint này.",
         "operationId": "patch_admin_schedules__id_",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -8092,10 +7526,7 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "OPEN",
-                            "CLOSED"
-                          ],
+                          "enum": ["OPEN", "CLOSED"],
                           "default": "OPEN"
                         },
                         "id": {
@@ -8137,17 +7568,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -8296,10 +7721,7 @@
                   },
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "OPEN",
-                      "CLOSED"
-                    ],
+                    "enum": ["OPEN", "CLOSED"],
                     "default": "OPEN"
                   }
                 },
@@ -8318,9 +7740,7 @@
       "get": {
         "summary": "Danh sách đơn toàn hệ thống.",
         "operationId": "get_admin_bookings",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -8397,9 +7817,7 @@
                               },
                               "currency": {
                                 "type": "string",
-                                "enum": [
-                                  "VND"
-                                ]
+                                "enum": ["VND"]
                               },
                               "contactName": {
                                 "type": "string"
@@ -8451,10 +7869,7 @@
                                   "properties": {
                                     "kind": {
                                       "type": "string",
-                                      "enum": [
-                                        "ADULT",
-                                        "CHILD"
-                                      ]
+                                      "enum": ["ADULT", "CHILD"]
                                     },
                                     "quantity": {
                                       "type": "integer",
@@ -8472,12 +7887,7 @@
                                       "maximum": 9999999999
                                     }
                                   },
-                                  "required": [
-                                    "kind",
-                                    "quantity",
-                                    "unitPrice",
-                                    "lineTotal"
-                                  ],
+                                  "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                                   "additionalProperties": false
                                 }
                               },
@@ -8521,12 +7931,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -8540,17 +7945,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -8711,9 +8110,7 @@
       "get": {
         "summary": "Chi tiết đơn cho vận hành.",
         "operationId": "get_admin_bookings__id_",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -8773,9 +8170,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -8827,10 +8222,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -8848,12 +8240,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -8897,17 +8284,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -9061,9 +8442,7 @@
       "patch": {
         "summary": "Chỉ PAID -> CONFIRMED -> COMPLETED. Không cho tự đánh dấu PAID.",
         "operationId": "patch_admin_bookings__id__status",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -9123,9 +8502,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -9177,10 +8554,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -9198,12 +8572,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -9247,17 +8616,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -9414,15 +8777,10 @@
                 "properties": {
                   "status": {
                     "type": "string",
-                    "enum": [
-                      "CONFIRMED",
-                      "COMPLETED"
-                    ]
+                    "enum": ["CONFIRMED", "COMPLETED"]
                   }
                 },
-                "required": [
-                  "status"
-                ],
+                "required": ["status"],
                 "additionalProperties": false
               },
               "example": {
@@ -9437,9 +8795,7 @@
       "post": {
         "summary": "Hủy nghiệp vụ ở mọi trạng thái theo sơ đồ SRS, bắt buộc lý do và audit. Xem DECISIONS.md.",
         "operationId": "post_admin_bookings__id__cancel",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -9499,9 +8855,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "contactName": {
                           "type": "string"
@@ -9553,10 +8907,7 @@
                             "properties": {
                               "kind": {
                                 "type": "string",
-                                "enum": [
-                                  "ADULT",
-                                  "CHILD"
-                                ]
+                                "enum": ["ADULT", "CHILD"]
                               },
                               "quantity": {
                                 "type": "integer",
@@ -9574,12 +8925,7 @@
                                 "maximum": 9999999999
                               }
                             },
-                            "required": [
-                              "kind",
-                              "quantity",
-                              "unitPrice",
-                              "lineTotal"
-                            ],
+                            "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                             "additionalProperties": false
                           }
                         },
@@ -9623,17 +8969,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -9794,9 +9134,7 @@
                     "maxLength": 500
                   }
                 },
-                "required": [
-                  "reason"
-                ],
+                "required": ["reason"],
                 "additionalProperties": false
               },
               "example": {
@@ -9811,9 +9149,7 @@
       "get": {
         "summary": "Đối soát và tìm REFUND_REQUIRED.",
         "operationId": "get_admin_payments",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -9868,12 +9204,7 @@
                               },
                               "provider": {
                                 "type": "string",
-                                "enum": [
-                                  "VNPAY",
-                                  "MOMO",
-                                  "ZALOPAY",
-                                  "CASH"
-                                ]
+                                "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                               },
                               "status": {
                                 "type": "string",
@@ -9892,9 +9223,7 @@
                               },
                               "currency": {
                                 "type": "string",
-                                "enum": [
-                                  "VND"
-                                ]
+                                "enum": ["VND"]
                               },
                               "checkoutUrl": {
                                 "type": "string",
@@ -9929,12 +9258,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -9948,17 +9272,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -10094,9 +9412,7 @@
       "post": {
         "summary": "Chỉ ghi nhận PAID cho provider CASH sau khi nhân viên thực sự nhận tiền và nhập mã biên nhận.",
         "operationId": "post_admin_payments__id__cash_receipt",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -10134,12 +9450,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -10158,9 +9469,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "checkoutUrl": {
                           "type": "string",
@@ -10195,17 +9504,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -10346,9 +9649,7 @@
                     "maxLength": 500
                   }
                 },
-                "required": [
-                  "reference"
-                ],
+                "required": ["reference"],
                 "additionalProperties": false
               },
               "example": {
@@ -10364,9 +9665,7 @@
       "post": {
         "summary": "Ghi nhận bằng chứng đã hoàn tiền thủ công. Endpoint không chuyển tiền.",
         "operationId": "post_admin_payments__id__refund_record",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -10404,12 +9703,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -10428,9 +9722,7 @@
                         },
                         "currency": {
                           "type": "string",
-                          "enum": [
-                            "VND"
-                          ]
+                          "enum": ["VND"]
                         },
                         "checkoutUrl": {
                           "type": "string",
@@ -10465,17 +9757,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -10616,10 +9902,7 @@
                     "maxLength": 500
                   }
                 },
-                "required": [
-                  "reference",
-                  "note"
-                ],
+                "required": ["reference", "note"],
                 "additionalProperties": false
               },
               "example": {
@@ -10635,9 +9918,7 @@
       "get": {
         "summary": "Nhật ký thay đổi quan trọng.",
         "operationId": "get_admin_audit_logs",
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "security": [
           {
             "bearerAuth": []
@@ -10703,13 +9984,7 @@
                                 "format": "date-time"
                               }
                             },
-                            "required": [
-                              "id",
-                              "actorId",
-                              "action",
-                              "entityId",
-                              "createdAt"
-                            ],
+                            "required": ["id", "actorId", "action", "entityId", "createdAt"],
                             "additionalProperties": false
                           }
                         },
@@ -10723,12 +9998,7 @@
                           "type": "integer"
                         }
                       },
-                      "required": [
-                        "items",
-                        "page",
-                        "pageSize",
-                        "total"
-                      ],
+                      "required": ["items", "page", "pageSize", "total"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -10742,17 +10012,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -10889,9 +10153,7 @@
       "get": {
         "summary": "Chỉ báo provider nào đã cấu hình; không trả secret.",
         "operationId": "get_assistant_provider_status",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [],
         "parameters": [],
         "responses": {
@@ -10907,10 +10169,7 @@
                       "properties": {
                         "preferredProvider": {
                           "type": "string",
-                          "enum": [
-                            "GROQ",
-                            "GEMINI"
-                          ],
+                          "enum": ["GROQ", "GEMINI"],
                           "nullable": true
                         },
                         "groqConfigured": {
@@ -10921,9 +10180,7 @@
                         },
                         "fallbackAvailable": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         }
                       },
                       "required": [
@@ -10945,17 +10202,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -11080,9 +10331,7 @@
       "get": {
         "summary": "Gọi thử provider thật; providerLive=false nghĩa đang rơi về RULE_BASED.",
         "operationId": "get_assistant_provider_probe",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -11102,20 +10351,13 @@
                       "properties": {
                         "mode": {
                           "type": "string",
-                          "enum": [
-                            "GROQ",
-                            "GEMINI",
-                            "RULE_BASED"
-                          ]
+                          "enum": ["GROQ", "GEMINI", "RULE_BASED"]
                         },
                         "providerLive": {
                           "type": "boolean"
                         }
                       },
-                      "required": [
-                        "mode",
-                        "providerLive"
-                      ],
+                      "required": ["mode", "providerLive"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -11129,17 +10371,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -11262,9 +10498,7 @@
       "post": {
         "summary": "JWT tùy chọn. Planner chỉ chọn capability đã whitelist; dữ liệu nghiệp vụ lấy từ backend.",
         "operationId": "post_assistant_chat",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {},
           {
@@ -11288,11 +10522,7 @@
                         },
                         "mode": {
                           "type": "string",
-                          "enum": [
-                            "GROQ",
-                            "GEMINI",
-                            "RULE_BASED"
-                          ]
+                          "enum": ["GROQ", "GEMINI", "RULE_BASED"]
                         },
                         "actions": {
                           "type": "array",
@@ -11310,11 +10540,7 @@
                                 "type": "boolean"
                               }
                             },
-                            "required": [
-                              "label",
-                              "href",
-                              "requiresConfirmation"
-                            ],
+                            "required": ["label", "href", "requiresConfirmation"],
                             "additionalProperties": false
                           }
                         },
@@ -11325,12 +10551,7 @@
                             "properties": {
                               "type": {
                                 "type": "string",
-                                "enum": [
-                                  "TOUR",
-                                  "POLICY",
-                                  "BOOKING",
-                                  "OPERATIONS"
-                                ]
+                                "enum": ["TOUR", "POLICY", "BOOKING", "OPERATIONS"]
                               },
                               "id": {
                                 "type": "string"
@@ -11339,21 +10560,12 @@
                                 "type": "string"
                               }
                             },
-                            "required": [
-                              "type",
-                              "id",
-                              "label"
-                            ],
+                            "required": ["type", "id", "label"],
                             "additionalProperties": false
                           }
                         }
                       },
-                      "required": [
-                        "reply",
-                        "mode",
-                        "actions",
-                        "sources"
-                      ],
+                      "required": ["reply", "mode", "actions", "sources"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -11367,17 +10579,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -11522,10 +10728,7 @@
                   },
                   "lang": {
                     "type": "string",
-                    "enum": [
-                      "vi",
-                      "en"
-                    ]
+                    "enum": ["vi", "en"]
                   },
                   "history": {
                     "type": "array",
@@ -11534,29 +10737,21 @@
                       "properties": {
                         "role": {
                           "type": "string",
-                          "enum": [
-                            "user",
-                            "assistant"
-                          ]
+                          "enum": ["user", "assistant"]
                         },
                         "content": {
                           "type": "string",
                           "maxLength": 2000
                         }
                       },
-                      "required": [
-                        "role",
-                        "content"
-                      ],
+                      "required": ["role", "content"],
                       "additionalProperties": false
                     },
                     "maxItems": 8,
                     "default": []
                   }
                 },
-                "required": [
-                  "message"
-                ],
+                "required": ["message"],
                 "additionalProperties": false
               },
               "example": {
@@ -11573,9 +10768,7 @@
       "post": {
         "summary": "Tạo proposal Redis TTL 10 phút sau khi quote lại giá/chỗ; chưa tạo booking.",
         "operationId": "post_assistant_booking_proposals",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -11599,9 +10792,7 @@
                         },
                         "kind": {
                           "type": "string",
-                          "enum": [
-                            "CREATE_BOOKING"
-                          ]
+                          "enum": ["CREATE_BOOKING"]
                         },
                         "expiresAt": {
                           "type": "string",
@@ -11609,9 +10800,7 @@
                         },
                         "requiresConfirmation": {
                           "type": "boolean",
-                          "enum": [
-                            true
-                          ]
+                          "enum": [true]
                         },
                         "quote": {
                           "type": "object",
@@ -11643,9 +10832,7 @@
                             },
                             "currency": {
                               "type": "string",
-                              "enum": [
-                                "VND"
-                              ]
+                              "enum": ["VND"]
                             },
                             "availableSeats": {
                               "type": "integer"
@@ -11670,12 +10857,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ],
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"],
                           "nullable": true
                         },
                         "summary": {
@@ -11704,17 +10886,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -11883,12 +11059,7 @@
                   },
                   "provider": {
                     "type": "string",
-                    "enum": [
-                      "VNPAY",
-                      "MOMO",
-                      "ZALOPAY",
-                      "CASH"
-                    ]
+                    "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                   }
                 },
                 "required": [
@@ -11919,9 +11090,7 @@
       "post": {
         "summary": "Chỉ sau explicit confirmation mới tạo booking idempotent. Thanh toán vẫn dùng payment API riêng.",
         "operationId": "post_assistant_booking_proposals__id__confirm",
-        "tags": [
-          "assistant"
-        ],
+        "tags": ["assistant"],
         "security": [
           {
             "bearerAuth": []
@@ -11984,9 +11153,7 @@
                             },
                             "currency": {
                               "type": "string",
-                              "enum": [
-                                "VND"
-                              ]
+                              "enum": ["VND"]
                             },
                             "contactName": {
                               "type": "string"
@@ -12038,10 +11205,7 @@
                                 "properties": {
                                   "kind": {
                                     "type": "string",
-                                    "enum": [
-                                      "ADULT",
-                                      "CHILD"
-                                    ]
+                                    "enum": ["ADULT", "CHILD"]
                                   },
                                   "quantity": {
                                     "type": "integer",
@@ -12059,12 +11223,7 @@
                                     "maximum": 9999999999
                                   }
                                 },
-                                "required": [
-                                  "kind",
-                                  "quantity",
-                                  "unitPrice",
-                                  "lineTotal"
-                                ],
+                                "required": ["kind", "quantity", "unitPrice", "lineTotal"],
                                 "additionalProperties": false
                               }
                             },
@@ -12099,26 +11258,15 @@
                         },
                         "selectedProvider": {
                           "type": "string",
-                          "enum": [
-                            "VNPAY",
-                            "MOMO",
-                            "ZALOPAY",
-                            "CASH"
-                          ],
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"],
                           "nullable": true
                         },
                         "nextAction": {
                           "type": "string",
-                          "enum": [
-                            "OPEN_BOOKING"
-                          ]
+                          "enum": ["OPEN_BOOKING"]
                         }
                       },
-                      "required": [
-                        "booking",
-                        "selectedProvider",
-                        "nextAction"
-                      ],
+                      "required": ["booking", "selectedProvider", "nextAction"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -12132,17 +11280,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -12300,9 +11442,7 @@
       "get": {
         "summary": "Tiến trình đang phục vụ.",
         "operationId": "get_health_live",
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "security": [],
         "parameters": [],
         "responses": {
@@ -12318,14 +11458,10 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "ok"
-                          ]
+                          "enum": ["ok"]
                         }
                       },
-                      "required": [
-                        "status"
-                      ],
+                      "required": ["status"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -12339,17 +11475,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -12471,9 +11601,7 @@
       "get": {
         "summary": "Kiểm tra PostgreSQL và Redis; lỗi trả 503.",
         "operationId": "get_health_ready",
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "security": [],
         "parameters": [],
         "responses": {
@@ -12489,14 +11617,10 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "ok"
-                          ]
+                          "enum": ["ok"]
                         }
                       },
-                      "required": [
-                        "status"
-                      ],
+                      "required": ["status"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -12510,17 +11634,11 @@
                           "format": "date-time"
                         }
                       },
-                      "required": [
-                        "requestId",
-                        "timestamp"
-                      ],
+                      "required": ["requestId", "timestamp"],
                       "additionalProperties": false
                     }
                   },
-                  "required": [
-                    "data",
-                    "meta"
-                  ],
+                  "required": ["data", "meta"],
                   "additionalProperties": false
                 },
                 "example": {
@@ -12832,10 +11950,7 @@
                     "type": "integer"
                   }
                 },
-                "required": [
-                  "data",
-                  "mac"
-                ]
+                "required": ["data", "mac"]
               },
               "example": {
                 "data": "{\"app_id\":2553,\"app_trans_id\":\"261201_55555555555545558555555555555555\",\"zp_trans_id\":123456789,\"amount\":10470000}",
@@ -12876,10 +11991,7 @@
               },
               "details": {}
             },
-            "required": [
-              "code",
-              "message"
-            ],
+            "required": ["code", "message"],
             "additionalProperties": false
           },
           "meta": {
@@ -12893,17 +12005,11 @@
                 "format": "date-time"
               }
             },
-            "required": [
-              "requestId",
-              "timestamp"
-            ],
+            "required": ["requestId", "timestamp"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "error",
-          "meta"
-        ],
+        "required": ["error", "meta"],
         "additionalProperties": false
       }
     }

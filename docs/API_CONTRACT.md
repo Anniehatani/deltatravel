@@ -28,54 +28,54 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 
 ## Endpoint index
 
-| Method | Path | Quyền | Request body | Data response | HTTP |
-|---|---|---|---|---|---|
-| POST | /auth/register | Guest | RegisterSchema | AuthResultSchema | 201 |
-| POST | /auth/login | Guest | LoginSchema | AuthResultSchema | 200 |
-| POST | /auth/forgot-password | Guest | ForgotPasswordSchema | AckSchema | 200 |
-| POST | /auth/reset-password | Guest | ResetPasswordSchema | AckSchema | 200 |
-| POST | /auth/change-password | User | ChangePasswordSchema | AckSchema | 200 |
-| POST | /auth/refresh | Cookie | EmptySchema | AuthResultSchema | 200 |
-| POST | /auth/logout | Cookie | EmptySchema | AckSchema | 200 |
-| GET | /auth/me | User | Không | UserSchema | 200 |
-| GET | /profile/me | User | Không | UserSchema | 200 |
-| POST | /profile/avatar/upload-url | User | AvatarUploadRequestSchema | AvatarUploadTicketSchema | 200 |
-| POST | /profile/avatar/complete | User | AvatarCompleteSchema | UserSchema | 200 |
-| DELETE | /profile/avatar | User | Không | UserSchema | 200 |
-| GET | /tours | Guest | Không | TourSchema[] | 200 |
-| GET | /tours/{id} | Guest | Không | TourSchema | 200 |
-| GET | /tours/{id}/schedules | Guest | Không | ScheduleSchema[] | 200 |
-| GET | /schedules/{id}/availability | Guest | Không | ScheduleSchema | 200 |
-| POST | /bookings/quote | Guest | QuoteSchema | QuoteResultSchema | 200 |
-| POST | /bookings | CUSTOMER | CreateBookingSchema | BookingSchema | 201 |
-| GET | /bookings | User | Không | BookingSchema[] | 200 |
-| GET | /bookings/{id} | User | Không | BookingSchema | 200 |
-| POST | /bookings/{id}/cancel | User | CancelSchema | BookingSchema | 200 |
-| POST | /payments | User | CreatePaymentSchema | PaymentSchema | 200 |
-| GET | /payments/{id} | User | Không | PaymentSchema | 200 |
-| GET | /admin/summary | ADMIN,OPERATIONS | Không | SummarySchema | 200 |
-| GET | /admin/tours | ADMIN,OPERATIONS | Không | TourSchema[] | 200 |
-| POST | /admin/tours | ADMIN,OPERATIONS | CreateTourSchema | TourSchema | 201 |
-| PATCH | /admin/tours/{id} | ADMIN,OPERATIONS | UpdateTourSchema | TourSchema | 200 |
-| DELETE | /admin/tours/{id} | ADMIN | Không | AckSchema | 200 |
-| GET | /admin/schedules | ADMIN,OPERATIONS | Không | ScheduleSchema[] | 200 |
-| POST | /admin/schedules | ADMIN,OPERATIONS | CreateScheduleSchema | ScheduleSchema | 201 |
-| PATCH | /admin/schedules/{id} | ADMIN,OPERATIONS | UpdateScheduleSchema | ScheduleSchema | 200 |
-| GET | /admin/bookings | ADMIN,OPERATIONS | Không | BookingSchema[] | 200 |
-| GET | /admin/bookings/{id} | ADMIN,OPERATIONS | Không | BookingSchema | 200 |
-| PATCH | /admin/bookings/{id}/status | ADMIN,OPERATIONS | TransitionSchema | BookingSchema | 200 |
-| POST | /admin/bookings/{id}/cancel | ADMIN,OPERATIONS | CancelSchema | BookingSchema | 200 |
-| GET | /admin/payments | ADMIN,OPERATIONS | Không | PaymentSchema[] | 200 |
-| POST | /admin/payments/{id}/cash-receipt | ADMIN,OPERATIONS | CashReceiptSchema | PaymentSchema | 200 |
-| POST | /admin/payments/{id}/refund-record | ADMIN | RefundRecordSchema | PaymentSchema | 200 |
-| GET | /admin/audit-logs | ADMIN | Không | AuditSchema[] | 200 |
-| GET | /assistant/provider-status | Guest | Không | AssistantProviderStatusSchema | 200 |
-| GET | /assistant/provider-probe | ADMIN,OPERATIONS | Không | AssistantProbeResultSchema | 200 |
-| POST | /assistant/chat | Guest | AssistantRequestSchema | AssistantResultSchema | 200 |
-| POST | /assistant/booking-proposals | CUSTOMER | AssistantBookingProposalSchema | AssistantBookingProposalResultSchema | 200 |
-| POST | /assistant/booking-proposals/{id}/confirm | CUSTOMER | Không | AssistantBookingConfirmResultSchema | 200 |
-| GET | /health/live | Guest | Không | HealthSchema | 200 |
-| GET | /health/ready | Guest | Không | HealthSchema | 200 |
+| Method | Path                                      | Quyền            | Request body                   | Data response                        | HTTP |
+| ------ | ----------------------------------------- | ---------------- | ------------------------------ | ------------------------------------ | ---- |
+| POST   | /auth/register                            | Guest            | RegisterSchema                 | AuthResultSchema                     | 201  |
+| POST   | /auth/login                               | Guest            | LoginSchema                    | AuthResultSchema                     | 200  |
+| POST   | /auth/forgot-password                     | Guest            | ForgotPasswordSchema           | AckSchema                            | 200  |
+| POST   | /auth/reset-password                      | Guest            | ResetPasswordSchema            | AckSchema                            | 200  |
+| POST   | /auth/change-password                     | User             | ChangePasswordSchema           | AckSchema                            | 200  |
+| POST   | /auth/refresh                             | Cookie           | EmptySchema                    | AuthResultSchema                     | 200  |
+| POST   | /auth/logout                              | Cookie           | EmptySchema                    | AckSchema                            | 200  |
+| GET    | /auth/me                                  | User             | Không                          | UserSchema                           | 200  |
+| GET    | /profile/me                               | User             | Không                          | UserSchema                           | 200  |
+| POST   | /profile/avatar/upload-url                | User             | AvatarUploadRequestSchema      | AvatarUploadTicketSchema             | 200  |
+| POST   | /profile/avatar/complete                  | User             | AvatarCompleteSchema           | UserSchema                           | 200  |
+| DELETE | /profile/avatar                           | User             | Không                          | UserSchema                           | 200  |
+| GET    | /tours                                    | Guest            | Không                          | TourSchema[]                         | 200  |
+| GET    | /tours/{id}                               | Guest            | Không                          | TourSchema                           | 200  |
+| GET    | /tours/{id}/schedules                     | Guest            | Không                          | ScheduleSchema[]                     | 200  |
+| GET    | /schedules/{id}/availability              | Guest            | Không                          | ScheduleSchema                       | 200  |
+| POST   | /bookings/quote                           | Guest            | QuoteSchema                    | QuoteResultSchema                    | 200  |
+| POST   | /bookings                                 | CUSTOMER         | CreateBookingSchema            | BookingSchema                        | 201  |
+| GET    | /bookings                                 | User             | Không                          | BookingSchema[]                      | 200  |
+| GET    | /bookings/{id}                            | User             | Không                          | BookingSchema                        | 200  |
+| POST   | /bookings/{id}/cancel                     | User             | CancelSchema                   | BookingSchema                        | 200  |
+| POST   | /payments                                 | User             | CreatePaymentSchema            | PaymentSchema                        | 200  |
+| GET    | /payments/{id}                            | User             | Không                          | PaymentSchema                        | 200  |
+| GET    | /admin/summary                            | ADMIN,OPERATIONS | Không                          | SummarySchema                        | 200  |
+| GET    | /admin/tours                              | ADMIN,OPERATIONS | Không                          | TourSchema[]                         | 200  |
+| POST   | /admin/tours                              | ADMIN,OPERATIONS | CreateTourSchema               | TourSchema                           | 201  |
+| PATCH  | /admin/tours/{id}                         | ADMIN,OPERATIONS | UpdateTourSchema               | TourSchema                           | 200  |
+| DELETE | /admin/tours/{id}                         | ADMIN            | Không                          | AckSchema                            | 200  |
+| GET    | /admin/schedules                          | ADMIN,OPERATIONS | Không                          | ScheduleSchema[]                     | 200  |
+| POST   | /admin/schedules                          | ADMIN,OPERATIONS | CreateScheduleSchema           | ScheduleSchema                       | 201  |
+| PATCH  | /admin/schedules/{id}                     | ADMIN,OPERATIONS | UpdateScheduleSchema           | ScheduleSchema                       | 200  |
+| GET    | /admin/bookings                           | ADMIN,OPERATIONS | Không                          | BookingSchema[]                      | 200  |
+| GET    | /admin/bookings/{id}                      | ADMIN,OPERATIONS | Không                          | BookingSchema                        | 200  |
+| PATCH  | /admin/bookings/{id}/status               | ADMIN,OPERATIONS | TransitionSchema               | BookingSchema                        | 200  |
+| POST   | /admin/bookings/{id}/cancel               | ADMIN,OPERATIONS | CancelSchema                   | BookingSchema                        | 200  |
+| GET    | /admin/payments                           | ADMIN,OPERATIONS | Không                          | PaymentSchema[]                      | 200  |
+| POST   | /admin/payments/{id}/cash-receipt         | ADMIN,OPERATIONS | CashReceiptSchema              | PaymentSchema                        | 200  |
+| POST   | /admin/payments/{id}/refund-record        | ADMIN            | RefundRecordSchema             | PaymentSchema                        | 200  |
+| GET    | /admin/audit-logs                         | ADMIN            | Không                          | AuditSchema[]                        | 200  |
+| GET    | /assistant/provider-status                | Guest            | Không                          | AssistantProviderStatusSchema        | 200  |
+| GET    | /assistant/provider-probe                 | ADMIN,OPERATIONS | Không                          | AssistantProbeResultSchema           | 200  |
+| POST   | /assistant/chat                           | Guest            | AssistantRequestSchema         | AssistantResultSchema                | 200  |
+| POST   | /assistant/booking-proposals              | CUSTOMER         | AssistantBookingProposalSchema | AssistantBookingProposalResultSchema | 200  |
+| POST   | /assistant/booking-proposals/{id}/confirm | CUSTOMER         | Không                          | AssistantBookingConfirmResultSchema  | 200  |
+| GET    | /health/live                              | Guest            | Không                          | HealthSchema                         | 200  |
+| GET    | /health/ready                             | Guest            | Không                          | HealthSchema                         | 200  |
 
 ## POST /auth/register
 
@@ -1793,7 +1793,10 @@ Replay hợp lệ không đổi trạng thái hoặc trả chỗ lần hai. Sai 
 ## Lỗi mẫu
 
 ```json
-{"error":{"code":"INSUFFICIENT_SEATS","message":"Không đủ chỗ"},"meta":{"requestId":"example-request-id","timestamp":"2026-12-01T01:00:00.000Z"}}
+{
+  "error": { "code": "INSUFFICIENT_SEATS", "message": "Không đủ chỗ" },
+  "meta": { "requestId": "example-request-id", "timestamp": "2026-12-01T01:00:00.000Z" }
+}
 ```
 
 Mã nghiệp vụ ổn định: VALIDATION_ERROR, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, CSRF_REJECTED, NOT_FOUND, CONFLICT, IDEMPOTENCY_CONFLICT, INSUFFICIENT_SEATS, SCHEDULE_UNAVAILABLE, CANCELLATION_NOT_ALLOWED, INVALID_TRANSITION, TOUR_NOT_STARTED, CAPACITY_BELOW_RESERVED, BOOKING_NOT_PAYABLE, PAYMENT_PROVIDER_LOCKED, PROVIDER_NOT_CONFIGURED, PROVIDER_AMOUNT_LIMIT, PROVIDER_TIME_LIMIT, PROVIDER_UNAVAILABLE, INVALID_PROVIDER_RESPONSE, INVALID_SIGNATURE, MERCHANT_MISMATCH, AMOUNT_MISMATCH, TRANSACTION_MISMATCH, REFUND_NOT_REQUIRED, REFUND_REFERENCE_CONFLICT, RETRY_TRANSACTION, RATE_LIMITED, MAIL_UNAVAILABLE, INVALID_RESET_CODE, INVALID_CURRENT_PASSWORD, PROPOSAL_NOT_FOUND, PROPOSAL_EXPIRED.
