@@ -84,6 +84,6 @@ Không commit credential vào Git. Sau khi có sandbox credentials, chạy toàn
 
 ## Kiểm chứng và giới hạn
 
-Xem `docs/VERIFICATION.md` để biết bằng chứng đã chạy, `docs/PRODUCTION_READINESS.md` để biết gate đã đạt và dependency bên ngoài còn lại, `docs/TEST_PLAN.md` để xem ma trận nghiệm thu.
+Xem `docs/VERIFICATION.md` để biết bằng chứng đã chạy, `docs/PRODUCTION_READINESS.md` để biết gate đã đạt, `docs/TEST_PLAN.md` để xem ma trận nghiệm thu, `docs/REQUIREMENTS_TRACEABILITY.md` để truy vết yêu cầu và `docs/DEMO_RUNBOOK.md` để chuẩn bị bảo vệ.
 
 Tài liệu dự án hiện có chỉ xác nhận phạm vi SRS đã được trích trong quá trình phát triển. Chưa có toàn văn SRS hoặc rubric chính thức trong Project để đối chiếu thêm, vì vậy các yêu cầu ngoài phạm vi nguồn phải được giảng viên xác nhận trước khi coi là bắt buộc.
