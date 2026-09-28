@@ -6,6 +6,7 @@ type AuthState = {
   user: User | null;
   loading: boolean;
   accept: (result: AuthResult) => void;
+  updateUser: (user: User) => void;
   logout: () => Promise<void>;
 };
 const Context = createContext<AuthState | null>(null);
@@ -32,12 +33,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       off();
     };
   }, [accept]);
+  const updateUser = useCallback((nextUser: User) => {
+    setUser(nextUser);
+  }, []);
   const logout = async () => {
     await authApi.logout();
     setAccessToken(null);
     setUser(null);
   };
-  return <Context.Provider value={{ user, loading, accept, logout }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ user, loading, accept, updateUser, logout }}>{children}</Context.Provider>;
 }
 export function useAuth() {
   const value = useContext(Context);
