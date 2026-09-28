@@ -89,7 +89,9 @@ const avatarUpload = await fetch(avatarTicket.signedUrl, {
   body: avatarForm,
 });
 if (!avatarUpload.ok) {
-  throw new Error(`avatar storage upload -> ${avatarUpload.status}: ${(await avatarUpload.text()).slice(0, 300)}`);
+  throw new Error(
+    `avatar storage upload -> ${avatarUpload.status}: ${(await avatarUpload.text()).slice(0, 300)}`,
+  );
 }
 const avatarUser = await request('/profile/avatar/complete', {
   method: 'POST',

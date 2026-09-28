@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
-const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(/\/$/, '');
-const API = (process.env.LIVE_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(/\/$/, '');
+const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(
+  /\/$/,
+  '',
+);
+const API = (process.env.LIVE_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(
+  /\/$/,
+  '',
+);
 
 function pass(label, detail = '') {
   console.log(`PASS  ${label}${detail ? `  ${detail}` : ''}`);
@@ -11,7 +17,9 @@ async function expectStatus(label, url, init, allowed) {
   const response = await fetch(url, init);
   const text = await response.text();
   if (!allowed.includes(response.status)) {
-    throw new Error(`${label}: expected ${allowed.join('/')} got ${response.status}: ${text.slice(0, 300)}`);
+    throw new Error(
+      `${label}: expected ${allowed.join('/')} got ${response.status}: ${text.slice(0, 300)}`,
+    );
   }
   pass(label, `status=${response.status}`);
   return { response, text };

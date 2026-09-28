@@ -84,9 +84,9 @@ async function assertInternalLinks(page) {
   for (const seed of ['/', '/tours']) {
     await page.goto(WEB + seed, { waitUntil: 'domcontentloaded', timeout: 120000 });
     await page.waitForTimeout(500);
-    const hrefs = await page.locator('a[href]').evaluateAll((links) =>
-      links.map((link) => link.getAttribute('href')).filter(Boolean),
-    );
+    const hrefs = await page
+      .locator('a[href]')
+      .evaluateAll((links) => links.map((link) => link.getAttribute('href')).filter(Boolean));
     for (const href of hrefs) {
       if (
         href.startsWith('#') ||

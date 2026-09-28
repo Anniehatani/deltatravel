@@ -295,9 +295,7 @@ function HomeContent() {
 
   return (
     <div className="bg-white text-black">
-      <h1 className="sr-only">
-        Delta Travel, đặt tour du lịch Việt Nam cùng AI Agent
-      </h1>
+      <h1 className="sr-only">Delta Travel, đặt tour du lịch Việt Nam cùng AI Agent</h1>
 
       {/* Luxury Cinematic Preloader & 3D Asset Warming Engine */}
       <LuxuryPreloader />
