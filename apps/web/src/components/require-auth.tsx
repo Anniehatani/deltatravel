@@ -47,7 +47,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           <h1 className="text-2xl sm:text-[26px] font-black text-black tracking-tight uppercase">
             {t('auth_login_required')}
           </h1>
-          <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-normal leading-relaxed">
+          <p className="mt-3 text-xs sm:text-sm text-black font-medium leading-relaxed">
             {t('auth_login_desc')}
           </p>
 
@@ -74,7 +74,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           <div className="mt-6 pt-5 border-t border-neutral-100">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-500 hover:text-black transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-black hover:text-neutral-700 transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>{t('auth_back_home')}</span>
