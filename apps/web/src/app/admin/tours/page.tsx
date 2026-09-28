@@ -121,7 +121,7 @@ export default function AdminToursPage() {
       slug: finalSlug,
       description: description.trim(),
       destination: destination.trim(),
-      countryCode: 'VN',
+      countryCode: 'VN' as const,
       durationDays: Number(durationDays),
       status,
     };
