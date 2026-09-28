@@ -1,0 +1,54 @@
+
+> tour-booking@1.0.0 typecheck
+> npm run build -w @tour/shared && npm run db:generate && npm run typecheck -w @tour/api && npm run typecheck -w @tour/web
+
+
+> @tour/shared@1.0.0 build
+> tsc -p tsconfig.json
+
+
+> tour-booking@1.0.0 db:generate
+> npm run db:generate -w @tour/api
+
+
+> @tour/api@1.0.0 db:generate
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.19.3 -> 8.0.0-rc.17                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+✔ Generated Prisma Client (v6.19.3) to ./../../node_modules/@prisma/client in 213ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+
+> @tour/api@1.0.0 typecheck
+> tsc --noEmit
+
+
+> @tour/web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Route types generated successfully
+src/components/agent-booking-panel.tsx(348,9): error TS2322: Type '"" | "VNPAY" | "MOMO" | "ZALOPAY" | "CASH"' is not assignable to type '"VNPAY" | "MOMO" | "ZALOPAY" | "CASH" | undefined'.
+  Type '""' is not assignable to type '"VNPAY" | "MOMO" | "ZALOPAY" | "CASH" | undefined'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /home/runner/work/deltatravel/deltatravel/apps/web
+npm error workspace @tour/web@1.0.0
+npm error location /home/runner/work/deltatravel/deltatravel/apps/web
+npm error command failed
+npm error command sh -c next typegen && tsc --noEmit
+EXIT_CODE=2
