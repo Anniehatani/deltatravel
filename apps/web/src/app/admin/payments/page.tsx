@@ -31,6 +31,13 @@ export default function AdminPaymentsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Cash receipt modal
+  const [cashPaymentId, setCashPaymentId] = useState<string | null>(null);
+  const [cashReference, setCashReference] = useState('');
+  const [cashNote, setCashNote] = useState('');
+  const [submittingCash, setSubmittingCash] = useState(false);
+  const [cashError, setCashError] = useState<string | null>(null);
+
   // Refund Modal
   const [refundPaymentId, setRefundPaymentId] = useState<string | null>(null);
   const [refundRef, setRefundRef] = useState('');
@@ -57,6 +64,30 @@ export default function AdminPaymentsPage() {
   useEffect(() => {
     fetchPayments();
   }, []);
+
+  const handleRecordCash = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cashPaymentId || cashReference.trim().length < 3) return;
+
+    setSubmittingCash(true);
+    setCashError(null);
+    try {
+      await adminApi.recordCashReceipt(cashPaymentId, {
+        reference: cashReference.trim(),
+        ...(cashNote.trim() ? { note: cashNote.trim() } : {}),
+      });
+      setCashPaymentId(null);
+      setCashReference('');
+      setCashNote('');
+      fetchPayments();
+    } catch (err) {
+      setCashError(
+        err instanceof Error ? err.message : 'Không thể ghi nhận thu tiền mặt.',
+      );
+    } finally {
+      setSubmittingCash(false);
+    }
+  };
 
   const handleRecordRefund = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +117,7 @@ export default function AdminPaymentsPage() {
     <PageShell
       badge="Đối Soát Dòng Tiền"
       title="Giao Dịch Thanh Toán & Hoàn Tiền"
-      description="Kiểm tra đối soát qua VNPay, MoMo, ZaloPay và xử lý ghi nhận các khoản REFUND_REQUIRED."
+      description="Đối soát VNPay, MoMo, ZaloPay, thu tiền mặt và xử lý các khoản hoàn tiền."
       action={
         <Button variant="outline" onClick={fetchPayments} className="text-xs gap-1.5">
           <RefreshCcw className="h-3.5 w-3.5" />
@@ -153,7 +184,20 @@ export default function AdminPaymentsPage() {
                       {formatDateTime(p.createdAt)}
                     </td>
                     <td className="py-4 px-6 text-right">
-                      {p.status === 'REFUND_REQUIRED' && (
+                      <div className="flex justify-end gap-2">
+                        {p.provider === 'CASH' && p.status === 'INITIATED' && (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setCashPaymentId(p.id);
+                              setCashError(null);
+                            }}
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] h-7 px-3"
+                          >
+                            Xác nhận thu tiền
+                          </Button>
+                        )}
+                        {p.status === 'REFUND_REQUIRED' && (
                         <Button
                           size="sm"
                           onClick={() => setRefundPaymentId(p.id)}
@@ -161,13 +205,75 @@ export default function AdminPaymentsPage() {
                         >
                           Ghi nhận hoàn tiền
                         </Button>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {cashPaymentId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-stone-200">
+            <h3 className="font-serif text-xl font-bold text-stone-900 mb-2">
+              Xác Nhận Thu Tiền Mặt
+            </h3>
+            <p className="text-xs text-stone-600 mb-4">
+              Chỉ xác nhận sau khi nhân viên thực tế đã nhận đủ tiền của khách.
+            </p>
+            <form onSubmit={handleRecordCash} className="space-y-4 text-xs">
+              <div>
+                <label className="font-semibold text-stone-700">
+                  Mã biên nhận / tham chiếu *
+                </label>
+                <input
+                  type="text"
+                  required
+                  minLength={3}
+                  maxLength={100}
+                  value={cashReference}
+                  onChange={(e) => setCashReference(e.target.value)}
+                  placeholder="Ví dụ: CASH-HN-20260928-001"
+                />
+              </div>
+              <div>
+                <label className="font-semibold text-stone-700">Ghi chú</label>
+                <textarea
+                  rows={3}
+                  maxLength={500}
+                  value={cashNote}
+                  onChange={(e) => setCashNote(e.target.value)}
+                  placeholder="Nhân viên thu tiền, địa điểm hoặc ghi chú đối soát..."
+                />
+              </div>
+              {cashError && (
+                <p role="alert" className="text-red-700 font-medium">
+                  {cashError}
+                </p>
+              )}
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCashPaymentId(null)}
+                  disabled={submittingCash}
+                >
+                  Đóng
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={submittingCash}
+                  className="bg-emerald-700 text-white hover:bg-emerald-800"
+                >
+                  {submittingCash ? 'Đang xác nhận...' : 'Xác nhận đã thu tiền'}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
