@@ -287,9 +287,7 @@ export function AgentBookingPanel() {
     }
     const providerAvailable = Boolean(
       values.provider &&
-        plan?.paymentOptions.some(
-          (item) => item.provider === values.provider && item.available,
-        ),
+      plan?.paymentOptions.some((item) => item.provider === values.provider && item.available),
     );
     if (!providerAvailable) {
       providerRef.current?.focus();
