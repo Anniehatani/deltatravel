@@ -9,7 +9,7 @@ import type { Tour } from '@tour/shared';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/providers/language-provider';
-import { FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
+import { getLocalizedTour } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { formatVND } from '@/lib/format';
@@ -33,6 +33,7 @@ function ToursListContent() {
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
   const [tours, setTours] = useState<Tour[]>([]);
+  const [livePrices, setLivePrices] = useState<Record<string, number | null>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,6 +79,36 @@ function ToursListContent() {
     return () => window.removeEventListener('delta_tours_updated', onUpdate);
   }, [searchParams, lang]);
 
+  useEffect(() => {
+    let active = true;
+    if (!tours.length) {
+      setLivePrices({});
+      return () => {
+        active = false;
+      };
+    }
+
+    void Promise.all(
+      tours.map(async (tour) => {
+        try {
+          const page = await tourApi.schedules(tour.id);
+          const prices = page.items
+            .filter((schedule) => schedule.status === 'OPEN' && schedule.availableSeats > 0)
+            .map((schedule) => schedule.adultPrice);
+          return [tour.id, prices.length ? Math.min(...prices) : null] as const;
+        } catch {
+          return [tour.id, null] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (active) setLivePrices(Object.fromEntries(entries));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [tours]);
+
   const handleRegionChange = (regId: string) => {
     setActiveRegion(regId);
     const params = new URLSearchParams();
@@ -85,18 +116,7 @@ function ToursListContent() {
     router.push(`/tours${regId ? `?region=${regId}` : ''}`);
   };
 
-  // Helper to get pricing from commercial tour data
-  const getTourPrice = (tour: Tour): number => {
-    if (
-      'adultPrice' in tour &&
-      typeof (tour as any).adultPrice === 'number' &&
-      (tour as any).adultPrice > 0
-    ) {
-      return (tour as any).adultPrice;
-    }
-    const match = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
-    return match ? match.adultPrice : 2450000;
-  };
+  const getTourPrice = (tour: Tour): number | null => livePrices[tour.id] ?? null;
 
   return (
     <div className="relative space-y-12 text-black overflow-hidden pb-16">
@@ -302,10 +322,16 @@ function ToursListContent() {
                         {t('card_price_from')}
                       </span>
                       <span className="text-sm font-black text-black tracking-tight">
-                        {formatVND(price)}
-                        <span className="text-[10px] font-medium text-neutral-600 ml-1">
-                          {t('card_per_guest')}
-                        </span>
+                        {price !== null
+                          ? formatVND(price)
+                          : lang === 'en'
+                            ? 'See live schedules'
+                            : 'Xem lịch & giá thật'}
+                        {price !== null && (
+                          <span className="text-[10px] font-medium text-neutral-600 ml-1">
+                            {t('card_per_guest')}
+                          </span>
+                        )}
                       </span>
                     </div>
 

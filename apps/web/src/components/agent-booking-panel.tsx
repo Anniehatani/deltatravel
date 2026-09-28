@@ -75,7 +75,7 @@ export function AgentBookingPanel() {
   const [destination, setDestination] = useState('');
   const [departureFrom, setDepartureFrom] = useState('');
   const [departureTo, setDepartureTo] = useState('');
-  const [provider, setProvider] = useState<Provider | ''>('CASH');
+  const [provider, setProvider] = useState<Provider | ''>('');
   const [scheduleId, setScheduleId] = useState('');
 
   const editFormRef = useRef<HTMLFormElement>(null);
@@ -458,6 +458,11 @@ export function AgentBookingPanel() {
               className="w-full resize-none rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm leading-6 outline-none transition focus:border-amber-500 focus:bg-white"
               placeholder="Ví dụ: Mình muốn đi Đà Nẵng giữa tháng 10, 2 người, ngân sách dưới 8 triệu..."
             />
+            <p className="mt-2 text-[11px] leading-5 text-stone-500">
+              Bạn có thể nói luôn số điện thoại và phương thức thanh toán như MoMo, ZaloPay, VNPay
+              hoặc tiền mặt. AI chỉ dùng những gì bạn nói rõ và vẫn dừng ở checkpoint trước hành
+              động thật.
+            </p>
           </div>
           <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
             <p className="text-[10px] font-black uppercase tracking-wider text-stone-500">

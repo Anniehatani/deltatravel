@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { assistantApi, adminApi } from '@/lib/api';
+import { assistantApi, adminApi, paymentApi, systemApi } from '@/lib/api';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,12 +17,16 @@ import {
 
 type SystemSnapshot = {
   provider: Awaited<ReturnType<typeof assistantApi.providerStatus>> | null;
+  payments: Awaited<ReturnType<typeof paymentApi.providers>> | null;
+  integrations: Awaited<ReturnType<typeof systemApi.integrations>> | null;
   summary: Awaited<ReturnType<typeof adminApi.summary>> | null;
 };
 
 export default function SystemAdminPage() {
   const [snapshot, setSnapshot] = useState<SystemSnapshot>({
     provider: null,
+    payments: null,
+    integrations: null,
     summary: null,
   });
   const [loading, setLoading] = useState(true);
@@ -32,11 +36,13 @@ export default function SystemAdminPage() {
     setLoading(true);
     setError('');
     try {
-      const [provider, summary] = await Promise.all([
+      const [provider, payments, integrations, summary] = await Promise.all([
         assistantApi.providerStatus(),
+        paymentApi.providers(),
+        systemApi.integrations(),
         adminApi.summary(),
       ]);
-      setSnapshot({ provider, summary });
+      setSnapshot({ provider, payments, integrations, summary });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Không thể đọc trạng thái hệ thống từ backend.',
@@ -111,11 +117,76 @@ export default function SystemAdminPage() {
           icon={<Database className="h-6 w-6" />}
         />
         <StatusCard
+          title="Thanh toán"
+          value={
+            loading
+              ? 'ĐANG KIỂM TRA'
+              : snapshot.payments
+                ? `${snapshot.payments.providers.filter((item) => item.available).length}/4 SẴN SÀNG`
+                : 'KHÔNG XÁC NHẬN'
+          }
+          detail={
+            snapshot.payments
+              ? snapshot.payments.providers
+                  .map((item) => `${item.provider}: ${item.available ? item.environment : 'OFF'}`)
+                  .join(' • ')
+              : 'Đọc trực tiếp từ backend'
+          }
+          ok={Boolean(snapshot.payments?.providers.some((item) => item.available))}
+          icon={<Activity className="h-6 w-6" />}
+        />
+        <StatusCard
           title="Bảo mật client"
           value="SERVER-SIDE SECRETS"
-          detail="Không lưu Groq/Resend key trong localStorage hoặc bundle frontend"
+          detail="Không lưu Groq/Resend/payment key trong localStorage hoặc bundle frontend"
           ok
           icon={<ShieldCheck className="h-6 w-6" />}
+        />
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <StatusCard
+          title="Email giao dịch"
+          value={
+            snapshot.integrations?.mailProvider
+              ? snapshot.integrations.mailProvider
+              : loading
+                ? 'ĐANG KIỂM TRA'
+                : 'N/A'
+          }
+          detail="OTP đặt lại mật khẩu và email nghiệp vụ"
+          ok={Boolean(
+            snapshot.integrations?.mailProvider &&
+            snapshot.integrations.mailProvider !== 'DISABLED' &&
+            snapshot.integrations.mailProvider !== 'CONSOLE',
+          )}
+          icon={<Activity className="h-6 w-6" />}
+        />
+        <StatusCard
+          title="Avatar Storage"
+          value={
+            loading
+              ? 'ĐANG KIỂM TRA'
+              : snapshot.integrations?.avatarStorageConfigured
+                ? 'SUPABASE LIVE'
+                : 'CHƯA CẤU HÌNH'
+          }
+          detail="Signed upload, xác minh và lưu avatar bền vững"
+          ok={Boolean(snapshot.integrations?.avatarStorageConfigured)}
+          icon={<Database className="h-6 w-6" />}
+        />
+        <StatusCard
+          title="AI Runtime"
+          value={
+            loading
+              ? 'ĐANG KIỂM TRA'
+              : snapshot.integrations?.aiConfigured
+                ? 'AI CONFIGURED'
+                : 'FALLBACK ONLY'
+          }
+          detail={snapshot.integrations?.aiProvider ?? 'Không có provider ưu tiên'}
+          ok={Boolean(snapshot.integrations?.aiConfigured)}
+          icon={<Bot className="h-6 w-6" />}
         />
       </div>
 
@@ -159,6 +230,29 @@ export default function SystemAdminPage() {
             <Row
               label="Hoàn tiền chờ xử lý"
               value={snapshot.summary ? String(snapshot.summary.pendingRefunds) : 'N/A'}
+            />
+            <Row
+              label="Cổng thanh toán"
+              value={
+                snapshot.payments
+                  ? snapshot.payments.providers
+                      .map(
+                        (item) =>
+                          `${item.provider}: ${item.available ? item.environment : 'chưa cấu hình'}`,
+                      )
+                      .join(' • ')
+                  : 'N/A'
+              }
+            />
+            <Row label="Payment return" value={snapshot.payments?.returnOrigin ?? 'N/A'} />
+            <Row label="Email provider" value={snapshot.integrations?.mailProvider ?? 'N/A'} />
+            <Row
+              label="Avatar storage"
+              value={
+                snapshot.integrations?.avatarStorageConfigured
+                  ? 'Supabase sẵn sàng'
+                  : 'Chưa cấu hình'
+              }
             />
             <Row label="Cấu hình bí mật" value="Quản lý tại Render, không chỉnh từ trình duyệt" />
           </dl>
