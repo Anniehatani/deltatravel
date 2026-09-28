@@ -1,0 +1,78 @@
+
+> tour-booking@1.0.0 typecheck
+> npm run build -w @tour/shared && npm run db:generate && npm run typecheck -w @tour/api && npm run typecheck -w @tour/web
+
+
+> @tour/shared@1.0.0 build
+> tsc -p tsconfig.json
+
+
+> tour-booking@1.0.0 db:generate
+> npm run db:generate -w @tour/api
+
+
+> @tour/api@1.0.0 db:generate
+> prisma generate
+
+Prisma schema loaded from prisma/schema.prisma
+┌─────────────────────────────────────────────────────────┐
+│  Update available 6.19.3 -> 8.0.0-rc.17                 │
+│                                                         │
+│  This is a major update - please follow the guide at    │
+│  https://pris.ly/d/major-version-upgrade                │
+│                                                         │
+│  Run the following to update                            │
+│    npm i --save-dev prisma@latest                       │
+│    npm i @prisma/client@latest                          │
+└─────────────────────────────────────────────────────────┘
+
+✔ Generated Prisma Client (v6.19.3) to ./../../node_modules/@prisma/client in 119ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate
+
+
+> @tour/api@1.0.0 typecheck
+> tsc --noEmit
+
+
+> @tour/web@1.0.0 typecheck
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Route types generated successfully
+src/app/(account)/bookings/[id]/page.tsx(406,22): error TS2304: Cannot find name 'Trash2'.
+src/app/(account)/bookings/[id]/page.tsx(414,34): error TS2304: Cannot find name 'setShowDeleteModal'.
+src/app/(account)/bookings/[id]/page.tsx(417,20): error TS2304: Cannot find name 'Trash2'.
+src/app/(account)/bookings/[id]/page.tsx(731,8): error TS2304: Cannot find name 'showDeleteModal'.
+src/app/(account)/bookings/[id]/page.tsx(735,16): error TS2304: Cannot find name 'Trash2'.
+src/app/(account)/bookings/[id]/page.tsx(744,14): error TS2304: Cannot find name 'deleteError'.
+src/app/(account)/bookings/[id]/page.tsx(746,18): error TS2304: Cannot find name 'deleteError'.
+src/app/(account)/bookings/[id]/page.tsx(754,32): error TS2304: Cannot find name 'setShowDeleteModal'.
+src/app/(account)/bookings/[id]/page.tsx(755,27): error TS2304: Cannot find name 'deleting'.
+src/app/(account)/bookings/[id]/page.tsx(762,26): error TS2304: Cannot find name 'handleDeleteBooking'.
+src/app/(account)/bookings/[id]/page.tsx(763,27): error TS2304: Cannot find name 'deleting'.
+src/app/(account)/bookings/[id]/page.tsx(766,18): error TS2304: Cannot find name 'deleting'.
+src/app/(account)/bookings/page.tsx(351,8): error TS2304: Cannot find name 'deleteTarget'.
+src/app/(account)/bookings/page.tsx(355,16): error TS2304: Cannot find name 'Trash2'.
+src/app/(account)/bookings/page.tsx(364,14): error TS2304: Cannot find name 'deleteError'.
+src/app/(account)/bookings/page.tsx(366,18): error TS2304: Cannot find name 'deleteError'.
+src/app/(account)/bookings/page.tsx(374,32): error TS2304: Cannot find name 'setDeleteTarget'.
+src/app/(account)/bookings/page.tsx(375,27): error TS2304: Cannot find name 'deleting'.
+src/app/(account)/bookings/page.tsx(382,26): error TS2304: Cannot find name 'handleConfirmDelete'.
+src/app/(account)/bookings/page.tsx(383,27): error TS2304: Cannot find name 'deleting'.
+src/app/(account)/bookings/page.tsx(386,18): error TS2304: Cannot find name 'deleting'.
+src/lib/fallback-admin.ts(6,3): error TS2741: Property 'cashDueAt' is missing in type '{ id: string; scheduleId: string; status: "PAID"; adults: number; children: number; totalAmount: number; currency: "VND"; contactName: string; contactEmail: string; contactPhone: string; expiresAt: string; ... 7 more ...; serverTime: string; }' but required in type '{ status: "PENDING_PAYMENT" | "AWAITING_CASH" | "PAID" | "CONFIRMED" | "COMPLETED" | "CANCELLED"; departureAt: string; adults: number; children: number; scheduleId: string; contactName: string; ... 13 more ...; details: { ...; }[]; }'.
+src/lib/fallback-admin.ts(30,3): error TS2741: Property 'cashDueAt' is missing in type '{ id: string; scheduleId: string; status: "CONFIRMED"; adults: number; children: number; totalAmount: number; currency: "VND"; contactName: string; contactEmail: string; contactPhone: string; expiresAt: string; ... 7 more ...; serverTime: string; }' but required in type '{ status: "PENDING_PAYMENT" | "AWAITING_CASH" | "PAID" | "CONFIRMED" | "COMPLETED" | "CANCELLED"; departureAt: string; adults: number; children: number; scheduleId: string; contactName: string; ... 13 more ...; details: { ...; }[]; }'.
+src/lib/fallback-admin.ts(51,3): error TS2741: Property 'cashDueAt' is missing in type '{ id: string; scheduleId: string; status: "PENDING_PAYMENT"; adults: number; children: number; totalAmount: number; currency: "VND"; contactName: string; contactEmail: string; contactPhone: string; ... 8 more ...; serverTime: string; }' but required in type '{ status: "PENDING_PAYMENT" | "AWAITING_CASH" | "PAID" | "CONFIRMED" | "COMPLETED" | "CANCELLED"; departureAt: string; adults: number; children: number; scheduleId: string; contactName: string; ... 13 more ...; details: { ...; }[]; }'.
+src/lib/fallback-admin.ts(72,3): error TS2741: Property 'cashDueAt' is missing in type '{ id: string; scheduleId: string; status: "COMPLETED"; adults: number; children: number; totalAmount: number; currency: "VND"; contactName: string; contactEmail: string; contactPhone: string; expiresAt: string; ... 7 more ...; serverTime: string; }' but required in type '{ status: "PENDING_PAYMENT" | "AWAITING_CASH" | "PAID" | "CONFIRMED" | "COMPLETED" | "CANCELLED"; departureAt: string; adults: number; children: number; scheduleId: string; contactName: string; ... 13 more ...; details: { ...; }[]; }'.
+src/lib/fallback-admin.ts(96,3): error TS2741: Property 'cashDueAt' is missing in type '{ id: string; scheduleId: string; status: "CANCELLED"; adults: number; children: number; totalAmount: number; currency: "VND"; contactName: string; contactEmail: string; contactPhone: string; expiresAt: string; ... 7 more ...; serverTime: string; }' but required in type '{ status: "PENDING_PAYMENT" | "AWAITING_CASH" | "PAID" | "CONFIRMED" | "COMPLETED" | "CANCELLED"; departureAt: string; adults: number; children: number; scheduleId: string; contactName: string; ... 13 more ...; details: { ...; }[]; }'.
+npm error Lifecycle script `typecheck` failed with error:
+npm error code 2
+npm error path /home/runner/work/deltatravel/deltatravel/apps/web
+npm error workspace @tour/web@1.0.0
+npm error location /home/runner/work/deltatravel/deltatravel/apps/web
+npm error command failed
+npm error command sh -c next typegen && tsc --noEmit
+EXIT_CODE=2
