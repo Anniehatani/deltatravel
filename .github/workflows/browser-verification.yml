@@ -1,0 +1,22 @@
+name: Browser Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts playwright@1.55.0
+      - run: npx playwright install --with-deps chromium firefox
+      - run: node scripts/browser-smoke.mjs
+        env:
+          LIVE_WEB_URL: https://delta-travel-web.onrender.com

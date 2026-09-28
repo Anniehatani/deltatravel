@@ -1,39 +1,55 @@
-# Báo cáo kiểm chứng bộ bàn giao
+# Báo cáo kiểm chứng
 
-Ngày: 16/09/2026. Phạm vi: mã nguồn skeleton và phần SRS được cung cấp trong hội thoại. Không phải chứng nhận production hoặc chứng nhận sandbox của nhà cung cấp thanh toán.
+Cập nhật: 28/09/2026.
 
-## Đã kiểm tra
+## Bằng chứng đã chạy
 
-| Hạng mục                                      | Kết quả                                           | Phạm vi chứng minh                                                                        |
-| --------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Cài sạch bằng npm ci                          | PASS                                              | Lockfile cài được trong môi trường kiểm tra                                               |
-| Prisma generate 6.19.3                        | PASS                                              | Model/schema sinh được Prisma Client                                                      |
-| TypeScript shared, API, web                   | PASS                                              | Type checking strict; web tự sinh route types bằng next typegen                           |
-| NestJS compilation                            | PASS                                              | Backend biên dịch được                                                                    |
-| Next.js 15.5.25 production build              | PASS                                              | Các route App Router biên dịch và tạo được build output                                   |
-| API Contract / OpenAPI                        | PASS                                              | 37 operations; mọi ví dụ JSON chuẩn được shared Zod kiểm tra khi sinh                     |
-| Unit, HTTP boundary, timeout, assistant tests | 39 PASS                                           | Quy tắc giá/thời gian, chữ ký, password, auth boundary, outbox recovery, quyền trợ lý     |
-| Prisma + PostgreSQL WASM nghiệp vụ            | 17 PASS                                           | SQL migrations/CHECK, trạng thái, idempotency, snapshots, hủy, callback, refresh rotation |
-| npm audit --omit=dev                          | 0 vulnerabilities được báo tại thời điểm kiểm tra | Snapshot dependency advisory, không chứng minh hệ thống không có lỗ hổng                  |
+| Hạng mục                                | Kết quả        | Ghi chú                                                          |
+| --------------------------------------- | -------------- | ---------------------------------------------------------------- |
+| npm ci                                  | PASS           | cài sạch bằng lockfile                                           |
+| Prisma generate + migrate               | PASS           | PostgreSQL native trong GitHub Actions                           |
+| format:check                            | PASS           | Prettier                                                         |
+| TypeScript strict                       | PASS           | shared, API, web                                                 |
+| docs:generate                           | PASS           | contract và OpenAPI sinh được                                    |
+| unit tests                              | PASS           | backend business rules và boundaries                             |
+| production build                        | PASS           | NestJS + Next.js                                                 |
+| integration tests                       | PASS           | PostgreSQL 16 + Redis service                                    |
+| npm audit --omit=dev --audit-level=high | PASS           | không có advisory mức high trở lên tại lượt release              |
+| Render web deploy                       | PASS           | service live                                                     |
+| Render API deploy                       | PASS           | service live                                                     |
+| public web smoke                        | PASS           | /, /assistant, /tours                                            |
+| API readiness                           | PASS           | PostgreSQL + Redis reachable                                     |
+| AI provider                             | PASS           | GROQ configured, fallback available                              |
+| AI chat                                 | PASS           | live response mode GROQ, có sources                              |
+| mail integration                        | PASS readiness | RESEND configured                                                |
+| avatar integration                      | PASS readiness | Supabase storage configured                                      |
+| payment capability                      | PASS           | CASH available, wallet gateways fail closed khi thiếu credential |
 
-Môi trường thực hiện: Node.js 24.19.0, npm 11.9.0. Dự án hướng dẫn Node.js 22 LTS và CI cấu hình Node.js 22; CI chưa chạy trên GitHub trong phiên này.
+Full CI đã được chạy trên release tree trước khi merge vào upstream. Release tree trên upstream `main` và tree đã deploy trên Render là cùng nội dung source.
 
-## Giới hạn cần hiểu chính xác
+## Bằng chứng live gần nhất
 
-- Kiểm tra database tại đây dùng PGlite qua PostgreSQL wire protocol, một kết nối. Các request Promise.all vẫn được tuần tự hóa qua kết nối này. Kết quả **không chứng minh** tính đúng đắn dưới nhiều kết nối PostgreSQL native đồng thời.
-- File `test/integration/runtime.test.ts` yêu cầu PostgreSQL và Redis native. Bài smoke test runtime này được bỏ qua ở môi trường WASM; CI sẽ chạy khi REDIS_URL được cung cấp.
-- Chưa chạy Docker Compose, Docker image hoặc workflow GitHub Actions thực tế vì môi trường không có Docker daemon và chưa có repository của nhóm.
-- Chưa chạy giao dịch merchant sandbox/live VNPay, MoMo, ZaloPay. Các tests chữ ký và callback dùng fixture. Phải kiểm thử với merchant thật trước khi nghiệm thu thanh toán.
-- Chưa gọi Gemini live vì không có API key/model của nhóm. Đã kiểm tra chế độ rule-based và quyền truy cập dữ liệu.
-- Chưa có E2E UI trọn tám bước, vì các trang đặt tour/admin là skeleton bàn giao cho An hoàn thiện.
-- Chưa thực hiện load test, kiểm thử tấn công độc lập, hoặc diễn tập backup/restore trên host triển khai.
+`npm run verify:live` kiểm tra:
 
-## Dependency pinning
+1. Web trả HTML hợp lệ tại trang chủ, AI Agent và danh sách tour.
+2. `/health/ready` trả `status=ok`.
+3. `/assistant/provider-status` báo provider thực tế.
+4. `/health/integrations` báo trạng thái AI, mail, avatar và payment.
+5. `/payments/providers/status` phải có CASH available.
+6. `/assistant/chat` phải trả response đúng shape và sources.
 
-Giữ Next.js 15 theo yêu cầu. Lockfile có overrides cho `multer`, `postcss`, `effect`, `deepmerge-ts` để dùng phiên bản đã xử lý các advisory phát hiện trong lượt kiểm tra. Đây là các pin có chủ ý; không tự xóa chúng khi giải quyết conflict. Cài sạch, Prisma generate, tests và build đã được dùng để kiểm tra khả năng tương thích trong phạm vi skeleton. Khi nâng version, chạy lại CI và kiểm tra advisory tại thời điểm release.
+## Những gì CI chứng minh
 
-## Điều kiện còn lại trước nghiệm thu
+CI chứng minh build, type safety, migrations, unit tests, integration tests và dependency audit trong môi trường kiểm soát. Nó không thay thế merchant certification, penetration test độc lập hoặc SLA production.
 
-Đăng/Phúc chạy toàn bộ CI trên PostgreSQL/Redis native, đặc biệt chỗ cuối cùng, webhook/hủy đồng thời và restart worker. Leader và Thắm đối chiếu DECISIONS.md với toàn văn SRS. An hoàn thiện UI theo contract. Nhóm chạy sandbox ba cổng, kiểm thử quyền trên UI và API, xác nhận chính sách hoàn tiền rồi mới triển khai public.
+## Staging mutation E2E đã chạy
 
-Các bài đã pass là bằng chứng kỹ thuật cụ thể, không phải bảo đảm đạt 10 điểm. Rubric, độ hoàn thiện UI, tài liệu và khả năng giải thích của từng thành viên vẫn quyết định kết quả bảo vệ.
+Lượt kiểm chứng ngày 28/09/2026 đã tạo một customer tổng hợp, chọn lịch Hạ Long còn chỗ, tạo AI Agent plan ở mode GROQ, dừng tại trạng thái `READY_FOR_APPROVAL`, approve checkpoint, tạo booking và CASH payment, xác nhận booking persisted ở `AWAITING_CASH`, sau đó hủy booking để trả chỗ. Luồng direct booking riêng cũng được tạo và hủy cleanup thành công.
+
+Browser smoke cũng đã chạy thành công trên Chromium desktop, Chromium mobile 390x844 và Firefox desktop cho năm route công khai chính. Không phát hiện page error trong lượt chạy đó.
+
+## Phần cần credential hoặc quyền bên ngoài
+
+VNPay, MoMo và ZaloPay chưa thể chạy giao dịch sandbox thật nếu chưa có merchant credentials do nhà cung cấp cấp. Đây là dependency bên ngoài duy nhất đang chặn full payment E2E của ba gateway.
+
+Toàn văn SRS và rubric chính thức chưa có trong Project, nên chưa thể tuyên bố đã đối chiếu 100 phần trăm mọi tiêu chí ngoài phạm vi SRS đã được cung cấp.

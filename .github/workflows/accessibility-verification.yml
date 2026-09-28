@@ -1,0 +1,22 @@
+name: Accessibility Verification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts playwright@1.55.0 @axe-core/playwright@4.10.2
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/a11y-smoke.mjs
+        env:
+          LIVE_WEB_URL: https://delta-travel-web.onrender.com

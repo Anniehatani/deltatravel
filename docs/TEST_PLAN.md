@@ -1,5 +1,11 @@
 # Test plan và tiêu chí nghiệm thu
 
+## Trạng thái thực thi 28/09/2026
+
+CI native PostgreSQL 16 + Redis đã PASS toàn bộ quality gate. Public live smoke đã PASS. Browser smoke đã PASS trên Chromium desktop, Chromium mobile 390x844 và Firefox desktop. Mutation E2E trên staging đã PASS luồng register, AI Agent checkpoint, approve, CASH booking, persistence, cancel và direct booking cleanup.
+
+Ba gateway VNPay, MoMo và ZaloPay vẫn cần merchant sandbox credentials thật trước khi có thể đánh dấu các case PAY liên quan provider là sandbox-certified.
+
 ## Các lệnh
 
 `npm test`: các bài unit, HTTP boundary và timeout dispatcher. `npm run test:integration`: nghiệp vụ với Prisma và DB thật. Không kết nối DB dữ liệu thật, test yêu cầu URL chứa `tour_booking_test` và chỉ xóa dữ liệu do test tạo.

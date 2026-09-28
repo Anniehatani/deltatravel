@@ -531,7 +531,7 @@ function HomeContent() {
         {/* ─── Iconic Destinations Showcase Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Compass className="h-3.5 w-3.5 text-amber-500" />
               {t('dest_showcase_tag')}
             </span>
@@ -623,7 +623,7 @@ function HomeContent() {
         {/* ─── Signature Experiences & Activities Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Sparkles className="h-3.5 w-3.5 text-amber-500" />
               {t('exp_tag')}
             </span>
@@ -700,7 +700,7 @@ function HomeContent() {
         {/* ─── Brand Guarantees — Apple Liquid Glass Prism Cards ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Crown className="h-3 w-3 text-amber-500" />
               {t('phil_tag')}
             </span>
@@ -760,7 +760,7 @@ function HomeContent() {
         {/* ─── 4-Step Seamless Booking Process Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Clock className="h-3.5 w-3.5 text-amber-500" />
               {t('proc_tag')}
             </span>
@@ -800,7 +800,7 @@ function HomeContent() {
                 className="relative liquid-glass-card rounded-[26px] p-7 transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between"
               >
                 <div>
-                  <span className="text-3xl font-black text-amber-400/90 font-mono block mb-4">
+                  <span className="text-3xl font-black text-amber-700 font-mono block mb-4">
                     {item.step}
                   </span>
                   <h3 className="text-base font-black text-black leading-snug tracking-tight">
@@ -851,7 +851,7 @@ function HomeContent() {
         {/* ─── Guest Testimonials & Reviews Section ─── */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-neutral-100">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
               <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
               {t('rev_tag')}
             </span>
@@ -921,7 +921,7 @@ function HomeContent() {
 
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
               <div className="max-w-2xl">
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-600 mb-2">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-amber-800 mb-2">
                   <Sparkles className="h-3.5 w-3.5 text-amber-500" />
                   {t('bespoke_tag')}
                 </span>
