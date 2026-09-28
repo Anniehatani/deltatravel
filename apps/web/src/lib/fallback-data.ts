@@ -1,14 +1,9 @@
-import type { Tour, Schedule, Page, QuoteResultSchema } from '@tour/shared';
-import type { z } from 'zod';
-
-export type QuoteResult = z.infer<typeof QuoteResultSchema>;
+import type { Tour } from '@tour/shared';
 
 export interface ExtendedTour extends Tour {
   region: 'bac' | 'trung' | 'nam';
   regionName: string;
   regionNameEn?: string;
-  adultPrice: number;
-  childPrice: number;
   highlights: string[];
   highlightsEn?: string[];
   titleEn?: string;
@@ -34,8 +29,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'bac',
     regionName: 'Miền Bắc',
     regionNameEn: 'Northern Vietnam',
-    adultPrice: 2450000,
-    childPrice: 1650000,
     highlights: [
       'Du thuyền vịnh Hạ Long',
       'Chèo kayak hang Luồn',
@@ -68,8 +61,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'bac',
     regionName: 'Miền Bắc',
     regionNameEn: 'Northern Vietnam',
-    adultPrice: 2850000,
-    childPrice: 1950000,
     highlights: [
       'Đỉnh Fansipan 3.143m',
       'Bản văn hóa Cát Cát',
@@ -102,8 +93,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'bac',
     regionName: 'Miền Bắc',
     regionNameEn: 'Northern Vietnam',
-    adultPrice: 950000,
-    childPrice: 650000,
     highlights: [
       'Ngồi thuyền Tràng An',
       'Chùa Bái Đính kỷ lục',
@@ -134,8 +123,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'trung',
     regionName: 'Miền Trung',
     regionNameEn: 'Central Vietnam',
-    adultPrice: 3650000,
-    childPrice: 2450000,
     highlights: [
       'Cầu Vàng Bà Nà Hills',
       'Phố cổ Hội An về đêm',
@@ -168,8 +155,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'trung',
     regionName: 'Miền Trung',
     regionNameEn: 'Central Vietnam',
-    adultPrice: 1850000,
-    childPrice: 1250000,
     highlights: [
       'Đại Nội Hoàng Cung',
       'Lăng Khải Định & Tự Đức',
@@ -202,8 +187,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'trung',
     regionName: 'Miền Trung',
     regionNameEn: 'Central Vietnam',
-    adultPrice: 2950000,
-    childPrice: 1950000,
     highlights: [
       'Con đường giữa biển Điệp Sơn',
       'Lặn ngắm san hô vịnh Nha Trang',
@@ -234,8 +217,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'nam',
     regionName: 'Miền Nam',
     regionNameEn: 'Southern Vietnam',
-    adultPrice: 3450000,
-    childPrice: 2350000,
     highlights: [
       'Cáp treo Hòn Thơm',
       'Lặn san hô 4 đảo',
@@ -268,8 +249,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'nam',
     regionName: 'Miền Nam',
     regionNameEn: 'Southern Vietnam',
-    adultPrice: 1650000,
-    childPrice: 1100000,
     highlights: [
       'Chợ nổi Cái Răng buổi sớm',
       'Vườn trái cây trĩu quả',
@@ -302,8 +281,6 @@ export const FALLBACK_TOURS: ExtendedTour[] = [
     region: 'nam',
     regionName: 'Miền Nam',
     regionNameEn: 'Southern Vietnam',
-    adultPrice: 850000,
-    childPrice: 550000,
     highlights: [
       'Tượng Phật Bà núi Bà Đen',
       'Cáp treo Sun World',
@@ -333,80 +310,4 @@ export function getLocalizedTour<T extends Tour | ExtendedTour>(tour: T, lang: '
     ...('regionName' in tour && match.regionNameEn ? { regionName: match.regionNameEn } : {}),
     ...('highlights' in tour && match.highlightsEn ? { highlights: match.highlightsEn } : {}),
   } as T;
-}
-
-export function getFallbackSchedules(tourId?: string): Schedule[] {
-  if (!tourId) {
-    return FALLBACK_TOURS.flatMap((t) => getFallbackSchedules(t.id));
-  }
-  const tour =
-    FALLBACK_TOURS.find((t) => t.id === tourId || t.slug === tourId) || FALLBACK_TOURS[0];
-  const tourIdx = FALLBACK_TOURS.findIndex((t) => t.id === tour.id);
-  const tourHex = (tourIdx >= 0 ? tourIdx + 1 : 1).toString().padStart(4, '0');
-  const baseTime = Date.now();
-
-  const schedules: Schedule[] = [];
-  const intervals = [3, 7, 14, 21];
-
-  intervals.forEach((days, idx) => {
-    const depTime = baseTime + days * 24 * 60 * 60 * 1000;
-    const depIso = new Date(depTime).toISOString();
-    const available = idx === 0 ? 8 : idx === 1 ? 15 : 22;
-
-    // Valid and unique UUID formatting per tour & schedule
-    const schedHex = (idx + 1).toString().padStart(12, '0');
-    const schedId = `b1000000-${tourHex}-4000-8000-${schedHex}`;
-
-    schedules.push({
-      id: schedId,
-      tourId: tour.id,
-      departureAt: depIso,
-      totalSeats: 30,
-      reservedSeats: 30 - available,
-      availableSeats: available,
-      adultPrice: tour.adultPrice,
-      childPrice: tour.childPrice,
-      status: 'OPEN',
-      serverTime: new Date().toISOString(),
-    });
-  });
-
-  return schedules;
-}
-
-export function filterFallbackTours(
-  query = '',
-  region = '',
-  lang: 'vi' | 'en' = 'vi',
-): Page<ExtendedTour> {
-  const q = query.trim().toLowerCase();
-  const reg = region.trim().toLowerCase();
-
-  let filtered = FALLBACK_TOURS;
-
-  if (reg && (reg === 'bac' || reg === 'trung' || reg === 'nam')) {
-    filtered = filtered.filter((t) => t.region === reg);
-  }
-
-  if (q) {
-    filtered = filtered.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        (t.titleEn && t.titleEn.toLowerCase().includes(q)) ||
-        t.destination.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q) ||
-        t.regionName.toLowerCase().includes(q),
-    );
-  }
-
-  if (lang === 'en') {
-    filtered = filtered.map((t) => getLocalizedTour(t, 'en'));
-  }
-
-  return {
-    items: filtered,
-    page: 1,
-    pageSize: 20,
-    total: filtered.length,
-  };
 }
