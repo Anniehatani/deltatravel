@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 
 const ADMIN_NAV_LINKS = [
+  { href: '/admin', label: 'Tổng quan vận hành', icon: LayoutDashboard, adminOnly: false },
   { href: '/admin/tours', label: 'Quản lý Tour', icon: Compass, badge: 'CHÍNH', adminOnly: false },
   { href: '/admin/schedules', label: 'Lịch khởi hành & Slot', icon: Calendar, adminOnly: false },
   { href: '/admin/bookings', label: 'Quản lý Đơn & Sao kê', icon: Ticket, adminOnly: false },
