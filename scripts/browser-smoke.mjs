@@ -20,26 +20,28 @@ async function assertBasicAccessibility(page, name, route) {
   const missingAlt = await page.locator('img:not([alt])').count();
   if (missingAlt > 0) throw new Error(`${name} ${route} has ${missingAlt} image(s) without alt`);
 
-  const unnamedButtons = await page.locator('button').evaluateAll((buttons) =>
-    buttons.filter((button) => {
-      const text = button.textContent?.trim();
-      const label = button.getAttribute('aria-label')?.trim();
-      const title = button.getAttribute('title')?.trim();
-      return !text && !label && !title;
-    }).length,
+  const unnamedButtons = await page.locator('button').evaluateAll(
+    (buttons) =>
+      buttons.filter((button) => {
+        const text = button.textContent?.trim();
+        const label = button.getAttribute('aria-label')?.trim();
+        const title = button.getAttribute('title')?.trim();
+        return !text && !label && !title;
+      }).length,
   );
   if (unnamedButtons > 0) {
     throw new Error(`${name} ${route} has ${unnamedButtons} unnamed button(s)`);
   }
 
-  const unnamedLinks = await page.locator('a').evaluateAll((links) =>
-    links.filter((link) => {
-      const text = link.textContent?.trim();
-      const label = link.getAttribute('aria-label')?.trim();
-      const title = link.getAttribute('title')?.trim();
-      const imageAlt = link.querySelector('img')?.getAttribute('alt')?.trim();
-      return !text && !label && !title && !imageAlt;
-    }).length,
+  const unnamedLinks = await page.locator('a').evaluateAll(
+    (links) =>
+      links.filter((link) => {
+        const text = link.textContent?.trim();
+        const label = link.getAttribute('aria-label')?.trim();
+        const title = link.getAttribute('title')?.trim();
+        const imageAlt = link.querySelector('img')?.getAttribute('alt')?.trim();
+        return !text && !label && !title && !imageAlt;
+      }).length,
   );
   if (unnamedLinks > 0) {
     throw new Error(`${name} ${route} has ${unnamedLinks} unnamed link(s)`);
@@ -68,7 +70,9 @@ async function openRoute(page, name, viewport, route) {
 async function assertAuthGate(page, name, viewport, route) {
   await openRoute(page, name, viewport, route);
   await page.locator('a[href="/login"]').first().waitFor({ state: 'visible', timeout: 30000 });
-  const leakedDashboard = await page.getByText('Trung Tâm Điều Hành Delta Travel', { exact: true }).count();
+  const leakedDashboard = await page
+    .getByText('Trung Tâm Điều Hành Delta Travel', { exact: true })
+    .count();
   if (leakedDashboard > 0) throw new Error(`${name} ${route} exposed protected admin content`);
   console.log(`PASS  ${name} auth gate ${route}`);
 }

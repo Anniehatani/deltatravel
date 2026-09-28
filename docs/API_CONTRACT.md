@@ -52,6 +52,7 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 | GET    | /bookings/{id}                            | User             | Không                          | BookingSchema                        | 200  |
 | POST   | /bookings/{id}/cancel                     | User             | CancelSchema                   | BookingSchema                        | 200  |
 | POST   | /payments                                 | User             | CreatePaymentSchema            | PaymentSchema                        | 200  |
+| GET    | /payments/providers/status                | Guest            | Không                          | PaymentProviderStatusSchema          | 200  |
 | GET    | /payments/{id}                            | User             | Không                          | PaymentSchema                        | 200  |
 | GET    | /admin/summary                            | ADMIN,OPERATIONS | Không                          | SummarySchema                        | 200  |
 | GET    | /admin/tours                              | ADMIN,OPERATIONS | Không                          | TourSchema[]                         | 200  |
@@ -72,8 +73,14 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 | GET    | /assistant/provider-status                | Guest            | Không                          | AssistantProviderStatusSchema        | 200  |
 | GET    | /assistant/provider-probe                 | ADMIN,OPERATIONS | Không                          | AssistantProbeResultSchema           | 200  |
 | POST   | /assistant/chat                           | Guest            | AssistantRequestSchema         | AssistantResultSchema                | 200  |
+| POST   | /assistant/agent/plans                    | CUSTOMER         | AgentPlanRequestSchema         | AgentPlanSchema                      | 200  |
+| GET    | /assistant/agent/plans/{id}               | CUSTOMER         | Không                          | AgentPlanSchema                      | 200  |
+| PATCH  | /assistant/agent/plans/{id}               | CUSTOMER         | AgentPlanUpdateSchema          | AgentPlanSchema                      | 200  |
+| POST   | /assistant/agent/plans/{id}/approve       | CUSTOMER         | AgentApprovalSchema            | AgentPlanSchema                      | 200  |
+| POST   | /assistant/agent/plans/{id}/decline       | CUSTOMER         | AgentDeclineSchema             | AgentPlanSchema                      | 200  |
 | POST   | /assistant/booking-proposals              | CUSTOMER         | AssistantBookingProposalSchema | AssistantBookingProposalResultSchema | 200  |
 | POST   | /assistant/booking-proposals/{id}/confirm | CUSTOMER         | Không                          | AssistantBookingConfirmResultSchema  | 200  |
+| GET    | /health/integrations                      | Guest            | Không                          | IntegrationStatusSchema              | 200  |
 | GET    | /health/live                              | Guest            | Không                          | HealthSchema                         | 200  |
 | GET    | /health/ready                             | Guest            | Không                          | HealthSchema                         | 200  |
 
@@ -846,6 +853,44 @@ Response:
 }
 ```
 
+## GET /payments/providers/status
+
+Quyền: Guest. HTTP thành công: 200. Capability thực tế của CASH, VNPay, MoMo và ZaloPay. Không trả credential; gateway thiếu cấu hình phải available=false.
+
+Response:
+
+```json
+{
+  "data": {
+    "providers": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "kind": "OFFLINE",
+        "requiresExternalAuthorization": false,
+        "environment": "INTERNAL",
+        "reason": null
+      },
+      {
+        "provider": "VNPAY",
+        "available": false,
+        "label": "VNPay",
+        "kind": "GATEWAY",
+        "requiresExternalAuthorization": true,
+        "environment": "UNCONFIGURED",
+        "reason": "Merchant credentials chưa được cấu hình."
+      }
+    ],
+    "returnOrigin": "https://example.com"
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
 ## GET /payments/{id}
 
 Quyền: User. HTTP thành công: 200. Chỉ giao dịch của đơn thuộc user.
@@ -1578,6 +1623,601 @@ Response:
 }
 ```
 
+## POST /assistant/agent/plans
+
+Quyền: CUSTOMER. HTTP thành công: 200. Tạo kế hoạch AI Agent. Agent chỉ đọc và lập kế hoạch cho đến checkpoint phê duyệt rõ ràng.
+
+Request (AgentPlanRequestSchema):
+
+```json
+{
+  "message": "Đặt tour Đà Nẵng cho 2 người lớn, thanh toán tiền mặt",
+  "lang": "vi",
+  "adults": 2,
+  "children": 0,
+  "destination": "Đà Nẵng",
+  "contactPhone": "0901234567",
+  "provider": "CASH"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "88888888-8888-4888-8888-888888888888",
+    "version": 1,
+    "status": "READY_FOR_APPROVAL",
+    "mode": "GROQ",
+    "createdAt": "2026-12-01T01:00:00.000Z",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "summary": "Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.",
+    "rationale": "Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.",
+    "constraints": {
+      "destination": "Đà Nẵng",
+      "adults": 2,
+      "children": 0,
+      "budgetVnd": 10000000,
+      "durationDays": 3,
+      "departureFrom": null,
+      "departureTo": null,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "provider": "CASH"
+    },
+    "missingFields": [],
+    "candidates": [
+      {
+        "tourId": "11111111-1111-4111-8111-111111111111",
+        "tourTitle": "Đà Nẵng và Hội An",
+        "destination": "Đà Nẵng",
+        "durationDays": 3,
+        "scheduleId": "22222222-2222-4222-8222-222222222222",
+        "departureAt": "2026-12-15T01:00:00.000Z",
+        "availableSeats": 22,
+        "adultPrice": 3990000,
+        "childPrice": 2490000,
+        "totalAmount": 7980000,
+        "currency": "VND"
+      }
+    ],
+    "selectedScheduleId": "22222222-2222-4222-8222-222222222222",
+    "paymentOptions": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "requiresExternalAuthorization": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "UNDERSTAND",
+        "label": "Hiểu yêu cầu",
+        "state": "DONE"
+      },
+      {
+        "id": "SEARCH",
+        "label": "Tìm tour và lịch",
+        "state": "DONE"
+      },
+      {
+        "id": "VERIFY",
+        "label": "Xác minh giá và chỗ",
+        "state": "DONE"
+      },
+      {
+        "id": "APPROVAL",
+        "label": "Chờ khách phê duyệt",
+        "state": "WAITING_APPROVAL"
+      },
+      {
+        "id": "CREATE_BOOKING",
+        "label": "Tạo booking",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "CREATE_PAYMENT",
+        "label": "Tạo payment",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "VERIFY_RESULT",
+        "label": "Xác minh kết quả",
+        "state": "BLOCKED"
+      }
+    ],
+    "checkpoint": {
+      "title": "Xác nhận đặt tour",
+      "summary": "Tạo booking và chọn CASH.",
+      "effects": ["Giữ chỗ trong hệ thống", "Tạo payment CASH"],
+      "requiresExplicitApproval": true,
+      "version": 1
+    },
+    "booking": null,
+    "payment": null,
+    "nextAction": null,
+    "lastError": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## GET /assistant/agent/plans/{id}
+
+Quyền: CUSTOMER. HTTP thành công: 200. Đọc kế hoạch thuộc chính customer hiện tại.
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "88888888-8888-4888-8888-888888888888",
+    "version": 1,
+    "status": "READY_FOR_APPROVAL",
+    "mode": "GROQ",
+    "createdAt": "2026-12-01T01:00:00.000Z",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "summary": "Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.",
+    "rationale": "Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.",
+    "constraints": {
+      "destination": "Đà Nẵng",
+      "adults": 2,
+      "children": 0,
+      "budgetVnd": 10000000,
+      "durationDays": 3,
+      "departureFrom": null,
+      "departureTo": null,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "provider": "CASH"
+    },
+    "missingFields": [],
+    "candidates": [
+      {
+        "tourId": "11111111-1111-4111-8111-111111111111",
+        "tourTitle": "Đà Nẵng và Hội An",
+        "destination": "Đà Nẵng",
+        "durationDays": 3,
+        "scheduleId": "22222222-2222-4222-8222-222222222222",
+        "departureAt": "2026-12-15T01:00:00.000Z",
+        "availableSeats": 22,
+        "adultPrice": 3990000,
+        "childPrice": 2490000,
+        "totalAmount": 7980000,
+        "currency": "VND"
+      }
+    ],
+    "selectedScheduleId": "22222222-2222-4222-8222-222222222222",
+    "paymentOptions": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "requiresExternalAuthorization": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "UNDERSTAND",
+        "label": "Hiểu yêu cầu",
+        "state": "DONE"
+      },
+      {
+        "id": "SEARCH",
+        "label": "Tìm tour và lịch",
+        "state": "DONE"
+      },
+      {
+        "id": "VERIFY",
+        "label": "Xác minh giá và chỗ",
+        "state": "DONE"
+      },
+      {
+        "id": "APPROVAL",
+        "label": "Chờ khách phê duyệt",
+        "state": "WAITING_APPROVAL"
+      },
+      {
+        "id": "CREATE_BOOKING",
+        "label": "Tạo booking",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "CREATE_PAYMENT",
+        "label": "Tạo payment",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "VERIFY_RESULT",
+        "label": "Xác minh kết quả",
+        "state": "BLOCKED"
+      }
+    ],
+    "checkpoint": {
+      "title": "Xác nhận đặt tour",
+      "summary": "Tạo booking và chọn CASH.",
+      "effects": ["Giữ chỗ trong hệ thống", "Tạo payment CASH"],
+      "requiresExplicitApproval": true,
+      "version": 1
+    },
+    "booking": null,
+    "payment": null,
+    "nextAction": null,
+    "lastError": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## PATCH /assistant/agent/plans/{id}
+
+Quyền: CUSTOMER. HTTP thành công: 200. Cập nhật ràng buộc của kế hoạch. Thay đổi sau checkpoint yêu cầu phê duyệt lại.
+
+Request (AgentPlanUpdateSchema):
+
+```json
+{
+  "adults": 3,
+  "children": 1
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "88888888-8888-4888-8888-888888888888",
+    "version": 1,
+    "status": "READY_FOR_APPROVAL",
+    "mode": "GROQ",
+    "createdAt": "2026-12-01T01:00:00.000Z",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "summary": "Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.",
+    "rationale": "Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.",
+    "constraints": {
+      "destination": "Đà Nẵng",
+      "adults": 2,
+      "children": 0,
+      "budgetVnd": 10000000,
+      "durationDays": 3,
+      "departureFrom": null,
+      "departureTo": null,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "provider": "CASH"
+    },
+    "missingFields": [],
+    "candidates": [
+      {
+        "tourId": "11111111-1111-4111-8111-111111111111",
+        "tourTitle": "Đà Nẵng và Hội An",
+        "destination": "Đà Nẵng",
+        "durationDays": 3,
+        "scheduleId": "22222222-2222-4222-8222-222222222222",
+        "departureAt": "2026-12-15T01:00:00.000Z",
+        "availableSeats": 22,
+        "adultPrice": 3990000,
+        "childPrice": 2490000,
+        "totalAmount": 7980000,
+        "currency": "VND"
+      }
+    ],
+    "selectedScheduleId": "22222222-2222-4222-8222-222222222222",
+    "paymentOptions": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "requiresExternalAuthorization": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "UNDERSTAND",
+        "label": "Hiểu yêu cầu",
+        "state": "DONE"
+      },
+      {
+        "id": "SEARCH",
+        "label": "Tìm tour và lịch",
+        "state": "DONE"
+      },
+      {
+        "id": "VERIFY",
+        "label": "Xác minh giá và chỗ",
+        "state": "DONE"
+      },
+      {
+        "id": "APPROVAL",
+        "label": "Chờ khách phê duyệt",
+        "state": "WAITING_APPROVAL"
+      },
+      {
+        "id": "CREATE_BOOKING",
+        "label": "Tạo booking",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "CREATE_PAYMENT",
+        "label": "Tạo payment",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "VERIFY_RESULT",
+        "label": "Xác minh kết quả",
+        "state": "BLOCKED"
+      }
+    ],
+    "checkpoint": {
+      "title": "Xác nhận đặt tour",
+      "summary": "Tạo booking và chọn CASH.",
+      "effects": ["Giữ chỗ trong hệ thống", "Tạo payment CASH"],
+      "requiresExplicitApproval": true,
+      "version": 1
+    },
+    "booking": null,
+    "payment": null,
+    "nextAction": null,
+    "lastError": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /assistant/agent/plans/{id}/approve
+
+Quyền: CUSTOMER. HTTP thành công: 200. Chỉ thực thi side effect sau explicit approval đúng version của checkpoint.
+
+Request (AgentApprovalSchema):
+
+```json
+{
+  "approved": true,
+  "version": 1
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "88888888-8888-4888-8888-888888888888",
+    "version": 1,
+    "status": "READY_FOR_APPROVAL",
+    "mode": "GROQ",
+    "createdAt": "2026-12-01T01:00:00.000Z",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "summary": "Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.",
+    "rationale": "Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.",
+    "constraints": {
+      "destination": "Đà Nẵng",
+      "adults": 2,
+      "children": 0,
+      "budgetVnd": 10000000,
+      "durationDays": 3,
+      "departureFrom": null,
+      "departureTo": null,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "provider": "CASH"
+    },
+    "missingFields": [],
+    "candidates": [
+      {
+        "tourId": "11111111-1111-4111-8111-111111111111",
+        "tourTitle": "Đà Nẵng và Hội An",
+        "destination": "Đà Nẵng",
+        "durationDays": 3,
+        "scheduleId": "22222222-2222-4222-8222-222222222222",
+        "departureAt": "2026-12-15T01:00:00.000Z",
+        "availableSeats": 22,
+        "adultPrice": 3990000,
+        "childPrice": 2490000,
+        "totalAmount": 7980000,
+        "currency": "VND"
+      }
+    ],
+    "selectedScheduleId": "22222222-2222-4222-8222-222222222222",
+    "paymentOptions": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "requiresExternalAuthorization": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "UNDERSTAND",
+        "label": "Hiểu yêu cầu",
+        "state": "DONE"
+      },
+      {
+        "id": "SEARCH",
+        "label": "Tìm tour và lịch",
+        "state": "DONE"
+      },
+      {
+        "id": "VERIFY",
+        "label": "Xác minh giá và chỗ",
+        "state": "DONE"
+      },
+      {
+        "id": "APPROVAL",
+        "label": "Chờ khách phê duyệt",
+        "state": "WAITING_APPROVAL"
+      },
+      {
+        "id": "CREATE_BOOKING",
+        "label": "Tạo booking",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "CREATE_PAYMENT",
+        "label": "Tạo payment",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "VERIFY_RESULT",
+        "label": "Xác minh kết quả",
+        "state": "BLOCKED"
+      }
+    ],
+    "checkpoint": {
+      "title": "Xác nhận đặt tour",
+      "summary": "Tạo booking và chọn CASH.",
+      "effects": ["Giữ chỗ trong hệ thống", "Tạo payment CASH"],
+      "requiresExplicitApproval": true,
+      "version": 1
+    },
+    "booking": null,
+    "payment": null,
+    "nextAction": null,
+    "lastError": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /assistant/agent/plans/{id}/decline
+
+Quyền: CUSTOMER. HTTP thành công: 200. Từ chối kế hoạch mà không tạo booking hoặc payment mới.
+
+Request (AgentDeclineSchema):
+
+```json
+{
+  "reason": "Tôi muốn đổi kế hoạch"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "88888888-8888-4888-8888-888888888888",
+    "version": 1,
+    "status": "READY_FOR_APPROVAL",
+    "mode": "GROQ",
+    "createdAt": "2026-12-01T01:00:00.000Z",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "summary": "Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.",
+    "rationale": "Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.",
+    "constraints": {
+      "destination": "Đà Nẵng",
+      "adults": 2,
+      "children": 0,
+      "budgetVnd": 10000000,
+      "durationDays": 3,
+      "departureFrom": null,
+      "departureTo": null,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "provider": "CASH"
+    },
+    "missingFields": [],
+    "candidates": [
+      {
+        "tourId": "11111111-1111-4111-8111-111111111111",
+        "tourTitle": "Đà Nẵng và Hội An",
+        "destination": "Đà Nẵng",
+        "durationDays": 3,
+        "scheduleId": "22222222-2222-4222-8222-222222222222",
+        "departureAt": "2026-12-15T01:00:00.000Z",
+        "availableSeats": 22,
+        "adultPrice": 3990000,
+        "childPrice": 2490000,
+        "totalAmount": 7980000,
+        "currency": "VND"
+      }
+    ],
+    "selectedScheduleId": "22222222-2222-4222-8222-222222222222",
+    "paymentOptions": [
+      {
+        "provider": "CASH",
+        "available": true,
+        "label": "Tiền mặt",
+        "requiresExternalAuthorization": false
+      }
+    ],
+    "steps": [
+      {
+        "id": "UNDERSTAND",
+        "label": "Hiểu yêu cầu",
+        "state": "DONE"
+      },
+      {
+        "id": "SEARCH",
+        "label": "Tìm tour và lịch",
+        "state": "DONE"
+      },
+      {
+        "id": "VERIFY",
+        "label": "Xác minh giá và chỗ",
+        "state": "DONE"
+      },
+      {
+        "id": "APPROVAL",
+        "label": "Chờ khách phê duyệt",
+        "state": "WAITING_APPROVAL"
+      },
+      {
+        "id": "CREATE_BOOKING",
+        "label": "Tạo booking",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "CREATE_PAYMENT",
+        "label": "Tạo payment",
+        "state": "BLOCKED"
+      },
+      {
+        "id": "VERIFY_RESULT",
+        "label": "Xác minh kết quả",
+        "state": "BLOCKED"
+      }
+    ],
+    "checkpoint": {
+      "title": "Xác nhận đặt tour",
+      "summary": "Tạo booking và chọn CASH.",
+      "effects": ["Giữ chỗ trong hệ thống", "Tạo payment CASH"],
+      "requiresExplicitApproval": true,
+      "version": 1
+    },
+    "booking": null,
+    "payment": null,
+    "nextAction": null,
+    "lastError": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
 ## POST /assistant/booking-proposals
 
 Quyền: CUSTOMER. HTTP thành công: 200. Tạo proposal Redis TTL 10 phút sau khi quote lại giá/chỗ; chưa tạo booking.
@@ -1672,6 +2312,33 @@ Response:
     },
     "selectedProvider": "VNPAY",
     "nextAction": "OPEN_BOOKING"
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## GET /health/integrations
+
+Quyền: Guest. HTTP thành công: 200. Readiness không nhạy cảm của mail, AI, avatar storage và payment integrations.
+
+Response:
+
+```json
+{
+  "data": {
+    "mailProvider": "RESEND",
+    "aiProvider": "GROQ",
+    "aiConfigured": true,
+    "avatarStorageConfigured": true,
+    "payments": {
+      "cashConfigured": true,
+      "vnpayConfigured": false,
+      "momoConfigured": false,
+      "zalopayConfigured": false
+    }
   },
   "meta": {
     "requestId": "example-request-id",

@@ -713,7 +713,10 @@ export const DICTIONARY: Translations = {
   },
   bk_status_pending_label: { vi: 'CHỜ THANH TOÁN', en: 'PENDING PAYMENT' },
   bk_status_cash_label: { vi: 'CHỜ THU TIỀN MẶT', en: 'AWAITING CASH' },
-  bk_status_cash_title: { vi: 'Đang Giữ Chỗ Chờ Thu Tiền Mặt', en: 'Reservation Held for Cash Payment' },
+  bk_status_cash_title: {
+    vi: 'Đang Giữ Chỗ Chờ Thu Tiền Mặt',
+    en: 'Reservation Held for Cash Payment',
+  },
   bk_status_cash_sub: {
     vi: 'Đơn đã chọn thanh toán tiền mặt. Chỉ được đánh dấu đã thanh toán sau khi nhân viên thực sự nhận tiền và ghi mã biên nhận.',
     en: 'Cash payment was selected. The booking is marked paid only after staff actually receives the money and records a receipt reference.',
