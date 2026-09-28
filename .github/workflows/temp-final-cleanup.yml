@@ -1,0 +1,39 @@
+name: Temporary Final Cleanup
+
+on:
+  push:
+    branches:
+      - manh/final-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: manh/final-hardening
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format permanent verification files
+        run: |
+          npx prettier --write scripts/browser-smoke.mjs .github/workflows/browser-verification.yml
+      - name: Remove temporary verification triggers
+        run: |
+          rm -f .github/workflows/temp-browser-smoke-run.yml
+          rm -f .github/workflows/temp-staging-e2e-run.yml
+          rm -f .ci-final-trigger
+          rm -f .github/workflows/temp-final-cleanup.yml
+      - name: Commit clean final tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: clean temporary final verification files"
+          git push origin HEAD:manh/final-hardening
