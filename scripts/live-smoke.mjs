@@ -55,6 +55,25 @@ for (const route of ['/', '/assistant', '/tours']) {
   pass('web ' + route);
 }
 
+const { text: robots } = await textGet(WEB + '/robots.txt');
+if (!robots.includes('Sitemap:') || !robots.includes('Disallow: /admin')) {
+  throw new Error('robots.txt is missing sitemap or protected-area crawler policy');
+}
+pass('robots.txt');
+
+const { text: sitemap } = await textGet(WEB + '/sitemap.xml');
+if (!sitemap.includes('<urlset') || !sitemap.includes('/tours')) {
+  throw new Error('sitemap.xml is missing expected public routes');
+}
+pass('sitemap.xml');
+
+const { text: releaseRaw } = await textGet(WEB + '/api/release');
+const release = JSON.parse(releaseRaw);
+if (!release?.commit || release.service !== 'delta-travel-web') {
+  throw new Error('web release identity endpoint is incomplete');
+}
+pass('web release identity', release.commit);
+
 const ready = await jsonRequest(API + '/health/ready');
 if (ready?.status !== 'ok') throw new Error('health/ready did not return status=ok');
 pass('health/ready');
