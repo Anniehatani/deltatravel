@@ -89,43 +89,45 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="col-span-2 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
                 Menu Quản Trị Hệ Thống
               </div>
-              {ADMIN_NAV_LINKS.filter((link) => !link.adminOnly || user?.role === 'ADMIN').map((link) => {
-                const Icon = link.icon;
-                const isActive =
-                  pathname === link.href ||
-                  (link.href !== '/admin' && pathname.startsWith(link.href));
+              {ADMIN_NAV_LINKS.filter((link) => !link.adminOnly || user?.role === 'ADMIN').map(
+                (link) => {
+                  const Icon = link.icon;
+                  const isActive =
+                    pathname === link.href ||
+                    (link.href !== '/admin' && pathname.startsWith(link.href));
 
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
-                      isActive
-                        ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
-                        : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon
-                        className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
-                      />
-                      <span>{link.label}</span>
-                    </div>
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                        isActive
+                          ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
+                          : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon
+                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+                        />
+                        <span>{link.label}</span>
+                      </div>
 
-                    {link.badge && (
-                      <span
-                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
-                          isActive
-                            ? 'bg-neutral-950 text-amber-400'
-                            : 'bg-amber-950 text-amber-300 border border-amber-500/40'
-                        }`}
-                      >
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                      {link.badge && (
+                        <span
+                          className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
+                            isActive
+                              ? 'bg-neutral-950 text-amber-400'
+                              : 'bg-amber-950 text-amber-300 border border-amber-500/40'
+                          }`}
+                        >
+                          {link.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                },
+              )}
             </nav>
           </div>
 

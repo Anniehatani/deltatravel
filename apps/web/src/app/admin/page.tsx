@@ -60,8 +60,8 @@ export default function AdminDashboardPage() {
 
   const cash = snapshot.payments?.providers.find((item) => item.provider === 'CASH');
   const walletReady =
-    snapshot.payments?.providers.filter((item) => item.provider !== 'CASH' && item.available).length ??
-    0;
+    snapshot.payments?.providers.filter((item) => item.provider !== 'CASH' && item.available)
+      .length ?? 0;
 
   return (
     <PageShell
@@ -69,7 +69,12 @@ export default function AdminDashboardPage() {
       title="Trung Tâm Điều Hành Delta Travel"
       description="Tổng quan lấy trực tiếp từ backend production: danh mục tour, booking, hoàn tiền, AI và trạng thái tích hợp."
       action={
-        <Button variant="outline" onClick={() => void load()} disabled={loading} className="gap-2 text-xs">
+        <Button
+          variant="outline"
+          onClick={() => void load()}
+          disabled={loading}
+          className="gap-2 text-xs"
+        >
           <RefreshCcw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           Làm mới
         </Button>
@@ -78,7 +83,10 @@ export default function AdminDashboardPage() {
       {error && (
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0" />
-          <div><strong>Không thể đọc toàn bộ snapshot.</strong><div className="mt-1 text-xs">{error}</div></div>
+          <div>
+            <strong>Không thể đọc toàn bộ snapshot.</strong>
+            <div className="mt-1 text-xs">{error}</div>
+          </div>
         </div>
       )}
 
@@ -126,7 +134,9 @@ export default function AdminDashboardPage() {
             <Readiness label="AI configured" ok={snapshot.integrations?.aiConfigured === true} />
             <Readiness
               label={`Mail provider: ${snapshot.integrations?.mailProvider ?? 'unknown'}`}
-              ok={Boolean(snapshot.integrations && snapshot.integrations.mailProvider !== 'DISABLED')}
+              ok={Boolean(
+                snapshot.integrations && snapshot.integrations.mailProvider !== 'DISABLED',
+              )}
             />
             <Readiness
               label="Avatar storage"
@@ -157,7 +167,11 @@ export default function AdminDashboardPage() {
               icon={<CalendarDays className="h-4 w-4" />}
               title="Lịch & kho chỗ"
             />
-            <Shortcut href="/admin/bookings" icon={<Ticket className="h-4 w-4" />} title="Booking" />
+            <Shortcut
+              href="/admin/bookings"
+              icon={<Ticket className="h-4 w-4" />}
+              title="Booking"
+            />
             <Shortcut
               href="/admin/payments"
               icon={<CreditCard className="h-4 w-4" />}
@@ -221,15 +235,7 @@ function Readiness({
   );
 }
 
-function Shortcut({
-  href,
-  icon,
-  title,
-}: {
-  href: string;
-  icon: React.ReactNode;
-  title: string;
-}) {
+function Shortcut({ href, icon, title }: { href: string; icon: React.ReactNode; title: string }) {
   return (
     <Link
       href={href}

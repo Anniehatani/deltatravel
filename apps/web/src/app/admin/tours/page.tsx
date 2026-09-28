@@ -65,9 +65,7 @@ export default function AdminToursPage() {
     adminApi
       .tours()
       .then((res) => setTours(res.items))
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : 'Không thể tải danh mục tour.'),
-      )
+      .catch((err) => setError(err instanceof Error ? err.message : 'Không thể tải danh mục tour.'))
       .finally(() => setLoading(false));
   };
 
@@ -149,7 +147,9 @@ export default function AdminToursPage() {
     const nextStatus: TourStatus = tour.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
       await adminApi.updateTour(tour.id, { status: nextStatus });
-      notify(nextStatus === 'ACTIVE' ? 'Tour đã được mở bán.' : 'Tour đã được ẩn khỏi trang khách.');
+      notify(
+        nextStatus === 'ACTIVE' ? 'Tour đã được mở bán.' : 'Tour đã được ẩn khỏi trang khách.',
+      );
       fetchTours();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Không thể đổi trạng thái tour.');
@@ -190,7 +190,10 @@ export default function AdminToursPage() {
       }
     >
       {toast && (
-        <div role="status" className="fixed bottom-6 right-6 z-[99999] rounded-2xl border border-emerald-300 bg-stone-950 px-5 py-3 text-xs font-bold text-white shadow-2xl">
+        <div
+          role="status"
+          className="fixed bottom-6 right-6 z-[99999] rounded-2xl border border-emerald-300 bg-stone-950 px-5 py-3 text-xs font-bold text-white shadow-2xl"
+        >
           <CheckCircle2 className="mr-2 inline h-4 w-4 text-emerald-400" />
           {toast}
         </div>
@@ -203,8 +206,13 @@ export default function AdminToursPage() {
           ['Bản nháp', stats.draft],
           ['Đang ẩn', stats.inactive],
         ].map(([label, value]) => (
-          <div key={String(label)} className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-            <div className="text-[10px] font-black uppercase tracking-wider text-stone-500">{label}</div>
+          <div
+            key={String(label)}
+            className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm"
+          >
+            <div className="text-[10px] font-black uppercase tracking-wider text-stone-500">
+              {label}
+            </div>
             <div className="mt-1 text-3xl font-black text-stone-950">{value}</div>
           </div>
         ))}
@@ -243,7 +251,9 @@ export default function AdminToursPage() {
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
           <AlertTriangle className="mx-auto mb-2 h-7 w-7 text-amber-700" />
           <p className="text-sm font-bold text-stone-900">{error}</p>
-          <Button variant="outline" onClick={fetchTours} className="mt-4">Thử lại</Button>
+          <Button variant="outline" onClick={fetchTours} className="mt-4">
+            Thử lại
+          </Button>
         </div>
       ) : filteredTours.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-12 text-center">
@@ -279,14 +289,26 @@ export default function AdminToursPage() {
                     </span>
                   </td>
                   <td className="px-5 py-4 text-stone-500">
-                    {new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(new Date(tour.updatedAt))}
+                    {new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(
+                      new Date(tour.updatedAt),
+                    )}
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
-                      <Button size="sm" variant="outline" onClick={() => resetForm(tour)} className="h-8 text-[11px]">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => resetForm(tour)}
+                        className="h-8 text-[11px]"
+                      >
                         <Edit3 className="mr-1 h-3.5 w-3.5" /> Sửa
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => void toggleStatus(tour)} className="h-8 text-[11px]">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => void toggleStatus(tour)}
+                        className="h-8 text-[11px]"
+                      >
                         {tour.status === 'ACTIVE' ? 'Ẩn' : 'Mở bán'}
                       </Button>
                       {user?.role === 'ADMIN' && (
@@ -310,11 +332,19 @@ export default function AdminToursPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div role="dialog" aria-modal="true" className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl"
+          >
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-black text-stone-950">{editingTour ? 'Chỉnh sửa tour' : 'Tạo tour mới'}</h2>
-                <p className="mt-1 text-xs text-stone-500">Các trường dưới đây được lưu trực tiếp vào backend.</p>
+                <h2 className="text-xl font-black text-stone-950">
+                  {editingTour ? 'Chỉnh sửa tour' : 'Tạo tour mới'}
+                </h2>
+                <p className="mt-1 text-xs text-stone-500">
+                  Các trường dưới đây được lưu trực tiếp vào backend.
+                </p>
               </div>
               <button type="button" onClick={() => setShowModal(false)} aria-label="Đóng">
                 <X className="h-5 w-5" />
@@ -325,7 +355,13 @@ export default function AdminToursPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-1 font-semibold">
                   <span>Tên tour *</span>
-                  <input required minLength={2} maxLength={160} value={title} onChange={(e) => setTitle(e.target.value)} />
+                  <input
+                    required
+                    minLength={2}
+                    maxLength={160}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
                 </label>
                 <label className="space-y-1 font-semibold">
                   <span>Slug *</span>
@@ -342,17 +378,37 @@ export default function AdminToursPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="space-y-1 font-semibold">
                   <span>Điểm đến *</span>
-                  <input required minLength={2} maxLength={120} value={destination} onChange={(e) => setDestination(e.target.value)} />
+                  <input
+                    required
+                    minLength={2}
+                    maxLength={120}
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                  />
                 </label>
                 <label className="space-y-1 font-semibold">
                   <span>Thời lượng (ngày) *</span>
-                  <input type="number" required min={1} max={60} value={durationDays} onChange={(e) => setDurationDays(Number(e.target.value))} />
+                  <input
+                    type="number"
+                    required
+                    min={1}
+                    max={60}
+                    value={durationDays}
+                    onChange={(e) => setDurationDays(Number(e.target.value))}
+                  />
                 </label>
               </div>
 
               <label className="block space-y-1 font-semibold">
                 <span>Mô tả *</span>
-                <textarea required minLength={10} maxLength={4000} rows={5} value={description} onChange={(e) => setDescription(e.target.value)} />
+                <textarea
+                  required
+                  minLength={10}
+                  maxLength={4000}
+                  rows={5}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
               </label>
 
               <label className="block space-y-1 font-semibold">
@@ -364,10 +420,24 @@ export default function AdminToursPage() {
                 </select>
               </label>
 
-              {formError && <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 font-semibold text-red-700">{formError}</p>}
+              {formError && (
+                <p
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50 p-3 font-semibold text-red-700"
+                >
+                  {formError}
+                </p>
+              )}
 
               <div className="flex flex-wrap justify-end gap-2 border-t pt-4">
-                <Button type="button" variant="outline" onClick={() => setShowModal(false)} disabled={submitting}>Hủy</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowModal(false)}
+                  disabled={submitting}
+                >
+                  Hủy
+                </Button>
                 <Button type="submit" disabled={submitting} className="bg-stone-950 text-white">
                   {submitting ? 'Đang lưu...' : editingTour ? 'Lưu thay đổi' : 'Tạo tour'}
                 </Button>
@@ -379,14 +449,22 @@ export default function AdminToursPage() {
 
       {deletingTour && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div role="alertdialog" aria-modal="true" className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"
+          >
             <h2 className="text-lg font-black">Archive “{deletingTour.title}”?</h2>
             <p className="mt-2 text-xs leading-relaxed text-stone-600">
               Tour sẽ không còn xuất hiện trong danh mục vận hành. Booking lịch sử không bị xóa.
             </p>
             <div className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeletingTour(null)}>Giữ lại</Button>
-              <Button onClick={() => void confirmDelete()} className="bg-red-700 text-white">Archive tour</Button>
+              <Button variant="outline" onClick={() => setDeletingTour(null)}>
+                Giữ lại
+              </Button>
+              <Button onClick={() => void confirmDelete()} className="bg-red-700 text-white">
+                Archive tour
+              </Button>
             </div>
           </div>
         </div>
