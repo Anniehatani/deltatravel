@@ -311,3 +311,62 @@ export function getLocalizedTour<T extends Tour | ExtendedTour>(tour: T, lang: '
     ...('highlights' in tour && match.highlightsEn ? { highlights: match.highlightsEn } : {}),
   } as T;
 }
+
+
+export type TourRegion = 'bac' | 'trung' | 'nam';
+
+const REGION_TERMS: Record<TourRegion, string[]> = {
+  bac: [
+    'hà nội',
+    'quảng ninh',
+    'hạ long',
+    'lào cai',
+    'sa pa',
+    'ninh bình',
+    'hải phòng',
+    'hà giang',
+    'cao bằng',
+    'sơn la',
+    'mộc châu',
+  ],
+  trung: [
+    'đà nẵng',
+    'hội an',
+    'quảng nam',
+    'huế',
+    'thừa thiên',
+    'khánh hòa',
+    'nha trang',
+    'quảng bình',
+    'quảng trị',
+    'bình định',
+    'phú yên',
+  ],
+  nam: [
+    'hồ chí minh',
+    'sài gòn',
+    'kiên giang',
+    'phú quốc',
+    'cần thơ',
+    'tây ninh',
+    'vũng tàu',
+    'bà rịa',
+    'an giang',
+    'cà mau',
+    'đồng tháp',
+    'bến tre',
+  ],
+};
+
+export function inferTourRegion(tour: Pick<Tour, 'id' | 'slug' | 'destination' | 'title'>): TourRegion | null {
+  const metadata = FALLBACK_TOURS.find(
+    (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
+  );
+  if (metadata) return metadata.region;
+
+  const text = `${tour.destination} ${tour.title}`.toLocaleLowerCase('vi');
+  for (const region of ['bac', 'trung', 'nam'] as const) {
+    if (REGION_TERMS[region].some((term) => text.includes(term))) return region;
+  }
+  return null;
+}

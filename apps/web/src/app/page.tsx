@@ -9,7 +9,7 @@ import type { Tour } from '@tour/shared';
 import { Scroll3DHero } from '@/components/scroll-3d-hero';
 import { formatVND } from '@/lib/format';
 import { useLanguage } from '@/providers/language-provider';
-import { FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
+import { getLocalizedTour, inferTourRegion } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { LuxuryPreloader } from '@/components/luxury-preloader';
@@ -285,12 +285,7 @@ function HomeContent() {
   };
 
   const displayedTours = activeTab
-    ? allTours.filter((tour) => {
-        const metadata = FALLBACK_TOURS.find(
-          (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
-        );
-        return metadata ? metadata.region === activeTab : false;
-      })
+    ? allTours.filter((tour) => inferTourRegion(tour) === activeTab)
     : allTours;
 
   return (

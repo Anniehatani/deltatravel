@@ -42,7 +42,7 @@ import {
   AgentApprovalSchema,
   AgentDeclineSchema,
 } from '@tour/shared';
-import { FALLBACK_TOURS } from './fallback-data';
+import { inferTourRegion } from './fallback-data';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://delta-travel-api.onrender.com/api/v1';
 const REQUEST_TIMEOUT_MS = 65000;
@@ -241,61 +241,7 @@ export const authApi = {
 };
 
 function belongsToRegion(tour: z.infer<typeof TourSchema>, region: string) {
-  if (!region) return true;
-  const metadata = FALLBACK_TOURS.find(
-    (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
-  );
-  if (metadata) return metadata.region === region;
-
-  const text = `${tour.destination} ${tour.title}`.toLocaleLowerCase('vi');
-  const north = [
-    'hà nội',
-    'quảng ninh',
-    'hạ long',
-    'lào cai',
-    'sa pa',
-    'ninh bình',
-    'hải phòng',
-    'hà giang',
-    'cao bằng',
-    'sơn la',
-    'mộc châu',
-  ];
-  const central = [
-    'đà nẵng',
-    'hội an',
-    'quảng nam',
-    'huế',
-    'thừa thiên',
-    'khánh hòa',
-    'nha trang',
-    'quảng bình',
-    'quảng trị',
-    'bình định',
-    'phú yên',
-  ];
-  const south = [
-    'hồ chí minh',
-    'sài gòn',
-    'kiên giang',
-    'phú quốc',
-    'cần thơ',
-    'tây ninh',
-    'vũng tàu',
-    'bà rịa',
-    'an giang',
-    'cà mau',
-    'đồng tháp',
-    'bến tre',
-  ];
-  const inferred = north.some((item) => text.includes(item))
-    ? 'bac'
-    : central.some((item) => text.includes(item))
-      ? 'trung'
-      : south.some((item) => text.includes(item))
-        ? 'nam'
-        : null;
-  return inferred === region;
+  return !region || inferTourRegion(tour) === region;
 }
 
 export const tourApi = {
