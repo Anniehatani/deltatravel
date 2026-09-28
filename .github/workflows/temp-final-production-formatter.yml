@@ -1,0 +1,35 @@
+name: Temporary Final Production Formatter
+
+on:
+  push:
+    branches:
+      - manh/integrate-production-api
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: manh/integrate-production-api
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - run: npm run docs:generate
+      - run: npx prettier --write docs/API_CONTRACT.md docs/openapi.json
+      - run: rm .github/workflows/temp-final-production-formatter.yml
+      - name: Commit normalized final tree
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "style: normalize final production release"
+          git push origin HEAD:manh/integrate-production-api
