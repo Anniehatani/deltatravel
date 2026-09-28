@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import Link from 'next/link';
 import type { AgentPlan, Provider } from '@tour/shared';
 import { assistantApi } from '@/lib/api';
@@ -78,6 +78,18 @@ export function AgentBookingPanel() {
   const [provider, setProvider] = useState<Provider | ''>('CASH');
   const [scheduleId, setScheduleId] = useState('');
 
+  const editFormRef = useRef<HTMLFormElement>(null);
+  const checkpointRef = useRef<HTMLDivElement>(null);
+  const adultsRef = useRef<HTMLInputElement>(null);
+  const childrenRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const budgetRef = useRef<HTMLInputElement>(null);
+  const departureFromRef = useRef<HTMLInputElement>(null);
+  const departureToRef = useRef<HTMLInputElement>(null);
+  const providerRef = useRef<HTMLSelectElement>(null);
+
+  const phonePattern = /^(?:\+84|0)[0-9]{9,10}$/;
+
   useEffect(() => {
     if (!plan) return;
     setAdults(plan.constraints.adults ? String(plan.constraints.adults) : '');
@@ -95,6 +107,44 @@ export function AgentBookingPanel() {
     () => plan?.candidates.find((item) => item.scheduleId === plan.selectedScheduleId),
     [plan],
   );
+
+  const formIsDirty = useMemo(() => {
+    if (!plan) return false;
+    return (
+      String(plan.constraints.adults ?? '') !== adults ||
+      String(plan.constraints.children ?? 0) !== children ||
+      String(plan.constraints.contactPhone ?? '') !== phone ||
+      String(plan.constraints.budgetVnd ?? '') !== budget ||
+      String(plan.constraints.destination ?? '') !== destination ||
+      String(plan.constraints.departureFrom ?? '') !== departureFrom ||
+      String(plan.constraints.departureTo ?? '') !== departureTo ||
+      String(plan.constraints.provider ?? '') !== provider ||
+      String(plan.selectedScheduleId ?? '') !== scheduleId
+    );
+  }, [
+    plan,
+    adults,
+    children,
+    phone,
+    budget,
+    destination,
+    departureFrom,
+    departureTo,
+    provider,
+    scheduleId,
+  ]);
+
+  const scrollToCheckpoint = () => {
+    window.setTimeout(() => {
+      checkpointRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  };
+
+  const scrollToEditor = () => {
+    window.setTimeout(() => {
+      editFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
+  };
 
   if (!user) {
     return (
@@ -154,6 +204,13 @@ export function AgentBookingPanel() {
         ...(provider ? { provider } : {}),
       });
       setPlan(next);
+      window.setTimeout(() => {
+        if (next.checkpoint) {
+          checkpointRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          editFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể lập kế hoạch AI.');
     } finally {
@@ -180,10 +237,93 @@ export function AgentBookingPanel() {
           : {}),
       });
       setPlan(next);
+      return next;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không thể cập nhật kế hoạch.');
+      return null;
     } finally {
       setBusy(false);
+    }
+  };
+
+  const validateCheckpointFields = () => {
+    const adultCount = Number(adults);
+    const childCount = Number(children || 0);
+    const budgetValue = budget ? Number(budget) : null;
+
+    if (!Number.isInteger(adultCount) || adultCount < 1 || adultCount > 100) {
+      adultsRef.current?.focus();
+      return 'Số người lớn phải từ 1 đến 100.';
+    }
+    if (!Number.isInteger(childCount) || childCount < 0 || childCount > 100) {
+      childrenRef.current?.focus();
+      return 'Số trẻ em phải từ 0 đến 100.';
+    }
+    if (!phonePattern.test(phone.trim())) {
+      phoneRef.current?.focus();
+      return 'Số điện thoại chưa hợp lệ. Hãy nhập số Việt Nam bắt đầu bằng 0 hoặc +84.';
+    }
+    if (budgetValue !== null && (!Number.isFinite(budgetValue) || budgetValue < 0)) {
+      budgetRef.current?.focus();
+      return 'Ngân sách phải là một số không âm.';
+    }
+    if (departureFrom && departureTo && departureFrom > departureTo) {
+      departureToRef.current?.focus();
+      return 'Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.';
+    }
+    const providerAvailable = Boolean(
+      provider && plan?.paymentOptions.some((item) => item.provider === provider && item.available),
+    );
+    if (!providerAvailable) {
+      providerRef.current?.focus();
+      return 'Hãy chọn một phương thức thanh toán đang khả dụng.';
+    }
+    return '';
+  };
+
+  const continueToNextCheckpoint = async (e?: FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
+    if (!plan || busy) return;
+
+    setError('');
+    const validationError = validateCheckpointFields();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    if (plan.checkpoint && !formIsDirty) {
+      scrollToCheckpoint();
+      return;
+    }
+
+    const next = await updatePlan();
+    if (!next) return;
+
+    if (next.checkpoint) {
+      scrollToCheckpoint();
+      return;
+    }
+
+    scrollToEditor();
+    if (next.missingFields.includes('CONTACT_PHONE')) {
+      window.setTimeout(() => phoneRef.current?.focus(), 140);
+    } else if (next.missingFields.includes('PAYMENT_METHOD')) {
+      window.setTimeout(() => providerRef.current?.focus(), 140);
+    }
+  };
+
+  const handleInitialEnter = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (
+      e.key === 'Enter' &&
+      !e.shiftKey &&
+      !e.nativeEvent.isComposing &&
+      !plan &&
+      !busy &&
+      message.trim()
+    ) {
+      e.preventDefault();
+      void createPlan();
     }
   };
 
@@ -224,19 +364,19 @@ export function AgentBookingPanel() {
         <div className="absolute right-[-60px] top-[-80px] h-52 w-52 rounded-full border border-white/10" />
         <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-amber-300">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] !text-white">
               <Sparkles className="h-4 w-4" />
               DELTA AI AGENT • HUMAN-IN-THE-LOOP
             </div>
-            <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-3xl">
+            <h2 className="mt-3 text-2xl font-black tracking-tight !text-white sm:text-3xl">
               Một travel agent có thể hành động, nhưng không bao giờ vượt quyền bạn
             </h2>
-            <p className="mt-3 text-sm leading-6 text-stone-300">
+            <p className="mt-3 text-sm leading-6 !text-white">
               AI tự tìm, xếp hạng, kiểm tra giá và chỗ, tạo booking và chuẩn bị thanh toán. Trước
               hành động thật, hệ thống luôn hiển thị checkpoint để bạn duyệt.
             </p>
           </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-xs font-bold text-emerald-200">
+          <div className="flex items-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-xs font-bold !text-white">
             <ShieldCheck className="h-4 w-4" />
             Explicit approval required
           </div>
@@ -254,6 +394,7 @@ export function AgentBookingPanel() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               maxLength={2000}
+              onKeyDown={handleInitialEnter}
               className="w-full resize-none rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm leading-6 outline-none transition focus:border-amber-500 focus:bg-white"
               placeholder="Ví dụ: Mình muốn đi Đà Nẵng giữa tháng 10, 2 người, ngân sách dưới 8 triệu..."
             />
@@ -288,6 +429,7 @@ export function AgentBookingPanel() {
                 max={100}
                 value={adults}
                 onChange={(e) => setAdults(e.target.value)}
+                onKeyDown={handleInitialEnter}
               />
             </CompactField>
             <CompactField label="Trẻ em">
@@ -297,6 +439,7 @@ export function AgentBookingPanel() {
                 max={100}
                 value={children}
                 onChange={(e) => setChildren(e.target.value)}
+                onKeyDown={handleInitialEnter}
               />
             </CompactField>
             <CompactField label="Ngân sách tối đa">
@@ -305,6 +448,7 @@ export function AgentBookingPanel() {
                 min={0}
                 value={budget}
                 onChange={(e) => setBudget(e.target.value)}
+                onKeyDown={handleInitialEnter}
                 placeholder="VD 8000000"
               />
             </CompactField>
@@ -312,6 +456,7 @@ export function AgentBookingPanel() {
               <input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                onKeyDown={handleInitialEnter}
                 placeholder="Đà Nẵng"
               />
             </CompactField>
@@ -429,16 +574,26 @@ export function AgentBookingPanel() {
             )}
 
             {!plan.booking && plan.status !== 'DECLINED' && (
-              <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
-                <div className="mb-4 flex items-center gap-2">
-                  <Pencil className="h-4 w-4 text-amber-700" />
-                  <p className="text-xs font-black uppercase tracking-wider text-stone-800">
-                    Kiểm tra và chỉnh trước khi duyệt
-                  </p>
+              <form
+                ref={editFormRef}
+                onSubmit={(e) => void continueToNextCheckpoint(e)}
+                className="rounded-3xl border border-stone-200 bg-stone-50 p-5"
+              >
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Pencil className="h-4 w-4 text-amber-700" />
+                    <p className="text-xs font-black uppercase tracking-wider text-stone-800">
+                      Kiểm tra và chỉnh trước khi duyệt
+                    </p>
+                  </div>
+                  <div className="rounded-full border border-stone-200 bg-white px-3 py-1 text-[10px] font-bold text-stone-500">
+                    Enter để tiếp tục
+                  </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <CompactField label="Người lớn">
                     <input
+                      ref={adultsRef}
                       type="number"
                       min={1}
                       max={100}
@@ -448,6 +603,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Trẻ em">
                     <input
+                      ref={childrenRef}
                       type="number"
                       min={0}
                       max={100}
@@ -457,6 +613,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Số điện thoại">
                     <input
+                      ref={phoneRef}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="09xxxxxxxx"
@@ -464,6 +621,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Ngân sách tối đa">
                     <input
+                      ref={budgetRef}
                       type="number"
                       min={0}
                       value={budget}
@@ -475,6 +633,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Từ ngày">
                     <input
+                      ref={departureFromRef}
                       type="date"
                       value={departureFrom}
                       onChange={(e) => setDepartureFrom(e.target.value)}
@@ -482,6 +641,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Đến ngày">
                     <input
+                      ref={departureToRef}
                       type="date"
                       value={departureTo}
                       onChange={(e) => setDepartureTo(e.target.value)}
@@ -489,6 +649,7 @@ export function AgentBookingPanel() {
                   </CompactField>
                   <CompactField label="Thanh toán">
                     <select
+                      ref={providerRef}
                       value={provider}
                       onChange={(e) => setProvider(e.target.value as Provider | '')}
                     >
@@ -506,25 +667,48 @@ export function AgentBookingPanel() {
                     </select>
                   </CompactField>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={busy}
-                  onClick={() => void updatePlan()}
-                  className="mt-4 gap-2 rounded-xl"
-                >
-                  {busy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <RefreshCcw className="h-4 w-4" />
-                  )}
-                  Tính lại kế hoạch
-                </Button>
-              </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={busy}
+                    onClick={() => void updatePlan()}
+                    className="gap-2 rounded-xl"
+                  >
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCcw className="h-4 w-4" />
+                    )}
+                    Tính lại kế hoạch
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={busy}
+                    className="gap-2 rounded-xl bg-stone-950 text-white hover:bg-stone-800"
+                  >
+                    {busy ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                    {plan.checkpoint && !formIsDirty
+                      ? 'Tới checkpoint duyệt'
+                      : 'Cập nhật & tiếp tục'}
+                  </Button>
+                  <span className="text-[10px] text-stone-500">
+                    Nhấn Enter ở bất kỳ ô nào để sang checkpoint kế tiếp.
+                  </span>
+                </div>
+              </form>
             )}
 
             {plan.checkpoint && selected && (
-              <div className="rounded-[26px] border-2 border-amber-400 bg-gradient-to-br from-amber-50 to-white p-5 shadow-lg sm:p-6">
+              <div
+                ref={checkpointRef}
+                className="rounded-[26px] border-2 border-amber-400 bg-gradient-to-br from-amber-50 to-white p-5 shadow-lg sm:p-6"
+              >
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black">
                     <ShieldCheck className="h-5 w-5" />
