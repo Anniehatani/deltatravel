@@ -31,16 +31,7 @@ export interface SystemAuditItem {
   status: 'SUCCESS' | 'WARNING' | 'ALERT';
 }
 
-export const DEFAULT_GROQ_KEY = [
-  'g' + 's' + 'k' + '_',
-  'VQb54WEr',
-  'qu0Nw73F',
-  '95IeWGdy',
-  'b3FYQBFS',
-  'IhaAygfL',
-  '5Opjif8k',
-  'z8Tk',
-].join('');
+export const DEFAULT_GROQ_KEY = '';
 
 export const DEFAULT_SYSTEM_PROMPT = `You are the Official Luxury Concierge & Travel Consultant of DELTA TRAVEL VIETNAM (deltatravel.vn).
 Maintain a prestigious, hospitable, ultra-refined, and warm demeanor.
@@ -199,46 +190,35 @@ export function maskApiKey(key: string): string {
  * Live AI ping diagnostic tester
  */
 export async function testAiConnection(
-  apiKey: string,
+  _apiKey: string,
   model: string = 'openai/gpt-oss-120b'
 ): Promise<{ success: boolean; latency: number; message: string; modelUsed: string }> {
   const startTime = Date.now();
+  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
   try {
-    const keyToUse = apiKey || DEFAULT_GROQ_KEY;
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${keyToUse}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'user', content: 'Ping test. Reply with word OK.' }],
-        max_tokens: 5,
-        temperature: 0,
-      }),
-      signal: AbortSignal.timeout(8000),
+    const res = await fetch(`${base}/assistant/provider-status`, {
+      method: 'GET',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
     });
-
     const latency = Date.now() - startTime;
-
     if (!res.ok) {
-      const errBody = await res.text();
       return {
         success: false,
         latency,
-        message: `HTTP ${res.status}: ${errBody.slice(0, 120)}`,
+        message: `Backend AI status HTTP ${res.status}`,
         modelUsed: model,
       };
     }
-
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'OK';
-
+    const body = await res.json();
+    const data = body?.data ?? body;
+    const live = data?.preferredProvider === 'GROQ' && data?.groqConfigured === true;
     return {
-      success: true,
+      success: live,
       latency,
-      message: `Kết nối thành công! Phản hồi: "${reply.trim()}"`,
+      message: live
+        ? 'Backend production đã cấu hình Groq.'
+        : 'Backend production chưa xác nhận cấu hình Groq.',
       modelUsed: model,
     };
   } catch (err: any) {
@@ -246,7 +226,7 @@ export async function testAiConnection(
     return {
       success: false,
       latency,
-      message: err.name === 'TimeoutError' ? 'Hết thời gian chờ (Timeout >8s)' : err.message || 'Lỗi kết nối',
+      message: err?.name === 'TimeoutError' ? 'Hết thời gian chờ backend.' : err?.message || 'Lỗi kết nối backend',
       modelUsed: model,
     };
   }
