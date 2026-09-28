@@ -34,6 +34,11 @@ import {
   AvatarUploadTicketSchema,
   AvatarCompleteSchema,
   AssistantProviderStatusSchema,
+  AgentPlanSchema,
+  AgentPlanRequestSchema,
+  AgentPlanUpdateSchema,
+  AgentApprovalSchema,
+  AgentDeclineSchema,
 } from '@tour/shared';
 import type { CommercialTour } from './commercial-store';
 import { FALLBACK_TOURS } from './fallback-data';
@@ -337,6 +342,32 @@ export const assistantApi = {
     api('/assistant/provider-status', AssistantProviderStatusSchema, {
       retryAuth: false,
       anonymous: true,
+    }),
+
+  createPlan: (input: z.input<typeof AgentPlanRequestSchema>) =>
+    api('/assistant/agent/plans', AgentPlanSchema, {
+      method: 'POST',
+      body: AgentPlanRequestSchema.parse(input),
+    }),
+
+  getPlan: (id: string) => api(`/assistant/agent/plans/${id}`, AgentPlanSchema),
+
+  updatePlan: (id: string, input: z.input<typeof AgentPlanUpdateSchema>) =>
+    api(`/assistant/agent/plans/${id}`, AgentPlanSchema, {
+      method: 'PATCH',
+      body: AgentPlanUpdateSchema.parse(input),
+    }),
+
+  approvePlan: (id: string, version: number) =>
+    api(`/assistant/agent/plans/${id}/approve`, AgentPlanSchema, {
+      method: 'POST',
+      body: AgentApprovalSchema.parse({ approved: true, version }),
+    }),
+
+  declinePlan: (id: string, reason?: string) =>
+    api(`/assistant/agent/plans/${id}/decline`, AgentPlanSchema, {
+      method: 'POST',
+      body: AgentDeclineSchema.parse(reason ? { reason } : {}),
     }),
 };
 

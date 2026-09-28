@@ -23,8 +23,15 @@ export class AuthController {
   ) {}
 
   private csrf(req: AppRequest) {
+    const allowedOrigins = (
+      this.config.get<string>('WEB_ORIGINS') || this.config.getOrThrow<string>('WEB_ORIGIN')
+    )
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean);
     if (
-      req.headers.origin !== this.config.get('WEB_ORIGIN') ||
+      !req.headers.origin ||
+      !allowedOrigins.includes(req.headers.origin) ||
       req.headers['x-csrf-protection'] !== '1'
     ) {
       fail(403, 'CSRF_REJECTED', 'Origin hoặc CSRF header không hợp lệ');
