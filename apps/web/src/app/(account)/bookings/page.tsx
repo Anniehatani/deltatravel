@@ -346,7 +346,6 @@ export default function BookingsListPage() {
           </div>
         </div>
       )}
-
     </PageShell>
   );
 }

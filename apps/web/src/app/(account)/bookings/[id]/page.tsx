@@ -399,7 +399,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                   <p className="text-xs text-neutral-500 mt-2">{t('bk_status_cancelled_sub')}</p>
                 </div>
               </div>
-
             </>
           )}
 
@@ -708,7 +707,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       )}
-
     </PageShell>
   );
 }
