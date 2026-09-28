@@ -8,6 +8,7 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+  NEXT_PUBLIC_API_URL = "https://delta-travel-api.onrender.com/api/v1"
 
 [[headers]]
   for = "/*"
