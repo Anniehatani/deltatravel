@@ -5,6 +5,7 @@ export const CANCEL_WINDOW_MS = 72 * 60 * 60 * 1000;
 export const RoleSchema = z.enum(['CUSTOMER', 'OPERATIONS', 'ADMIN']);
 export const BookingStatusSchema = z.enum([
   'PENDING_PAYMENT',
+  'AWAITING_CASH',
   'PAID',
   'CONFIRMED',
   'COMPLETED',
@@ -12,7 +13,7 @@ export const BookingStatusSchema = z.enum([
 ]);
 export const TourStatusSchema = z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']);
 export const ScheduleStatusSchema = z.enum(['OPEN', 'CLOSED']);
-export const ProviderSchema = z.enum(['VNPAY', 'MOMO', 'ZALOPAY']);
+export const ProviderSchema = z.enum(['VNPAY', 'MOMO', 'ZALOPAY', 'CASH']);
 export const PaymentStatusSchema = z.enum([
   'INITIATED',
   'SUCCEEDED',
@@ -25,6 +26,7 @@ export type BookingStatus = z.infer<typeof BookingStatusSchema>;
 export type Provider = z.infer<typeof ProviderSchema>;
 export const BOOKING_LABELS: Record<BookingStatus, string> = {
   PENDING_PAYMENT: 'CHỜ THANH TOÁN',
+  AWAITING_CASH: 'CHỜ THANH TOÁN TIỀN MẶT',
   PAID: 'ĐÃ THANH TOÁN',
   CONFIRMED: 'ĐÃ XÁC NHẬN',
   COMPLETED: 'HOÀN THÀNH',
@@ -41,9 +43,23 @@ const email = z
   .max(254)
   .transform((v) => v.toLowerCase());
 export const RegisterSchema = z
-  .object({ name, email, password: z.string().min(6).max(128) })
+  .object({ name, email, password: z.string().min(12).max(128) })
   .strict();
 export const LoginSchema = z.object({ email, password: z.string().min(1).max(128) }).strict();
+export const ForgotPasswordSchema = z.object({ email }).strict();
+export const ResetPasswordSchema = z
+  .object({
+    email,
+    code: z.string().regex(/^\d{6}$/),
+    newPassword: z.string().min(12).max(128),
+  })
+  .strict();
+export const ChangePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1).max(128),
+    newPassword: z.string().min(12).max(128),
+  })
+  .strict();
 export const EmptySchema = z.object({}).strict();
 export const PaginationSchema = z
   .object({
@@ -92,6 +108,9 @@ export const CreateBookingSchema = QuoteSchema.extend({
   contactEmail: email,
   contactPhone: z.string().regex(/^(?:\+84|0)[0-9]{9,10}$/),
 }).strict();
+export const AssistantBookingProposalSchema = CreateBookingSchema.extend({
+  provider: ProviderSchema.optional(),
+}).strict();
 export const CancelSchema = z.object({ reason: z.string().trim().min(3).max(500) }).strict();
 export const TransitionSchema = z.object({ status: z.enum(['CONFIRMED', 'COMPLETED']) }).strict();
 export const CreatePaymentSchema = z
@@ -100,17 +119,23 @@ export const CreatePaymentSchema = z
 export const RefundRecordSchema = z
   .object({ reference: z.string().trim().min(3).max(100), note: z.string().trim().min(3).max(500) })
   .strict();
+export const CashReceiptSchema = z
+  .object({
+    reference: z.string().trim().min(3).max(100),
+    note: z.string().trim().min(3).max(500).optional(),
+  })
+  .strict();
 export const IdempotencyKeySchema = z.string().uuid();
 export const AssistantRequestSchema = z
   .object({
     message: z.string().trim().min(1).max(2000),
+    lang: z.enum(['vi', 'en']).optional(),
     history: z
       .array(
         z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(2000) }).strict(),
       )
       .max(8)
       .default([]),
-    lang: z.enum(['vi', 'en']).optional(),
   })
   .strict();
 
@@ -120,6 +145,8 @@ export const UserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   role: RoleSchema,
+  avatarUrl: z.string().url().nullable(),
+  avatarId: IdSchema.nullable(),
 });
 export const AuthResultSchema = z.object({
   accessToken: z.string(),
@@ -157,6 +184,7 @@ export const BookingSchema = z.object({
   expiresAt: IsoDateSchema,
   createdAt: IsoDateSchema,
   paidAt: IsoDateSchema.nullable(),
+  cashDueAt: IsoDateSchema.nullable(),
   cancelledAt: IsoDateSchema.nullable(),
   cancelReason: z.string().nullable(),
   tourTitle: z.string(),
@@ -185,9 +213,52 @@ export const PaymentSchema = z.object({
   checkoutUrl: z.string().url().nullable(),
   createdAt: IsoDateSchema,
 });
+export const AssistantBookingProposalResultSchema = z.object({
+  proposalId: IdSchema,
+  kind: z.literal('CREATE_BOOKING'),
+  expiresAt: IsoDateSchema,
+  requiresConfirmation: z.literal(true),
+  quote: QuoteResultSchema,
+  provider: ProviderSchema.nullable(),
+  summary: z.string(),
+});
+export const AssistantBookingConfirmResultSchema = z.object({
+  booking: BookingSchema,
+  selectedProvider: ProviderSchema.nullable(),
+  nextAction: z.literal('OPEN_BOOKING'),
+});
+export const AvatarUploadRequestSchema = z
+  .object({
+    contentType: z.enum(['image/jpeg', 'image/png', 'image/webp']),
+    sizeBytes: z
+      .number()
+      .int()
+      .positive()
+      .max(2 * 1024 * 1024),
+  })
+  .strict();
+export const AvatarUploadTicketSchema = z.object({
+  uploadId: IdSchema,
+  path: z.string(),
+  signedUrl: z.string().url(),
+  token: z.string().min(1),
+  publicUrl: z.string().url(),
+  expiresIn: z.literal(7200),
+});
+export const AvatarCompleteSchema = z.object({ uploadId: IdSchema }).strict();
+export const AssistantProviderStatusSchema = z.object({
+  preferredProvider: z.enum(['GROQ', 'GEMINI']).nullable(),
+  groqConfigured: z.boolean(),
+  geminiConfigured: z.boolean(),
+  fallbackAvailable: z.literal(true),
+});
+export const AssistantProbeResultSchema = z.object({
+  mode: z.enum(['GROQ', 'GEMINI', 'RULE_BASED']),
+  providerLive: z.boolean(),
+});
 export const AssistantResultSchema = z.object({
   reply: z.string(),
-  mode: z.enum(['GEMINI', 'RULE_BASED', 'GROQ']),
+  mode: z.enum(['GROQ', 'GEMINI', 'RULE_BASED']),
   actions: z.array(
     z.object({
       label: z.string(),
@@ -260,7 +331,7 @@ export function calculateTotal(
 }
 export function canCustomerCancel(status: BookingStatus, departureAt: Date, now: Date): boolean {
   return (
-    (status === 'PENDING_PAYMENT' || status === 'PAID') &&
+    (['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'] as BookingStatus[]).includes(status) &&
     departureAt.getTime() - now.getTime() >= CANCEL_WINDOW_MS
   );
 }
