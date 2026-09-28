@@ -42,6 +42,7 @@ jobs:
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm run docs:generate
+      - run: npm run verify:contract
       - run: npm test
       - run: npm run build
       - run: npm run test:integration
