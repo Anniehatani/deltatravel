@@ -81,9 +81,7 @@ export default function AdminPaymentsPage() {
       setCashNote('');
       fetchPayments();
     } catch (err) {
-      setCashError(
-        err instanceof Error ? err.message : 'Không thể ghi nhận thu tiền mặt.',
-      );
+      setCashError(err instanceof Error ? err.message : 'Không thể ghi nhận thu tiền mặt.');
     } finally {
       setSubmittingCash(false);
     }
@@ -134,7 +132,9 @@ export default function AdminPaymentsPage() {
       ) : error ? (
         <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-sm">
           <p className="text-sm text-stone-700 mb-4">{error}</p>
-          <Button variant="outline" onClick={fetchPayments}>Thử lại</Button>
+          <Button variant="outline" onClick={fetchPayments}>
+            Thử lại
+          </Button>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-stone-200/80 bg-white shadow-luxury">
@@ -167,12 +167,8 @@ export default function AdminPaymentsPage() {
                         {p.bookingId.slice(0, 8)}...
                       </Link>
                     </td>
-                    <td className="py-4 px-6 font-semibold text-stone-800">
-                      {p.provider}
-                    </td>
-                    <td className="py-4 px-6 font-bold text-stone-900">
-                      {formatVND(p.amount)}
-                    </td>
+                    <td className="py-4 px-6 font-semibold text-stone-800">{p.provider}</td>
+                    <td className="py-4 px-6 font-bold text-stone-900">{formatVND(p.amount)}</td>
                     <td className="py-4 px-6">
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-[10px] uppercase border ${badge}`}
@@ -180,9 +176,7 @@ export default function AdminPaymentsPage() {
                         {p.status}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-stone-500">
-                      {formatDateTime(p.createdAt)}
-                    </td>
+                    <td className="py-4 px-6 text-stone-500">{formatDateTime(p.createdAt)}</td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex justify-end gap-2">
                         {p.provider === 'CASH' && p.status === 'INITIATED' && (
@@ -198,13 +192,13 @@ export default function AdminPaymentsPage() {
                           </Button>
                         )}
                         {p.status === 'REFUND_REQUIRED' && (
-                        <Button
-                          size="sm"
-                          onClick={() => setRefundPaymentId(p.id)}
-                          className="bg-amber-800 hover:bg-amber-900 text-white text-[11px] h-7 px-3"
-                        >
-                          Ghi nhận hoàn tiền
-                        </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => setRefundPaymentId(p.id)}
+                            className="bg-amber-800 hover:bg-amber-900 text-white text-[11px] h-7 px-3"
+                          >
+                            Ghi nhận hoàn tiền
+                          </Button>
                         )}
                       </div>
                     </td>
@@ -227,9 +221,7 @@ export default function AdminPaymentsPage() {
             </p>
             <form onSubmit={handleRecordCash} className="space-y-4 text-xs">
               <div>
-                <label className="font-semibold text-stone-700">
-                  Mã biên nhận / tham chiếu *
-                </label>
+                <label className="font-semibold text-stone-700">Mã biên nhận / tham chiếu *</label>
                 <input
                   type="text"
                   required
@@ -325,7 +317,11 @@ export default function AdminPaymentsPage() {
                 <Button type="button" variant="outline" onClick={() => setRefundPaymentId(null)}>
                   Đóng
                 </Button>
-                <Button type="submit" disabled={submittingRefund} className="bg-stone-900 text-white">
+                <Button
+                  type="submit"
+                  disabled={submittingRefund}
+                  className="bg-stone-900 text-white"
+                >
                   {submittingRefund ? 'Đang lưu...' : 'Lưu bằng chứng'}
                 </Button>
               </div>
@@ -336,4 +332,3 @@ export default function AdminPaymentsPage() {
     </PageShell>
   );
 }
-
