@@ -151,7 +151,7 @@ function ToursListContent() {
                   className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full transition-colors ${
                     isActive
                       ? 'bg-white/20 text-amber-200'
-                      : 'bg-black/5 text-neutral-500 group-hover:bg-black/10'
+                      : 'bg-black/5 text-neutral-700 group-hover:bg-black/10'
                   }`}
                 >
                   {tab.subtitle}
@@ -212,9 +212,9 @@ function ToursListContent() {
       ) : tours.length === 0 ? (
         <div className="liquid-glass-card rounded-3xl p-16 text-center max-w-xl mx-auto">
           <Compass className="mx-auto h-12 w-12 text-black/60 mb-4" />
-          <h3 className="text-xl font-black text-black uppercase tracking-tight">
+          <h2 className="text-xl font-black text-black uppercase tracking-tight">
             {lang === 'en' ? 'No Open Voyages in this Region' : 'Chưa có hành trình mở bán'}
-          </h3>
+          </h2>
           <p className="mt-2 text-xs font-medium text-neutral-600 max-w-md mx-auto leading-relaxed">
             {lang === 'en'
               ? 'This realm is currently undergoing high-season itinerary curation. Please select another realm.'
@@ -306,9 +306,9 @@ function ToursListContent() {
                 {/* Card Editorial Content Body */}
                 <div className="flex flex-col flex-1 p-6 justify-between bg-white/95">
                   <div>
-                    <h3 className="text-[16px] font-black text-black leading-snug line-clamp-2 group-hover:text-amber-900 transition-colors duration-300 tracking-tight">
+                    <h2 className="text-[16px] font-black text-black leading-snug line-clamp-2 group-hover:text-amber-900 transition-colors duration-300 tracking-tight">
                       {tour.title}
-                    </h3>
+                    </h2>
 
                     <p className="mt-3 text-xs leading-relaxed text-neutral-600 line-clamp-3 font-normal">
                       {tour.description}

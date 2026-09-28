@@ -91,7 +91,7 @@ export default function AssistantPage() {
 
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-stone-200" />
-          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">
+          <span className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-600">
             Hoặc chat tư vấn như bình thường
           </span>
           <div className="h-px flex-1 bg-stone-200" />
@@ -253,7 +253,7 @@ export default function AssistantPage() {
             </Button>
           </form>
 
-          <p className="mt-3 text-[11px] text-stone-400 flex items-center gap-1.5 px-1">
+          <p className="mt-3 text-[11px] text-stone-600 flex items-center gap-1.5 px-1">
             <Info className="h-3.5 w-3.5 shrink-0" />
             <span>{t('asst_disclaimer')}</span>
           </p>
