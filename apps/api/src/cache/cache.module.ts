@@ -27,6 +27,13 @@ export class CacheService implements OnModuleDestroy {
       /* Cache loss never changes inventory decisions. */
     }
   }
+  async readRequired<T>(key: string): Promise<T | null> {
+    const value = await this.redis.get(key);
+    return value ? (JSON.parse(value) as T) : null;
+  }
+  async writeRequired(key: string, value: unknown, ttl: number) {
+    await this.redis.set(key, JSON.stringify(value), 'EX', ttl);
+  }
   async onModuleDestroy() {
     this.redis.disconnect();
   }

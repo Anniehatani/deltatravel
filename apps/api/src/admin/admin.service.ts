@@ -7,6 +7,7 @@ import {
   UpdateScheduleSchema,
   PaginationSchema,
   RefundRecordSchema,
+  CashReceiptSchema,
 } from '@tour/shared';
 import { PrismaService } from '../database/prisma.service';
 import { CacheService } from '../cache/cache.module';
@@ -161,6 +162,63 @@ export class AdminService {
         data: { actorId, action: 'REFUND_RECORDED_MANUALLY', entityId: id, metadata: input },
       });
       return paymentDto(result);
+    });
+  }
+  async recordCashPayment(id: string, input: z.infer<typeof CashReceiptSchema>, actorId: string) {
+    const p = await this.db.payment.findUniqueOrThrow({
+      where: { id },
+      include: { booking: true },
+    });
+    if (p.provider !== 'CASH')
+      fail(409, 'NOT_CASH_PAYMENT', 'Giao dịch này không phải thanh toán tiền mặt');
+
+    return this.db.serial(async (tx) => {
+      await lockSchedule(tx, p.booking.scheduleId);
+      const now = await dbNow(tx);
+      await expireLocked(tx, p.booking.scheduleId, now);
+      const current = await tx.payment.findUniqueOrThrow({
+        where: { id },
+        include: { booking: true },
+      });
+
+      if (current.status === 'SUCCEEDED') {
+        if (current.transactionId !== input.reference)
+          fail(409, 'CASH_REFERENCE_CONFLICT', 'Mã biên nhận không trùng lần ghi nhận trước');
+        return paymentDto(current);
+      }
+
+      if (
+        current.status !== 'INITIATED' ||
+        current.booking.status !== 'AWAITING_CASH' ||
+        !current.booking.cashDueAt ||
+        current.booking.cashDueAt <= now
+      )
+        fail(409, 'CASH_PAYMENT_EXPIRED', 'Đơn không còn chờ nhận tiền mặt');
+
+      const payment = await tx.payment.update({
+        where: { id },
+        data: {
+          status: 'SUCCEEDED',
+          transactionId: input.reference,
+        },
+      });
+      await tx.booking.update({
+        where: { id: current.bookingId },
+        data: { status: 'PAID', paidAt: now },
+      });
+      await tx.auditLog.create({
+        data: {
+          actorId,
+          action: 'CASH_PAYMENT_RECEIVED',
+          entityId: current.bookingId,
+          metadata: {
+            paymentId: id,
+            reference: input.reference,
+            note: input.note ?? null,
+          },
+        },
+      });
+      return paymentDto(payment);
     });
   }
   async audit(q: z.infer<typeof PaginationSchema>) {

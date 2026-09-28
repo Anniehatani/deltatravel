@@ -8,7 +8,7 @@
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
+    "db:migrate": "node scripts/migrate-if-needed.mjs",
     "db:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "test": "vitest run test/unit",

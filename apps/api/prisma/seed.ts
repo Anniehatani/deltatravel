@@ -7,6 +7,8 @@ async function main() {
   const password = process.env.SEED_ADMIN_PASSWORD;
   if (!password || password.length < 12 || password.startsWith('REPLACE_'))
     throw new Error('Run npm run setup and configure SEED_ADMIN_PASSWORD');
+  if (/^(?:admin@?123456|123456|password)$/i.test(password))
+    throw new Error('Unsafe demo admin password is forbidden. Run npm run setup again.');
   await db.user.upsert({
     where: { email: process.env.SEED_ADMIN_EMAIL || 'admin@tour.local' },
     update: {},

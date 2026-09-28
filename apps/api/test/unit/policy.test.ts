@@ -49,7 +49,7 @@ describe('SRS business rules', () => {
     ).toBe(false);
   });
   const now = new Date('2026-10-01T00:00:00.000Z');
-  it.each(['PENDING_PAYMENT', 'PAID'] as const)(
+  it.each(['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'] as const)(
     'allows %s at the exact 72-hour boundary',
     (status) =>
       expect(canCustomerCancel(status, new Date(now.getTime() + CANCEL_WINDOW_MS), now)).toBe(true),
@@ -65,5 +65,13 @@ describe('SRS business rules', () => {
         false,
       ),
   );
-  it('has exactly the five SRS states', () => expect(Object.keys(BOOKING_LABELS)).toHaveLength(5));
+  it('keeps the five SRS states plus explicit cash-awaiting state', () =>
+    expect(Object.keys(BOOKING_LABELS)).toEqual([
+      'PENDING_PAYMENT',
+      'AWAITING_CASH',
+      'PAID',
+      'CONFIRMED',
+      'COMPLETED',
+      'CANCELLED',
+    ]));
 });

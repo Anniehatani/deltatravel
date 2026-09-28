@@ -29,7 +29,7 @@ describe('timeout delivery and recovery', () => {
     await dispatcher.dispatch();
     expect(queue.add).toHaveBeenCalledTimes(2);
     expect(db.booking.update).toHaveBeenCalledOnce();
-    expect(queue.add.mock.calls[1][2].jobId).toBe('expire_new');
+    expect(queue.add.mock.calls[1][2].jobId).toBe(`expire_new_${expiresAt.getTime()}`);
   });
   it('worker delegates idempotent expiry without assuming job timing is exact', async () => {
     const service = { expire: vi.fn().mockResolvedValue(undefined) };

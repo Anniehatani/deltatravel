@@ -15,6 +15,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
 import { AdminModule } from './admin/admin.module';
 import { AssistantModule } from './assistant/assistant.module';
+import { ProfileModule } from './profile/profile.module';
 import { fail } from './common/errors';
 @Public()
 @Controller('health')
@@ -22,10 +23,43 @@ class HealthController {
   constructor(
     private readonly db: PrismaService,
     private readonly cache: CacheService,
+    private readonly config: ConfigService,
   ) {}
   @Get('live') live() {
     return { status: 'ok' };
   }
+  @Get('integrations') integrations() {
+    return {
+      mailProvider: this.config.get<string>('MAIL_PROVIDER') || 'DISABLED',
+      aiProvider: this.config.get<string>('AI_PROVIDER') || null,
+      aiConfigured: Boolean(
+        (this.config.get<string>('GROQ_API_KEY') && this.config.get<string>('GROQ_MODEL')) ||
+        (this.config.get<string>('GEMINI_API_KEY') && this.config.get<string>('GEMINI_MODEL')),
+      ),
+      avatarStorageConfigured: Boolean(
+        this.config.get<string>('SUPABASE_URL') &&
+        (this.config.get<string>('SUPABASE_SECRET_KEY') ||
+          this.config.get<string>('SUPABASE_SERVICE_ROLE_KEY')),
+      ),
+      payments: {
+        cashConfigured: true,
+        vnpayConfigured: Boolean(
+          this.config.get<string>('VNPAY_TMN_CODE') && this.config.get<string>('VNPAY_HASH_SECRET'),
+        ),
+        momoConfigured: Boolean(
+          this.config.get<string>('MOMO_PARTNER_CODE') &&
+          this.config.get<string>('MOMO_ACCESS_KEY') &&
+          this.config.get<string>('MOMO_SECRET_KEY'),
+        ),
+        zalopayConfigured: Boolean(
+          this.config.get<string>('ZALOPAY_APP_ID') &&
+          this.config.get<string>('ZALOPAY_KEY1') &&
+          this.config.get<string>('ZALOPAY_KEY2'),
+        ),
+      },
+    };
+  }
+
   @Get('ready') async ready() {
     try {
       await this.db.$queryRaw`SELECT 1`;
@@ -70,6 +104,7 @@ class HealthController {
     PaymentsModule,
     AdminModule,
     AssistantModule,
+    ProfileModule,
   ],
   controllers: [HealthController],
   providers: [
