@@ -213,6 +213,19 @@ export const PaymentSchema = z.object({
   checkoutUrl: z.string().url().nullable(),
   createdAt: IsoDateSchema,
 });
+export const PaymentProviderCapabilitySchema = z.object({
+  provider: ProviderSchema,
+  available: z.boolean(),
+  label: z.string(),
+  kind: z.enum(['OFFLINE', 'WALLET', 'GATEWAY']),
+  requiresExternalAuthorization: z.boolean(),
+  environment: z.enum(['INTERNAL', 'SANDBOX', 'PRODUCTION', 'UNCONFIGURED']),
+  reason: z.string().nullable(),
+});
+export const PaymentProviderStatusSchema = z.object({
+  providers: z.array(PaymentProviderCapabilitySchema),
+  returnOrigin: z.string().url(),
+});
 export const AgentPlanStatusSchema = z.enum([
   'NEEDS_INPUT',
   'NO_MATCH',
@@ -451,6 +464,7 @@ export type Tour = z.infer<typeof TourSchema>;
 export type Schedule = z.infer<typeof ScheduleSchema>;
 export type Booking = z.infer<typeof BookingSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
+export type PaymentProviderCapability = z.infer<typeof PaymentProviderCapabilitySchema>;
 export type AuthResult = z.infer<typeof AuthResultSchema>;
 export type AssistantResult = z.infer<typeof AssistantResultSchema>;
 export type AgentPlan = z.infer<typeof AgentPlanSchema>;

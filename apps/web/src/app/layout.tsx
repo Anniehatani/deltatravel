@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { ShieldCheck, Clock, Award, Phone, Mail, MapPin } from 'lucide-react';
 
 import { SiteFooter } from '@/components/footer';
+import { AiAgentLauncher } from '@/components/ai-agent-launcher';
 
 const beVietnamPro = Be_Vietnam_Pro({
   subsets: ['latin', 'vietnamese'],
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <Nav />
             <main className="flex-1 bg-white">{children}</main>
+            <AiAgentLauncher />
             <SiteFooter />
           </AuthProvider>
         </LanguageProvider>

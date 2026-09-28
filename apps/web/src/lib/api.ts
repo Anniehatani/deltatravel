@@ -10,6 +10,7 @@ import {
   ScheduleSchema,
   BookingSchema,
   PaymentSchema,
+  PaymentProviderStatusSchema,
   PageSchema,
   QuoteResultSchema,
   AssistantResultSchema,
@@ -320,6 +321,12 @@ export const bookingApi = {
 };
 
 export const paymentApi = {
+  providers: () =>
+    api('/payments/providers/status', PaymentProviderStatusSchema, {
+      retryAuth: false,
+      anonymous: true,
+    }),
+
   create: (input: z.input<typeof CreatePaymentSchema>) =>
     api('/payments', PaymentSchema, {
       method: 'POST',
@@ -327,6 +334,27 @@ export const paymentApi = {
     }),
 
   get: (id: string) => api(`/payments/${id}`, PaymentSchema),
+};
+
+const IntegrationStatusSchema = z.object({
+  mailProvider: z.string(),
+  aiProvider: z.string().nullable(),
+  aiConfigured: z.boolean(),
+  avatarStorageConfigured: z.boolean(),
+  payments: z.object({
+    cashConfigured: z.boolean(),
+    vnpayConfigured: z.boolean(),
+    momoConfigured: z.boolean(),
+    zalopayConfigured: z.boolean(),
+  }),
+});
+
+export const systemApi = {
+  integrations: () =>
+    api('/health/integrations', IntegrationStatusSchema, {
+      retryAuth: false,
+      anonymous: true,
+    }),
 };
 
 export const assistantApi = {

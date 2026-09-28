@@ -101,6 +101,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   const [paying, setPaying] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [directPaymentSuccess, setDirectPaymentSuccess] = useState(false);
+  const [paymentCapabilities, setPaymentCapabilities] = useState<Awaited<
+    ReturnType<typeof paymentApi.providers>
+  > | null>(null);
+  const [paymentCapabilitiesLoading, setPaymentCapabilitiesLoading] = useState(true);
 
   // Cancel booking modal
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -127,6 +131,25 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     fetchBooking();
   }, [bookingId]);
+
+  useEffect(() => {
+    let active = true;
+    setPaymentCapabilitiesLoading(true);
+    paymentApi
+      .providers()
+      .then((data) => {
+        if (active) setPaymentCapabilities(data);
+      })
+      .catch(() => {
+        if (active) setPaymentCapabilities(null);
+      })
+      .finally(() => {
+        if (active) setPaymentCapabilitiesLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Accurate countdown based on expiresAt and serverTime
   useEffect(() => {
@@ -157,6 +180,18 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
   const handlePay = async () => {
     if (!booking) return;
+
+    const provider: Provider = selectedMethod === 'DIRECT' ? 'CASH' : selectedMethod;
+    const capability = paymentCapabilities?.providers.find((item) => item.provider === provider);
+
+    if (provider !== 'CASH' && (!capability || !capability.available)) {
+      setPaymentError(
+        capability?.reason ||
+          'Cổng thanh toán này chưa được cấu hình trên server. Hãy chọn phương thức khác.',
+      );
+      return;
+    }
+
     setPaying(true);
     setPaymentError(null);
 
@@ -165,7 +200,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
       try {
         await paymentApi.create({
           bookingId: booking.id,
-          provider: 'CASH',
+          provider,
         });
         const updated = await bookingApi.get(booking.id);
         setBooking(updated);
@@ -186,7 +221,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     try {
       const payment = await paymentApi.create({
         bookingId: booking.id,
-        provider: selectedMethod,
+        provider,
       });
 
       if (payment.checkoutUrl) {
@@ -526,15 +561,28 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 <div className="space-y-3">
                   {paymentOptions.map((opt) => {
                     const isSelected = selectedMethod === opt.id;
+                    const provider: Provider = opt.id === 'DIRECT' ? 'CASH' : opt.id;
+                    const capability = paymentCapabilities?.providers.find(
+                      (item) => item.provider === provider,
+                    );
+                    const available = provider === 'CASH' ? true : Boolean(capability?.available);
+                    const environment = capability?.environment;
 
                     return (
                       <div
                         key={opt.id}
-                        onClick={() => setSelectedMethod(opt.id)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                        onClick={() => {
+                          if (available) setSelectedMethod(opt.id);
+                        }}
+                        aria-disabled={!available}
+                        className={`p-4 rounded-2xl border-2 transition-all ${
+                          available ? 'cursor-pointer' : 'cursor-not-allowed opacity-55'
+                        } ${
                           isSelected
                             ? 'border-black bg-stone-50 shadow-sm ring-1 ring-black'
-                            : 'border-stone-200 hover:border-stone-400 bg-white'
+                            : available
+                              ? 'border-stone-200 hover:border-stone-400 bg-white'
+                              : 'border-stone-200 bg-stone-50'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -548,8 +596,11 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                             type="radio"
                             name="paymentMethod"
                             checked={isSelected}
-                            onChange={() => setSelectedMethod(opt.id)}
-                            className="w-4 h-4 text-black cursor-pointer"
+                            disabled={!available}
+                            onChange={() => {
+                              if (available) setSelectedMethod(opt.id);
+                            }}
+                            className="w-4 h-4 text-black cursor-pointer disabled:cursor-not-allowed"
                           />
                         </div>
                         {opt.badge && (
@@ -560,6 +611,28 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                         <p className="text-[11px] text-stone-500 mt-1.5 leading-relaxed">
                           {opt.desc}
                         </p>
+                        {provider !== 'CASH' && (
+                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${
+                                available
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-stone-200 text-stone-600'
+                              }`}
+                            >
+                              {paymentCapabilitiesLoading
+                                ? 'Đang kiểm tra'
+                                : available
+                                  ? 'Sẵn sàng'
+                                  : 'Chưa cấu hình'}
+                            </span>
+                            {available && environment && environment !== 'UNCONFIGURED' && (
+                              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[9px] font-bold uppercase text-blue-700">
+                                {environment}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -577,7 +650,13 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
                 <Button
                   onClick={handlePay}
-                  disabled={paying}
+                  disabled={
+                    paying ||
+                    (selectedMethod !== 'DIRECT' &&
+                      !paymentCapabilities?.providers.find(
+                        (item) => item.provider === selectedMethod,
+                      )?.available)
+                  }
                   className={`w-full py-4 rounded-full shadow-lg text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
                     selectedMethod === 'DIRECT'
                       ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
