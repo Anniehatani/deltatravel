@@ -245,6 +245,7 @@ export default function AssistantPage() {
             />
             <Button
               type="submit"
+              aria-label={t('asst_send')}
               disabled={busy || !inputMessage.trim()}
               className="bg-stone-900 hover:bg-stone-800 text-white px-5 rounded-xl gap-1.5 shadow-sm"
             >

@@ -44,9 +44,9 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           </div>
 
           {/* Title & Description */}
-          <h2 className="text-2xl sm:text-[26px] font-black text-black tracking-tight uppercase">
+          <h1 className="text-2xl sm:text-[26px] font-black text-black tracking-tight uppercase">
             {t('auth_login_required')}
-          </h2>
+          </h1>
           <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-normal leading-relaxed">
             {t('auth_login_desc')}
           </p>
@@ -92,7 +92,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
             <ShieldAlert className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-bold text-stone-900">{t('auth_forbidden_title')}</h3>
+          <h1 className="text-xl font-bold text-stone-900">{t('auth_forbidden_title')}</h1>
           <p className="mt-2 text-xs text-stone-600">{t('auth_forbidden_desc')}</p>
           <div className="mt-6">
             <Link
