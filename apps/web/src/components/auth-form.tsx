@@ -16,8 +16,6 @@ import {
   KeyRound,
   ArrowRight,
   RefreshCw,
-  Copy,
-  Check,
 } from 'lucide-react';
 import { useLanguage } from '@/providers/language-provider';
 
@@ -47,8 +45,6 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [sentOtp, setSentOtp] = useState<string | null>(null);
-  const [copiedOtp, setCopiedOtp] = useState(false);
 
   // Status
   const [error, setError] = useState('');
@@ -58,14 +54,6 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
   const resetMessages = () => {
     setError('');
     setSuccess('');
-  };
-
-  const handleCopyOtp = () => {
-    if (sentOtp) {
-      navigator.clipboard.writeText(sentOtp);
-      setCopiedOtp(true);
-      setTimeout(() => setCopiedOtp(false), 2000);
-    }
   };
 
   // Submit Handler
@@ -83,8 +71,8 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
         setError(lang === 'en' ? 'Please enter a valid email address.' : 'Vui lòng nhập địa chỉ email hợp lệ.');
         return;
       }
-      if (password.length < 6) {
-        setError(lang === 'en' ? 'Password must be at least 6 characters.' : 'Mật khẩu phải có tối thiểu 6 ký tự.');
+      if (password.length < 12) {
+        setError(lang === 'en' ? 'Password must be at least 12 characters.' : 'Mật khẩu phải có tối thiểu 12 ký tự.');
         return;
       }
       if (password !== confirmPassword) {
@@ -162,8 +150,7 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
 
         setBusy(true);
         try {
-          const res = await authApi.requestPasswordReset(email.trim().toLowerCase());
-          setSentOtp(res.code);
+          await authApi.requestPasswordReset(email.trim().toLowerCase());
           setForgotStep(2);
           setSuccess(
             lang === 'en'
@@ -188,11 +175,11 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
           );
           return;
         }
-        if (newPassword.length < 6) {
+        if (newPassword.length < 12) {
           setError(
             lang === 'en'
-              ? 'New password must be at least 6 characters.'
-              : 'Mật khẩu mới phải có tối thiểu 6 ký tự.',
+              ? 'New password must be at least 12 characters.'
+              : 'Mật khẩu mới phải có tối thiểu 12 ký tự.',
           );
           return;
         }
@@ -331,7 +318,7 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
                 Mật khẩu *
               </label>
               {mode === 'register' && (
-                <span className="text-[10px] text-amber-700 font-semibold">Tối thiểu 6 ký tự</span>
+                <span className="text-[10px] text-amber-700 font-semibold">Tối thiểu 12 ký tự</span>
               )}
               {mode === 'login' && (
                 <button
@@ -410,26 +397,6 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
               </p>
             </div>
 
-            {/* Simulated Live OTP Copy helper for instant testing */}
-            {sentOtp && (
-              <div className="p-2.5 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-between">
-                <div className="text-[11px] text-stone-700">
-                  <span>Mã OTP của bạn: </span>
-                  <strong className="font-mono text-xs text-stone-950 font-bold ml-1 tracking-widest">
-                    {sentOtp}
-                  </strong>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCopyOtp}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-white border border-stone-300 text-[10px] font-bold text-stone-800 hover:bg-stone-50 transition active:scale-95"
-                >
-                  {copiedOtp ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
-                  <span>{copiedOtp ? 'Đã chép' : 'Sao chép mã'}</span>
-                </button>
-              </div>
-            )}
-
             {/* OTP Input */}
             <div>
               <label htmlFor="otpCode" className="text-xs font-bold text-stone-800 block mb-1">
@@ -456,7 +423,7 @@ export function AuthForm({ register = false, forgot = false }: AuthFormProps) {
                 <label htmlFor="newPassword" className="text-xs font-bold text-stone-800">
                   Mật khẩu mới *
                 </label>
-                <span className="text-[10px] text-amber-700 font-semibold">Tối thiểu 6 ký tự</span>
+                <span className="text-[10px] text-amber-700 font-semibold">Tối thiểu 12 ký tự</span>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
