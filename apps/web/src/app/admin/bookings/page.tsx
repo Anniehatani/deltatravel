@@ -31,6 +31,7 @@ import {
 
 const STATUS_BADGE_STYLE: Record<string, string> = {
   PENDING_PAYMENT: 'bg-amber-100 text-amber-900 border-amber-300',
+  AWAITING_CASH: 'bg-sky-100 text-sky-900 border-sky-300',
   PAID: 'bg-emerald-100 text-emerald-900 border-emerald-300',
   CONFIRMED: 'bg-blue-100 text-blue-900 border-blue-300',
   COMPLETED: 'bg-stone-100 text-stone-800 border-stone-300',
@@ -124,7 +125,7 @@ export default function AdminBookingsPage() {
     const totalCount = filteredBookings.length;
 
     let revenueCollected = 0; // PAID, CONFIRMED, COMPLETED
-    let pendingAmount = 0; // PENDING_PAYMENT
+    let pendingAmount = 0; // PENDING_PAYMENT or AWAITING_CASH
     let cancelledCount = 0;
     let completedCount = 0;
 
@@ -133,7 +134,7 @@ export default function AdminBookingsPage() {
       if (b.status === 'PAID' || b.status === 'CONFIRMED' || b.status === 'COMPLETED') {
         revenueCollected += amount;
       }
-      if (b.status === 'PENDING_PAYMENT') {
+      if (b.status === 'PENDING_PAYMENT' || b.status === 'AWAITING_CASH') {
         pendingAmount += amount;
       }
       if (b.status === 'CANCELLED') {
@@ -365,7 +366,8 @@ export default function AdminBookingsPage() {
             className="py-2.5 px-3 rounded-xl border border-stone-200 bg-stone-50 text-xs font-semibold text-stone-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="PENDING_PAYMENT">Chờ thanh toán (PENDING)</option>
+            <option value="PENDING_PAYMENT">Chờ thanh toán online (PENDING)</option>
+            <option value="AWAITING_CASH">Chờ thu tiền mặt (AWAITING CASH)</option>
             <option value="PAID">Đã thanh toán (PAID)</option>
             <option value="CONFIRMED">Đã xác nhận (CONFIRMED)</option>
             <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
