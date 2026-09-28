@@ -61,13 +61,9 @@ export function SiteFooter() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-lg font-black tracking-wider text-black">
-                DELTA TRAVEL
-              </span>
+              <span className="text-lg font-black tracking-wider text-black">DELTA TRAVEL</span>
             </div>
-            <p className="mt-3 text-xs leading-relaxed text-neutral-600">
-              {t('nav_tagline')}
-            </p>
+            <p className="mt-3 text-xs leading-relaxed text-neutral-600">{t('nav_tagline')}</p>
           </div>
           <div>
             <h3 className="text-xs font-black uppercase tracking-wider text-black">
@@ -147,9 +143,7 @@ export function SiteFooter() {
         {/* Bottom Copyright */}
         <div className="border-t border-black/10 pt-8 pb-12 flex flex-col md:flex-row items-center justify-between text-xs text-neutral-500">
           <p>{t('footer_rights_text')}</p>
-          <p className="mt-2 md:mt-0 font-medium text-black">
-            {t('footer_tagline_text')}
-          </p>
+          <p className="mt-2 md:mt-0 font-medium text-black">{t('footer_tagline_text')}</p>
         </div>
       </div>
     </footer>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { bookingApi, paymentApi } from '@/lib/api';
 import type { Booking, Provider } from '@tour/shared';
 import { BOOKING_LABELS } from '@tour/shared';
@@ -28,7 +27,6 @@ import {
   Sparkles,
   Wallet,
   Coins,
-  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/providers/language-provider';
 
@@ -45,7 +43,6 @@ interface PaymentOption {
 export default function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const bookingId = resolvedParams.id;
-  const router = useRouter();
   const { t, lang } = useLanguage();
 
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -79,21 +76,22 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     },
   ];
 
-  const suggestedCancelReasons = lang === 'en'
-    ? [
-        'Change in business or personal schedule',
-        'Unexpected family emergency',
-        'Wrong departure date or guest count',
-        'Prefer to switch to another tour package',
-        'Health reasons or personal circumstances',
-      ]
-    : [
-        'Thay đổi lịch trình công tác / cá nhân',
-        'Có việc gia đình bận đột xuất',
-        'Đặt nhầm số lượng khách hoặc ngày khởi hành',
-        'Muốn chuyển sang hành trình tour khác',
-        'Lý do sức khỏe hoặc phát sinh riêng',
-      ];
+  const suggestedCancelReasons =
+    lang === 'en'
+      ? [
+          'Change in business or personal schedule',
+          'Unexpected family emergency',
+          'Wrong departure date or guest count',
+          'Prefer to switch to another tour package',
+          'Health reasons or personal circumstances',
+        ]
+      : [
+          'Thay đổi lịch trình công tác / cá nhân',
+          'Có việc gia đình bận đột xuất',
+          'Đặt nhầm số lượng khách hoặc ngày khởi hành',
+          'Muốn chuyển sang hành trình tour khác',
+          'Lý do sức khỏe hoặc phát sinh riêng',
+        ];
 
   // Countdown timer logic
   const [timeLeftMs, setTimeLeftMs] = useState<number | null>(null);
@@ -109,11 +107,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
-  // Delete booking modal
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchBooking = () => {
     setLoading(true);
@@ -167,32 +160,22 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     setPaying(true);
     setPaymentError(null);
 
-    // Direct Payment Flow
+    // Direct payment creates a real CASH payment on the backend.
     if (selectedMethod === 'DIRECT') {
       try {
-        const updated: Booking = {
-          ...booking,
-          status: 'CONFIRMED',
-          paidAt: new Date().toISOString(),
-        };
-
-        if (typeof window !== 'undefined') {
-          try {
-            const items: Booking[] = JSON.parse(localStorage.getItem('tour_local_bookings') || '[]');
-            const idx = items.findIndex((b) => b.id === booking.id);
-            if (idx !== -1) {
-              items[idx] = updated;
-            } else {
-              items.push(updated);
-            }
-            localStorage.setItem('tour_local_bookings', JSON.stringify(items));
-          } catch {}
-        }
-
+        await paymentApi.create({
+          bookingId: booking.id,
+          provider: 'CASH',
+        });
+        const updated = await bookingApi.get(booking.id);
         setBooking(updated);
         setDirectPaymentSuccess(true);
       } catch (err) {
-        setPaymentError('Không thể xác nhận thanh toán trực tiếp. Vui lòng thử lại.');
+        setPaymentError(
+          err instanceof Error
+            ? err.message
+            : 'Không thể tạo yêu cầu thanh toán tiền mặt. Vui lòng thử lại.',
+        );
       } finally {
         setPaying(false);
       }
@@ -245,19 +228,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleDeleteBooking = async () => {
-    if (!booking) return;
-    setDeleting(true);
-    setDeleteError(null);
-    try {
-      await bookingApi.delete(booking.id);
-      router.push('/bookings');
-    } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Không thể xóa đơn.');
-      setDeleting(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="mx-auto max-w-5xl px-6 py-16">
@@ -298,7 +268,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   const isPaid = booking.status === 'PAID';
   const isConfirmed = booking.status === 'CONFIRMED';
   const isCancelled = booking.status === 'CANCELLED';
-  const canCancel = !isCancelled && booking.status !== 'COMPLETED';
+  const canCancel = ['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'].includes(booking.status);
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
@@ -307,7 +277,9 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     COMPLETED: 'bk_status_completed_label',
     CANCELLED: 'bk_status_cancelled_label',
   };
-  const statusLabel = statusKeyMap[booking.status] ? t(statusKeyMap[booking.status]) : booking.status;
+  const statusLabel = statusKeyMap[booking.status]
+    ? t(statusKeyMap[booking.status])
+    : BOOKING_LABELS[booking.status] || booking.status;
 
   const formatCountdown = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -331,17 +303,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
             >
               <XCircle className="h-3.5 w-3.5" />
               <span>{t('bk_btn_cancel')}</span>
-            </Button>
-          )}
-
-          {isCancelled && (
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteModal(true)}
-              className="text-red-700 border-red-300 bg-red-50 hover:bg-red-100 text-xs font-bold gap-1.5 shadow-sm"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>{t('bk_btn_delete')}</span>
             </Button>
           )}
 
@@ -415,10 +376,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
             <div className="rounded-2xl border-2 border-black bg-black text-white p-6 shadow-sm flex items-center gap-4">
               <CheckCircle2 className="h-8 w-8 text-amber-300 shrink-0" />
               <div>
-                <h3 className="font-black text-white text-sm uppercase">{t('bk_status_paid_title')}</h3>
-                <p className="text-xs text-neutral-300 mt-0.5">
-                  {t('bk_status_paid_sub')}
-                </p>
+                <h3 className="font-black text-white text-sm uppercase">
+                  {t('bk_status_paid_title')}
+                </h3>
+                <p className="text-xs text-neutral-300 mt-0.5">{t('bk_status_paid_sub')}</p>
               </div>
             </div>
           )}
@@ -428,33 +389,15 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               <div className="rounded-2xl border-2 border-dashed border-red-300 bg-red-50/50 p-6 flex items-start gap-4">
                 <XCircle className="h-7 w-7 text-red-600 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-black text-red-900 text-sm uppercase">{t('bk_status_cancelled_title')}</h3>
+                  <h3 className="font-black text-red-900 text-sm uppercase">
+                    {t('bk_status_cancelled_title')}
+                  </h3>
                   <p className="text-xs text-red-700 mt-0.5">
-                    {t('bk_reason_prefix')} <strong>{booking.cancelReason || t('bk_default_cancel_reason')}</strong>
+                    {t('bk_reason_prefix')}{' '}
+                    <strong>{booking.cancelReason || t('bk_default_cancel_reason')}</strong>
                   </p>
-                  <p className="text-xs text-neutral-500 mt-2">
-                    {t('bk_status_cancelled_sub')}
-                  </p>
+                  <p className="text-xs text-neutral-500 mt-2">{t('bk_status_cancelled_sub')}</p>
                 </div>
-              </div>
-
-              <div className="rounded-2xl border border-stone-200/90 bg-white p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100">
-                    <Trash2 className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-stone-900">{t('bk_delete_box_title')}</h4>
-                    <p className="text-xs text-neutral-500 mt-0.5">{t('bk_delete_box_desc')}</p>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => setShowDeleteModal(true)}
-                  className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-full px-6 py-2.5 gap-2 shrink-0 shadow-sm transition"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span>{t('bk_btn_delete')}</span>
-                </Button>
               </div>
             </>
           )}
@@ -476,7 +419,8 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               <div className="p-4 rounded-xl bg-[#faf9f5] border border-stone-200/70">
                 <span className="text-xs text-stone-500 block">{t('bk_guest_count_label')}</span>
                 <span className="font-semibold text-stone-900 text-base mt-1 block">
-                  {booking.adults} {t('bk_adult_unit')} {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
+                  {booking.adults} {t('bk_adult_unit')}{' '}
+                  {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
                 </span>
               </div>
             </div>
@@ -490,7 +434,8 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 {booking.details.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span className="text-stone-600">
-                      {item.kind === 'ADULT' ? t('bk_ticket_adult') : t('bk_ticket_child')} × {item.quantity}
+                      {item.kind === 'ADULT' ? t('bk_ticket_adult') : t('bk_ticket_child')} ×{' '}
+                      {item.quantity}
                     </span>
                     <span className="font-semibold text-stone-900">
                       {formatVND(item.lineTotal)}
@@ -532,9 +477,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                   <XCircle className="h-4 w-4 text-red-600" />
                   <span>{t('bk_cancel_box_title')}</span>
                 </h4>
-                <p className="text-xs text-neutral-600 mt-1">
-                  {t('bk_cancel_box_desc')}
-                </p>
+                <p className="text-xs text-neutral-600 mt-1">{t('bk_cancel_box_desc')}</p>
               </div>
               <Button
                 variant="outline"
@@ -559,7 +502,15 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               </span>
               <span className="text-xs text-stone-500 mt-1 block">
                 {t('bk_status_label')}{' '}
-                <strong className={isConfirmed ? 'text-emerald-700' : isCancelled ? 'text-red-600' : 'text-stone-900'}>
+                <strong
+                  className={
+                    isConfirmed
+                      ? 'text-emerald-700'
+                      : isCancelled
+                        ? 'text-red-600'
+                        : 'text-stone-900'
+                  }
+                >
                   {statusLabel}
                 </strong>
               </span>
@@ -615,7 +566,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 </div>
 
                 {paymentError && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 flex items-start gap-2" role="alert">
+                  <div
+                    className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 flex items-start gap-2"
+                    role="alert"
+                  >
                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-600" />
                     <span>{paymentError}</span>
                   </div>
@@ -638,7 +592,11 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 text-amber-300" />
-                      <span>{paying ? t('bk_connecting_gateway') : `${t('bk_pay_via')} ${selectedMethod}`}</span>
+                      <span>
+                        {paying
+                          ? t('bk_connecting_gateway')
+                          : `${t('bk_pay_via')} ${selectedMethod}`}
+                      </span>
                     </>
                   )}
                 </Button>
@@ -674,7 +632,9 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 <h3 className="font-serif text-xl font-bold text-stone-900">
                   {t('bk_cancel_modal_title')}
                 </h3>
-                <span className="text-xs text-neutral-500">{t('bk_code_prefix')} {booking.id.slice(0, 13)}...</span>
+                <span className="text-xs text-neutral-500">
+                  {t('bk_code_prefix')} {booking.id.slice(0, 13)}...
+                </span>
               </div>
             </div>
 
@@ -684,7 +644,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
             <form onSubmit={handleCancelBooking} className="space-y-4">
               <div>
-                <label htmlFor="cancelReason" className="text-xs font-bold text-stone-800 block mb-1">
+                <label
+                  htmlFor="cancelReason"
+                  className="text-xs font-bold text-stone-800 block mb-1"
+                >
                   {t('bk_cancel_reason_label')}
                 </label>
 
@@ -741,49 +704,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Modal Confirmation */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-[20000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-md rounded-3xl bg-white p-7 sm:p-8 shadow-2xl border border-stone-200 animate-fade-in-scale text-center">
-            <div className="mx-auto h-12 w-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
-              <Trash2 className="h-6 w-6" />
-            </div>
-            <h3 className="font-serif text-xl font-bold text-stone-900 mb-2">
-              {t('bk_delete_modal_title')}
-            </h3>
-            <p className="text-xs text-neutral-600 mb-6 leading-relaxed">
-              {t('bk_delete_modal_desc')}
-            </p>
-
-            {deleteError && (
-              <div className="mb-4 p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600">
-                {deleteError}
-              </div>
-            )}
-
-            <div className="flex justify-center gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowDeleteModal(false)}
-                disabled={deleting}
-                className="text-xs rounded-full px-5"
-              >
-                {t('bk_cancel_btn_close')}
-              </Button>
-              <Button
-                type="button"
-                onClick={handleDeleteBooking}
-                disabled={deleting}
-                className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-full px-6 shadow-md"
-              >
-                {deleting ? t('bk_deleting') : t('bk_btn_delete')}
-              </Button>
-            </div>
           </div>
         </div>
       )}

@@ -21,6 +21,7 @@ enum ScheduleStatus {
 }
 enum BookingStatus {
   PENDING_PAYMENT
+  AWAITING_CASH
   PAID
   CONFIRMED
   COMPLETED
@@ -34,6 +35,7 @@ enum PaymentProvider {
   VNPAY
   MOMO
   ZALOPAY
+  CASH
 }
 enum PaymentStatus {
   INITIATED
@@ -49,9 +51,13 @@ model User {
   passwordHash String
   role Role @default(CUSTOMER)
   isActive Boolean @default(true)
+  avatarUrl String?
+  avatarPath String?
+  avatarId String? @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   sessions RefreshSession[]
   bookings Booking[]
+  passwordResetChallenges PasswordResetChallenge[]
   @@map("NGUOI_DUNG")
 }
 model RefreshSession {
@@ -64,6 +70,19 @@ model RefreshSession {
   revokedAt DateTime? @db.Timestamptz(3)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   @@index([userId,familyId])
+}
+model PasswordResetChallenge {
+  id String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  codeHash String
+  expiresAt DateTime @db.Timestamptz(3)
+  consumedAt DateTime? @db.Timestamptz(3)
+  attempts Int @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  @@index([userId,createdAt])
+  @@index([expiresAt])
+  @@map("PASSWORD_RESET_CHALLENGE")
 }
 model Tour {
   id String @id @default(uuid()) @db.Uuid
@@ -115,6 +134,7 @@ model Booking {
   expiresAt DateTime @db.Timestamptz(3)
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   paidAt DateTime? @db.Timestamptz(3)
+  cashDueAt DateTime? @db.Timestamptz(3)
   cancelledAt DateTime? @db.Timestamptz(3)
   cancelReason String?
   seatsReleasedAt DateTime? @db.Timestamptz(3)
@@ -123,6 +143,7 @@ model Booking {
   payment Payment?
   @@unique([userId,idempotencyKey])
   @@index([status,expiresAt])
+  @@index([status,cashDueAt])
   @@index([scheduleId,status])
   @@map("DON_DAT_TOUR")
 }

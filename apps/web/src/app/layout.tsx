@@ -20,7 +20,8 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata: Metadata = {
   title: { default: 'DELTA TRAVEL | Du Lịch Việt Nam 3 Miền', template: '%s | DELTA TRAVEL' },
-  description: 'DELTA TRAVEL — Đặt tour du lịch nội địa trọn gói khắp 3 miền Việt Nam. Lịch trình chu đáo, giá vé minh bạch, hỗ trợ tận tâm 24/7.',
+  description:
+    'DELTA TRAVEL — Đặt tour du lịch nội địa trọn gói khắp 3 miền Việt Nam. Lịch trình chu đáo, giá vé minh bạch, hỗ trợ tận tâm 24/7.',
   icons: {
     icon: '/favicon_logo_delta.png',
   },

@@ -11,7 +11,14 @@ const id = '11111111-1111-4111-8111-111111111111',
   pid = '55555555-5555-4555-8555-555555555555';
 const now = '2026-12-01T01:00:00.000Z',
   departure = '2026-12-15T01:00:00.000Z';
-const user = { id: uid, name: 'Nguyễn Minh Anh', email: 'minhanh@example.com', role: 'CUSTOMER' };
+const user = {
+  id: uid,
+  name: 'Nguyễn Minh Anh',
+  email: 'minhanh@example.com',
+  role: 'CUSTOMER',
+  avatarUrl: null,
+  avatarId: null,
+};
 const tour = {
   id,
   title: 'Đà Nẵng và Hội An',
@@ -53,6 +60,7 @@ const booking = {
   expiresAt: '2026-12-01T01:15:00.000Z',
   createdAt: now,
   paidAt: null,
+  cashDueAt: null,
   cancelledAt: null,
   cancelReason: null,
   tourTitle: tour.title,
@@ -76,10 +84,25 @@ const payment = {
 const examples = {
   RegisterSchema: { name: user.name, email: user.email, password: 'DemoPassword_123!' },
   LoginSchema: { email: user.email, password: 'DemoPassword_123!' },
+  ForgotPasswordSchema: { email: user.email },
+  ResetPasswordSchema: { email: user.email, code: '123456', newPassword: 'NewDemoPassword_123!' },
+  ChangePasswordSchema: { oldPassword: 'DemoPassword_123!', newPassword: 'NewDemoPassword_123!' },
   EmptySchema: {},
   UserSchema: user,
   AuthResultSchema: { user, accessToken: '<JWT_ACCESS_TOKEN>', expiresIn: 900 },
   AckSchema: { ok: true },
+  AvatarUploadRequestSchema: { contentType: 'image/jpeg', sizeBytes: 245760 },
+  AvatarUploadTicketSchema: {
+    uploadId: '77777777-7777-4777-8777-777777777777',
+    path: uid + '/avatar-77777777-7777-4777-8777-777777777777.jpg',
+    signedUrl:
+      'https://example.supabase.co/storage/v1/object/upload/sign/avatars/example.jpg?token=<SIGNED_UPLOAD_TOKEN>',
+    token: '<SIGNED_UPLOAD_TOKEN>',
+    publicUrl:
+      'https://example.supabase.co/storage/v1/object/public/avatars/44444444-4444-4444-8444-444444444444/avatar.jpg',
+    expiresIn: 7200,
+  },
+  AvatarCompleteSchema: { uploadId: '77777777-7777-4777-8777-777777777777' },
   TourSchema: tour,
   CreateTourSchema: (({ id, createdAt, updatedAt, ...r }) => r)(tour),
   UpdateTourSchema: { status: 'ACTIVE' },
@@ -104,6 +127,10 @@ const examples = {
   TransitionSchema: { status: 'CONFIRMED' },
   CreatePaymentSchema: { bookingId: bid, provider: 'VNPAY' },
   PaymentSchema: payment,
+  CashReceiptSchema: {
+    reference: 'CASH-20261201-001',
+    note: 'Đã nhận đủ tiền mặt tại quầy',
+  },
   RefundRecordSchema: {
     reference: 'REFUND-20261201-001',
     note: 'Đã đối soát hoàn tiền đầy đủ qua cổng thanh toán',
@@ -117,7 +144,39 @@ const examples = {
     metadata: { seats: 3, totalAmount: 10470000 },
     createdAt: now,
   },
-  AssistantRequestSchema: { message: 'Tìm tour Đà Nẵng', history: [] },
+  AssistantProviderStatusSchema: {
+    preferredProvider: 'GROQ',
+    groqConfigured: true,
+    geminiConfigured: false,
+    fallbackAvailable: true,
+  },
+  AssistantProbeResultSchema: { mode: 'GROQ', providerLive: true },
+  AssistantRequestSchema: { message: 'Tìm tour Đà Nẵng', lang: 'vi', history: [] },
+  AssistantBookingProposalSchema: { ...createBooking, provider: 'VNPAY' },
+  AssistantBookingProposalResultSchema: {
+    proposalId: '66666666-6666-4666-8666-666666666666',
+    kind: 'CREATE_BOOKING',
+    expiresAt: '2026-12-01T01:10:00.000Z',
+    requiresConfirmation: true,
+    quote: {
+      scheduleId: sid,
+      adults: 2,
+      children: 1,
+      adultPrice: 3990000,
+      childPrice: 2490000,
+      totalAmount: 10470000,
+      currency: 'VND',
+      availableSeats: 22,
+      serverTime: now,
+    },
+    provider: 'VNPAY',
+    summary: 'Tạo đơn giữ chỗ 15 phút cho 3 khách, tổng 10.470.000 VND.',
+  },
+  AssistantBookingConfirmResultSchema: {
+    booking,
+    selectedProvider: 'VNPAY',
+    nextAction: 'OPEN_BOOKING',
+  },
   AssistantResultSchema: {
     reply: 'Đà Nẵng và Hội An tại Đà Nẵng, 3 ngày. Xem lịch để có giá và chỗ hiện tại.',
     mode: 'RULE_BASED',
@@ -152,6 +211,8 @@ function responseExample(name, path) {
   if (path.endsWith('/status')) sample = { ...booking, status: 'CONFIRMED', paidAt: now };
   if (path.endsWith('/refund-record'))
     sample = { ...payment, status: 'REFUNDED', checkoutUrl: null };
+  if (path.endsWith('/cash-receipt'))
+    sample = { ...payment, provider: 'CASH', status: 'SUCCEEDED', checkoutUrl: null };
   return { data: sample, meta: { requestId: 'example-request-id', timestamp: now } };
 }
 const openapi = {
@@ -171,7 +232,7 @@ const openapi = {
     schemas: { ApiError: jsonSchema(s.ErrorSchema) },
   },
 };
-const header = `# API Contract v1.0\n\nSRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.mjs bằng npm run docs:generate. Không sửa trực tiếp phần sinh tự động.\n\n## Quy ước chung\n\n- Base URL local: http://localhost:4000/api/v1. HTTPS bắt buộc khi triển khai.\n- JSON UTF-8. Tên trường camelCase; ID UUID; tiền là số nguyên VND không âm. Database dùng BIGINT, response chuyển số nguyên trong giới hạn an toàn.\n- Ngày giờ ISO 8601 có offset, lưu UTC, UI hiển thị Asia/Ho_Chi_Minh. So sánh 72 giờ theo milliseconds, không trừ ngày lịch.\n- Response thành công: {data,meta:{requestId,timestamp}}. Lỗi: {error:{code,message,details?},meta}. Webhook dùng định dạng riêng ở cuối tài liệu.\n- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=Strict, Secure ở production.\n- Auth POST: Origin phải bằng WEB_ORIGIN, X-CSRF-Protection: 1, credentials: include. curl/Postman cũng phải gửi hai header này.\n- Pagination: page mặc định 1, pageSize mặc định 20, tối đa 100; response items,page,pageSize,total. q/destination tùy chọn.\n- Guest là chưa đăng nhập, không phải một giá trị role trong DB. User = mọi tài khoản đang hoạt động, dữ liệu cá nhân vẫn lọc theo userId.\n- 400 validation/chữ ký/số tiền; 401 thiếu/sai phiên; 403 quyền/CSRF; 404 không thấy hoặc không sở hữu; 409 xung đột nghiệp vụ; 422 giới hạn cổng; 429 rate limit; 502 phản hồi cổng không hợp lệ; 503 chưa cấu hình hoặc phụ thuộc lỗi.\n- Chỉ CUSTOMER được tạo đơn. Admin/Operations dùng phân hệ vận hành. Header hoặc body giả role/userId đều không cấp quyền.\n\n## Các bất biến mà frontend phải giữ\n\n1. adults >= 1, children >= 0, không có infants. Cả hai cùng chiếm một chỗ/người.\n2. Tổng tiền do backend tính từ giá trong DB. Client không gửi totalAmount hoặc status.\n3. Một Idempotency-Key UUID cho một lần xác nhận đặt; giữ nguyên khi retry sau timeout mạng. Thay nội dung phải tạo key mới.\n4. Quote không giữ chỗ. Tạo đơn mới kiểm tra và khóa chỗ trong transaction.\n5. expiresAt = createdAt + 900000ms. now >= expiresAt là hết hạn. Không gia hạn khi refresh, retry hoặc tạo payment.\n6. Countdown dùng expiresAt và serverTime. Poll kho chỗ mỗi 3 giây là thông tin cập nhật gần realtime; không thay cho kiểm tra nguyên tử khi đặt.\n7. Browser return URL không phải bằng chứng thanh toán. Chỉ webhook xác thực được phép đánh dấu PAID.\n8. Hủy đơn và hoàn tiền là hai quy trình. REFUND_REQUIRED không có nghĩa đã hoàn tiền.\n\n## Endpoint index\n\n| Method | Path | Quyền | Request body | Data response | HTTP |\n|---|---|---|---|---|---|\n`;
+const header = `# API Contract v1.0\n\nSRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.mjs bằng npm run docs:generate. Không sửa trực tiếp phần sinh tự động.\n\n## Quy ước chung\n\n- Base URL local: http://localhost:4000/api/v1. HTTPS bắt buộc khi triển khai.\n- JSON UTF-8. Tên trường camelCase; ID UUID; tiền là số nguyên VND không âm. Database dùng BIGINT, response chuyển số nguyên trong giới hạn an toàn.\n- Ngày giờ ISO 8601 có offset, lưu UTC, UI hiển thị Asia/Ho_Chi_Minh. So sánh 72 giờ theo milliseconds, không trừ ngày lịch.\n- Response thành công: {data,meta:{requestId,timestamp}}. Lỗi: {error:{code,message,details?},meta}. Webhook dùng định dạng riêng ở cuối tài liệu.\n- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=None và Secure ở production để frontend Netlify dùng API Render khác site.\n- Auth POST: Origin phải bằng WEB_ORIGIN, X-CSRF-Protection: 1, credentials: include. curl/Postman cũng phải gửi hai header này.\n- Pagination: page mặc định 1, pageSize mặc định 20, tối đa 100; response items,page,pageSize,total. q/destination tùy chọn.\n- Guest là chưa đăng nhập, không phải một giá trị role trong DB. User = mọi tài khoản đang hoạt động, dữ liệu cá nhân vẫn lọc theo userId.\n- 400 validation/chữ ký/số tiền; 401 thiếu/sai phiên; 403 quyền/CSRF; 404 không thấy hoặc không sở hữu; 409 xung đột nghiệp vụ; 422 giới hạn cổng; 429 rate limit; 502 phản hồi cổng không hợp lệ; 503 chưa cấu hình hoặc phụ thuộc lỗi.\n- Chỉ CUSTOMER được tạo đơn. Admin/Operations dùng phân hệ vận hành. Header hoặc body giả role/userId đều không cấp quyền.\n\n## Các bất biến mà frontend phải giữ\n\n1. adults >= 1, children >= 0, không có infants. Cả hai cùng chiếm một chỗ/người.\n2. Tổng tiền do backend tính từ giá trong DB. Client không gửi totalAmount hoặc status.\n3. Một Idempotency-Key UUID cho một lần xác nhận đặt; giữ nguyên khi retry sau timeout mạng. Thay nội dung phải tạo key mới.\n4. Quote không giữ chỗ. Tạo đơn mới kiểm tra và khóa chỗ trong transaction.\n5. expiresAt = createdAt + 900000ms. now >= expiresAt là hết hạn. Không gia hạn khi refresh, retry hoặc tạo payment.\n6. Countdown dùng expiresAt và serverTime. Poll kho chỗ mỗi 3 giây là thông tin cập nhật gần realtime; không thay cho kiểm tra nguyên tử khi đặt.\n7. Browser return URL không phải bằng chứng thanh toán. Chỉ webhook xác thực được phép đánh dấu PAID.\n8. Hủy đơn và hoàn tiền là hai quy trình. REFUND_REQUIRED không có nghĩa đã hoàn tiền.\n\n## Endpoint index\n\n| Method | Path | Quyền | Request body | Data response | HTTP |\n|---|---|---|---|---|---|\n`;
 let md =
   header +
   endpoints
@@ -235,7 +296,7 @@ for (const [method, path, auth, body, response, status, note, query] of endpoint
         },
       },
       ...Object.fromEntries(
-        [400, 401, 403, 404, 409, 422, 429, 502, 503].map((code) => [
+        [400, 401, 403, 404, 409, 410, 422, 429, 502, 503].map((code) => [
           code,
           {
             description: 'See error.code',
@@ -353,7 +414,7 @@ for (const [method, path, note, ack] of webhooks) {
   openapi.paths[path] = { [method]: operation };
   md += `### ${method.toUpperCase()} ${path}\n\n${note}\n\n${method === 'get' ? 'Query parameters, biểu diễn dưới dạng object để dễ đọc' : 'Request JSON'}:\n\n\`\`\`json\n${JSON.stringify(payload, null, 2)}\n\`\`\`\n\nACK: ${ack}.\n\n`;
 }
-md += `VNPay query tối thiểu: vnp_TmnCode, vnp_TxnRef, vnp_Amount, vnp_TransactionNo, vnp_ResponseCode, vnp_TransactionStatus, vnp_SecureHash. Ký toàn bộ tham số trả về trừ vnp_SecureHash và vnp_SecureHashType, sort tên rồi URL encode, dấu cách thành +. Cả hai trạng thái phải 00. ACK 02 khi đã ghi nhận, 97 chữ ký sai, 01 không thấy giao dịch, 04 sai tiền, 99 lỗi khác.\n\nMoMo JSON có partnerCode, orderId, requestId, amount, orderInfo, orderType, transId, resultCode, message, payType, responseTime, extraData, signature. Canonical signature gồm accessKey cộng các trường theo thứ tự trong gateways.ts. resultCode=0 thành công. Callback số nguyên vượt giới hạn an toàn JS bị từ chối, không làm tròn im lặng. ACK 204 sau commit, lỗi 4xx/5xx để đối soát/retry.\n\nZaloPay data chứa app_id, app_trans_id, zp_trans_id, amount. Callback này chỉ thông báo thành công; xác minh key2 và app_id. ACK return_code=1, sai MAC=-1, lỗi xử lý=0.\n\nReplay hợp lệ không đổi trạng thái hoặc trả chỗ lần hai. Sai provider/merchant/reference/amount không đánh dấu PAID. Tiền đến sau timeout hoặc sau hủy: REFUND_REQUIRED và giữ đơn CANCELLED. Thời điểm quyết định là clock_timestamp() của DB sau khi lấy khóa lịch.\n\n## Lỗi mẫu\n\n\`\`\`json\n{"error":{"code":"INSUFFICIENT_SEATS","message":"Không đủ chỗ"},"meta":{"requestId":"example-request-id","timestamp":"${now}"}}\n\`\`\`\n\nMã nghiệp vụ ổn định: VALIDATION_ERROR, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, CSRF_REJECTED, NOT_FOUND, CONFLICT, IDEMPOTENCY_CONFLICT, INSUFFICIENT_SEATS, SCHEDULE_UNAVAILABLE, CANCELLATION_NOT_ALLOWED, INVALID_TRANSITION, TOUR_NOT_STARTED, CAPACITY_BELOW_RESERVED, BOOKING_NOT_PAYABLE, PAYMENT_PROVIDER_LOCKED, PROVIDER_NOT_CONFIGURED, PROVIDER_AMOUNT_LIMIT, PROVIDER_TIME_LIMIT, PROVIDER_UNAVAILABLE, INVALID_PROVIDER_RESPONSE, INVALID_SIGNATURE, MERCHANT_MISMATCH, AMOUNT_MISMATCH, TRANSACTION_MISMATCH, REFUND_NOT_REQUIRED, REFUND_REFERENCE_CONFLICT, RETRY_TRANSACTION, RATE_LIMITED.\n\nChi tiết từng trường và required/optional nằm trong openapi.json và packages/shared/src/index.ts. OpenAPI bao gồm schema request/response; các ví dụ ở tài liệu này được Zod kiểm tra khi sinh.\n`;
+md += `VNPay query tối thiểu: vnp_TmnCode, vnp_TxnRef, vnp_Amount, vnp_TransactionNo, vnp_ResponseCode, vnp_TransactionStatus, vnp_SecureHash. Ký toàn bộ tham số trả về trừ vnp_SecureHash và vnp_SecureHashType, sort tên rồi URL encode, dấu cách thành +. Cả hai trạng thái phải 00. ACK 02 khi đã ghi nhận, 97 chữ ký sai, 01 không thấy giao dịch, 04 sai tiền, 99 lỗi khác.\n\nMoMo JSON có partnerCode, orderId, requestId, amount, orderInfo, orderType, transId, resultCode, message, payType, responseTime, extraData, signature. Canonical signature gồm accessKey cộng các trường theo thứ tự trong gateways.ts. resultCode=0 thành công. Callback số nguyên vượt giới hạn an toàn JS bị từ chối, không làm tròn im lặng. ACK 204 sau commit, lỗi 4xx/5xx để đối soát/retry.\n\nZaloPay data chứa app_id, app_trans_id, zp_trans_id, amount. Callback này chỉ thông báo thành công; xác minh key2 và app_id. ACK return_code=1, sai MAC=-1, lỗi xử lý=0.\n\nReplay hợp lệ không đổi trạng thái hoặc trả chỗ lần hai. Sai provider/merchant/reference/amount không đánh dấu PAID. Tiền đến sau timeout hoặc sau hủy: REFUND_REQUIRED và giữ đơn CANCELLED. Thời điểm quyết định là clock_timestamp() của DB sau khi lấy khóa lịch.\n\n## Lỗi mẫu\n\n\`\`\`json\n{"error":{"code":"INSUFFICIENT_SEATS","message":"Không đủ chỗ"},"meta":{"requestId":"example-request-id","timestamp":"${now}"}}\n\`\`\`\n\nMã nghiệp vụ ổn định: VALIDATION_ERROR, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, CSRF_REJECTED, NOT_FOUND, CONFLICT, IDEMPOTENCY_CONFLICT, INSUFFICIENT_SEATS, SCHEDULE_UNAVAILABLE, CANCELLATION_NOT_ALLOWED, INVALID_TRANSITION, TOUR_NOT_STARTED, CAPACITY_BELOW_RESERVED, BOOKING_NOT_PAYABLE, PAYMENT_PROVIDER_LOCKED, PROVIDER_NOT_CONFIGURED, PROVIDER_AMOUNT_LIMIT, PROVIDER_TIME_LIMIT, PROVIDER_UNAVAILABLE, INVALID_PROVIDER_RESPONSE, INVALID_SIGNATURE, MERCHANT_MISMATCH, AMOUNT_MISMATCH, TRANSACTION_MISMATCH, REFUND_NOT_REQUIRED, REFUND_REFERENCE_CONFLICT, RETRY_TRANSACTION, RATE_LIMITED, MAIL_UNAVAILABLE, INVALID_RESET_CODE, INVALID_CURRENT_PASSWORD, PROPOSAL_NOT_FOUND, PROPOSAL_EXPIRED.\n\nChi tiết từng trường và required/optional nằm trong openapi.json và packages/shared/src/index.ts. OpenAPI bao gồm schema request/response; các ví dụ ở tài liệu này được Zod kiểm tra khi sinh.\n`;
 writeFileSync(new URL('../docs/API_CONTRACT.md', import.meta.url), md);
 writeFileSync(
   new URL('../docs/openapi.json', import.meta.url),

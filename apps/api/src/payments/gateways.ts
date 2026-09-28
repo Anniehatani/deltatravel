@@ -56,6 +56,7 @@ export class Gateways {
     return value;
   }
   assertConfigured(provider: Provider, amount: bigint, expiresAt: Date) {
+    if (provider === 'CASH') return;
     const keys = {
       VNPAY: ['VNPAY_TMN_CODE', 'VNPAY_HASH_SECRET'],
       MOMO: ['MOMO_PARTNER_CODE', 'MOMO_ACCESS_KEY', 'MOMO_SECRET_KEY'],
@@ -76,6 +77,8 @@ export class Gateways {
       );
   }
   async checkout(p: Payment, expiresAt: Date, ip: string): Promise<string> {
+    if (p.provider === 'CASH')
+      fail(409, 'CASH_NO_CHECKOUT', 'Thanh toán tiền mặt không có checkout URL');
     const returnUrl = `${this.config.getOrThrow<string>('WEB_ORIGIN')}/payments/return?bookingId=${p.bookingId}`;
     const api = this.config.getOrThrow<string>('API_PUBLIC_URL');
     if (p.provider === 'VNPAY') {

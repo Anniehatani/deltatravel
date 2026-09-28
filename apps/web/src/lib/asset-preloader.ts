@@ -48,7 +48,10 @@ export function preloadSingleImage(src: string): Promise<HTMLImageElement> {
     if (img.complete) {
       imageCache.set(src, img);
       if (typeof img.decode === 'function') {
-        img.decode().catch(() => {}).finally(() => resolve(img));
+        img
+          .decode()
+          .catch(() => {})
+          .finally(() => resolve(img));
       } else {
         resolve(img);
       }
@@ -58,7 +61,10 @@ export function preloadSingleImage(src: string): Promise<HTMLImageElement> {
     img.onload = () => {
       imageCache.set(src, img);
       if (typeof img.decode === 'function') {
-        img.decode().catch(() => {}).finally(() => resolve(img));
+        img
+          .decode()
+          .catch(() => {})
+          .finally(() => resolve(img));
       } else {
         resolve(img);
       }
@@ -92,7 +98,7 @@ export function preloadFrame(frameIdx: number): Promise<HTMLImageElement> {
  */
 async function preloadAllFramesConcurrent(
   concurrency: number = 10,
-  onFrameLoaded?: (current: number, total: number) => void
+  onFrameLoaded?: (current: number, total: number) => void,
 ): Promise<void> {
   const frameIndices = Array.from({ length: TOTAL_FRAMES }, (_, i) => i + 1);
   let loadedCount = 0;
@@ -130,7 +136,7 @@ async function preloadAllFramesConcurrent(
  * Tracking live progress (0 - 100%)
  */
 export function preloadCriticalAssets(
-  onProgress?: (progress: number, loadedItem: string) => void
+  onProgress?: (progress: number, loadedItem: string) => void,
 ): Promise<void> {
   const totalTourImages = CRITICAL_TOUR_IMAGES.length;
   const totalFrames = TOTAL_FRAMES;
@@ -155,7 +161,7 @@ export function preloadCriticalAssets(
     const imagePromises = CRITICAL_TOUR_IMAGES.map((src) =>
       preloadSingleImage(src).finally(() => {
         notify(`Hình ảnh ${src.split('/').pop()}`);
-      })
+      }),
     );
 
     // 2. Preload all 150 3D frames with 12 parallel streams
@@ -174,7 +180,9 @@ export function preloadCriticalAssets(
 /**
  * Fallback background runner if any frame was skipped
  */
-export function startBackgroundFramePreload(onFrameLoaded?: (current: number, total: number) => void) {
+export function startBackgroundFramePreload(
+  onFrameLoaded?: (current: number, total: number) => void,
+) {
   if (typeof window === 'undefined') return;
   preloadAllFramesConcurrent(12, onFrameLoaded).catch(() => {});
 }

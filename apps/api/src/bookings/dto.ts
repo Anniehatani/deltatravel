@@ -16,6 +16,7 @@ export function bookingDto(b: BookingRow, now = new Date()) {
     expiresAt: b.expiresAt,
     createdAt: b.createdAt,
     paidAt: b.paidAt,
+    cashDueAt: b.cashDueAt,
     cancelledAt: b.cancelledAt,
     cancelReason: b.cancelReason,
     tourTitle: b.tourTitle,

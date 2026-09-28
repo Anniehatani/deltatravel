@@ -26,8 +26,8 @@ export function LiquidFloatingDock() {
     glassMode === 'regular'
       ? GLASS_PRESETS.regularGlass
       : glassMode === 'frosted'
-      ? GLASS_PRESETS.frostedGlass
-      : GLASS_PRESETS.darkGlass;
+        ? GLASS_PRESETS.frostedGlass
+        : GLASS_PRESETS.darkGlass;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 pointer-events-auto">
@@ -57,8 +57,8 @@ export function LiquidFloatingDock() {
               glassMode === 'dark'
                 ? 'bg-black/30 border-white/30 text-white shadow-[0_20px_50px_rgba(0,0,0,0.4)]'
                 : glassMode === 'frosted'
-                ? 'bg-amber-100/30 border-amber-300/40 text-neutral-900 shadow-[0_20px_50px_rgba(217,119,6,0.15)]'
-                : 'bg-white/10 border-white/80 text-neutral-900 shadow-[0_20px_50px_rgba(0,0,0,0.2),inset_0_1.5px_2px_rgba(255,255,255,1),inset_0_-1px_1px_rgba(0,0,0,0.1)]'
+                  ? 'bg-amber-100/30 border-amber-300/40 text-neutral-900 shadow-[0_20px_50px_rgba(217,119,6,0.15)]'
+                  : 'bg-white/10 border-white/80 text-neutral-900 shadow-[0_20px_50px_rgba(0,0,0,0.2),inset_0_1.5px_2px_rgba(255,255,255,1),inset_0_-1px_1px_rgba(0,0,0,0.1)]'
             }`}
           >
             {/* Drag Handle Indicator */}

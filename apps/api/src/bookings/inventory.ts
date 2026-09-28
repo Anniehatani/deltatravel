@@ -32,6 +32,10 @@ export async function cancelLocked(
     data: { reservedSeats: { decrement: b.adults + b.children } },
   });
   await tx.payment.updateMany({
+    where: { bookingId: id, provider: 'CASH', status: 'INITIATED' },
+    data: { status: 'FAILED' },
+  });
+  await tx.payment.updateMany({
     where: { bookingId: id, status: 'SUCCEEDED', amount: { gt: 0 } },
     data: { status: 'REFUND_REQUIRED' },
   });
@@ -46,9 +50,22 @@ export async function cancelLocked(
 }
 export async function expireLocked(tx: Tx, scheduleId: string, now: Date) {
   const expired = await tx.booking.findMany({
-    where: { scheduleId, status: 'PENDING_PAYMENT', expiresAt: { lte: now } },
-    select: { id: true },
+    where: {
+      scheduleId,
+      OR: [
+        { status: 'PENDING_PAYMENT', expiresAt: { lte: now } },
+        { status: 'AWAITING_CASH', cashDueAt: { lte: now } },
+      ],
+    },
+    select: { id: true, status: true },
     orderBy: { id: 'asc' },
   });
-  for (const b of expired) await cancelLocked(tx, b.id, 'HOLD_EXPIRED', now, null);
+  for (const b of expired)
+    await cancelLocked(
+      tx,
+      b.id,
+      b.status === 'AWAITING_CASH' ? 'CASH_DUE_EXPIRED' : 'HOLD_EXPIRED',
+      now,
+      null,
+    );
 }

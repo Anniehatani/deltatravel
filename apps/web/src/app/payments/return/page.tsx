@@ -8,13 +8,7 @@ import { bookingApi } from '@/lib/api';
 import { PageShell } from '@/components/page-shell';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
-import {
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  AlertCircle,
-  ArrowRight,
-} from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Clock, AlertCircle, ArrowRight } from 'lucide-react';
 
 function Result() {
   const params = useSearchParams();
@@ -70,7 +64,9 @@ function Result() {
   if (!loading && !user) {
     return (
       <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-luxury max-w-lg mx-auto">
-        <p className="text-sm text-stone-700 mb-4">Vui lòng đăng nhập tài khoản để đối soát thông tin đơn.</p>
+        <p className="text-sm text-stone-700 mb-4">
+          Vui lòng đăng nhập tài khoản để đối soát thông tin đơn.
+        </p>
         <Button asChild className="bg-stone-900 text-white text-xs">
           <Link href="/login">Đăng nhập ngay</Link>
         </Button>
@@ -94,16 +90,17 @@ function Result() {
         <span className="text-[10px] font-bold uppercase tracking-widest text-amber-800 block mb-1">
           Xác Thực Giao Dịch
         </span>
-        <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900">
-          {status}
-        </h2>
+        <h2 className="font-serif text-2xl md:text-3xl font-bold text-stone-900">{status}</h2>
         <p className="mt-2 text-xs text-stone-500 leading-relaxed max-w-md mx-auto">
           Hệ thống đang tự động đồng bộ kết quả trực tiếp từ cổng thanh toán qua webhook an toàn.
         </p>
       </div>
 
       <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Button asChild className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white text-xs px-6 py-2.5">
+        <Button
+          asChild
+          className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white text-xs px-6 py-2.5"
+        >
           <Link href={`/bookings/${id}`}>
             <span>Xem chi tiết chuyến đi</span>
             <ArrowRight className="h-3.5 w-3.5 ml-1.5 inline" />
@@ -124,10 +121,13 @@ export default function Page() {
       title="Kết Quả Thanh Toán"
       description="Trạng thái giao dịch được xác thực trực tiếp và an toàn từ hệ thống Việt Hành."
     >
-      <Suspense fallback={<div className="p-12 text-center text-sm text-stone-500">Đang kiểm tra kết quả...</div>}>
+      <Suspense
+        fallback={
+          <div className="p-12 text-center text-sm text-stone-500">Đang kiểm tra kết quả...</div>
+        }
+      >
         <Result />
       </Suspense>
     </PageShell>
   );
 }
-

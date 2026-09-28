@@ -41,7 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
     setUser(null);
   };
-  return <Context.Provider value={{ user, loading, accept, updateUser, logout }}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={{ user, loading, accept, updateUser, logout }}>
+      {children}
+    </Context.Provider>
+  );
 }
 export function useAuth() {
   const value = useContext(Context);

@@ -31,6 +31,7 @@ import {
 
 const STATUS_BADGE_STYLE: Record<string, string> = {
   PENDING_PAYMENT: 'bg-amber-100 text-amber-900 border-amber-300',
+  AWAITING_CASH: 'bg-sky-100 text-sky-900 border-sky-300',
   PAID: 'bg-emerald-100 text-emerald-900 border-emerald-300',
   CONFIRMED: 'bg-blue-100 text-blue-900 border-blue-300',
   COMPLETED: 'bg-stone-100 text-stone-800 border-stone-300',
@@ -124,7 +125,7 @@ export default function AdminBookingsPage() {
     const totalCount = filteredBookings.length;
 
     let revenueCollected = 0; // PAID, CONFIRMED, COMPLETED
-    let pendingAmount = 0; // PENDING_PAYMENT
+    let pendingAmount = 0; // PENDING_PAYMENT or AWAITING_CASH
     let cancelledCount = 0;
     let completedCount = 0;
 
@@ -133,7 +134,7 @@ export default function AdminBookingsPage() {
       if (b.status === 'PAID' || b.status === 'CONFIRMED' || b.status === 'COMPLETED') {
         revenueCollected += amount;
       }
-      if (b.status === 'PENDING_PAYMENT') {
+      if (b.status === 'PENDING_PAYMENT' || b.status === 'AWAITING_CASH') {
         pendingAmount += amount;
       }
       if (b.status === 'CANCELLED') {
@@ -229,7 +230,10 @@ export default function AdminBookingsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `sao_ke_don_hang_delta_travel_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute(
+      'download',
+      `sao_ke_don_hang_delta_travel_${new Date().toISOString().slice(0, 10)}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -294,7 +298,9 @@ export default function AdminBookingsPage() {
         {/* Real Revenue Collected */}
         <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-5 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-emerald-800">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Doanh Thu Thực Nhận</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">
+              Doanh Thu Thực Nhận
+            </span>
             <TrendingUp className="h-4 w-4" />
           </div>
           <div className="mt-3">
@@ -308,7 +314,9 @@ export default function AdminBookingsPage() {
         {/* Pending Orders Amount */}
         <div className="rounded-2xl border border-amber-200/80 bg-amber-50/60 p-5 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-amber-800">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Đang Chờ Thanh Toán</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">
+              Đang Chờ Thanh Toán
+            </span>
             <Clock className="h-4 w-4" />
           </div>
           <div className="mt-3">
@@ -365,7 +373,8 @@ export default function AdminBookingsPage() {
             className="py-2.5 px-3 rounded-xl border border-stone-200 bg-stone-50 text-xs font-semibold text-stone-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             <option value="all">Tất cả trạng thái</option>
-            <option value="PENDING_PAYMENT">Chờ thanh toán (PENDING)</option>
+            <option value="PENDING_PAYMENT">Chờ thanh toán online (PENDING)</option>
+            <option value="AWAITING_CASH">Chờ thu tiền mặt (AWAITING CASH)</option>
             <option value="PAID">Đã thanh toán (PAID)</option>
             <option value="CONFIRMED">Đã xác nhận (CONFIRMED)</option>
             <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
@@ -420,7 +429,9 @@ export default function AdminBookingsPage() {
         <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-sm">
           <p className="text-sm font-bold text-stone-800 mb-1">Lỗi tải danh sách đơn</p>
           <p className="text-xs text-stone-500 mb-4">{error}</p>
-          <Button variant="outline" onClick={fetchBookings}>Thử lại</Button>
+          <Button variant="outline" onClick={fetchBookings}>
+            Thử lại
+          </Button>
         </div>
       ) : filteredBookings.length === 0 ? (
         <div className="rounded-3xl border border-stone-200 bg-white p-12 text-center shadow-sm">
@@ -497,14 +508,19 @@ export default function AdminBookingsPage() {
 
                     <td className="py-4 px-4 sm:px-6">
                       <strong className="text-stone-900 block">{booking.contactName}</strong>
-                      <span className="text-stone-600 text-[11px] block">{booking.contactPhone}</span>
-                      <span className="text-stone-400 text-[10px] block">{booking.contactEmail}</span>
+                      <span className="text-stone-600 text-[11px] block">
+                        {booking.contactPhone}
+                      </span>
+                      <span className="text-stone-400 text-[10px] block">
+                        {booking.contactEmail}
+                      </span>
                     </td>
 
                     <td className="py-4 px-4 sm:px-6 font-medium text-stone-800">
                       <div>{formatDate(booking.departureAt)}</div>
                       <span className="text-[11px] text-stone-500 block">
-                        {booking.adults} Lớn {booking.children > 0 ? `· ${booking.children} Trẻ` : ''}
+                        {booking.adults} Lớn{' '}
+                        {booking.children > 0 ? `· ${booking.children} Trẻ` : ''}
                       </span>
                     </td>
 
@@ -577,7 +593,8 @@ export default function AdminBookingsPage() {
               Hủy Đơn Đặt Chỗ (Vận Hành)
             </h3>
             <p className="text-xs text-stone-600 mb-4 leading-relaxed">
-              Thao tác này sẽ đánh dấu đơn hàng là CANCELLED và cập nhật trạng thái trong sổ sao kê doanh thu.
+              Thao tác này sẽ đánh dấu đơn hàng là CANCELLED và cập nhật trạng thái trong sổ sao kê
+              doanh thu.
             </p>
 
             <form onSubmit={handleAdminCancel} className="space-y-4 text-xs">

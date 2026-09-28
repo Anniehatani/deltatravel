@@ -69,7 +69,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'A'}
                 </div>
                 <div className="overflow-hidden flex-1">
-                  <div className="text-xs font-bold text-white truncate">{user?.name || 'Quản trị viên'}</div>
+                  <div className="text-xs font-bold text-white truncate">
+                    {user?.name || 'Quản trị viên'}
+                  </div>
                   <div className="text-[10px] text-amber-400 font-mono flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3 text-amber-400 shrink-0" />
                     <span>QUẢN TRỊ VIÊN HỆ THỐNG</span>
@@ -86,7 +88,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {ADMIN_NAV_LINKS.map((link) => {
                 const Icon = link.icon;
                 const isActive =
-                  pathname === link.href || (link.href !== '/admin' && pathname.startsWith(link.href));
+                  pathname === link.href ||
+                  (link.href !== '/admin' && pathname.startsWith(link.href));
 
                 return (
                   <Link
@@ -99,7 +102,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`} />
+                      <Icon
+                        className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+                      />
                       <span>{link.label}</span>
                     </div>
 
@@ -159,9 +164,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <LogOut className="h-6 w-6" />
             </div>
 
-            <h3 className="text-center font-bold text-lg text-stone-900">
-              Xác Nhận Đăng Xuất
-            </h3>
+            <h3 className="text-center font-bold text-lg text-stone-900">Xác Nhận Đăng Xuất</h3>
             <p className="mt-2 text-center text-xs text-stone-600 leading-relaxed">
               Bạn có chắc chắn muốn đăng xuất khỏi phiên làm việc quản trị của DELTA TRAVEL không?
             </p>

@@ -34,11 +34,7 @@ export function LiquidGlassRoot({
   });
 
   return (
-    <div
-      ref={rootRef}
-      className={`relative ${className}`}
-      {...props}
-    >
+    <div ref={rootRef} className={`relative ${className}`} {...props}>
       {children}
     </div>
   );

@@ -3,33 +3,44 @@ import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { z } from 'zod';
-import { RegisterSchema, LoginSchema } from '@tour/shared';
+import {
+  RegisterSchema,
+  LoginSchema,
+  ForgotPasswordSchema,
+  ResetPasswordSchema,
+  ChangePasswordSchema,
+} from '@tour/shared';
 import { ZodPipe, AppRequest } from '../common/http';
 import { fail } from '../common/errors';
 import { Public } from './guards';
 import { AuthService } from './auth.service';
+
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly auth: AuthService,
     private readonly config: ConfigService,
   ) {}
+
   private csrf(req: AppRequest) {
     if (
       req.headers.origin !== this.config.get('WEB_ORIGIN') ||
       req.headers['x-csrf-protection'] !== '1'
-    )
+    ) {
       fail(403, 'CSRF_REJECTED', 'Origin hoặc CSRF header không hợp lệ');
+    }
   }
+
   private cookie(res: Response, token: string) {
     res.cookie('refresh_token', token, {
       httpOnly: true,
       secure: this.config.get('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: this.config.get('NODE_ENV') === 'production' ? 'none' : 'lax',
       path: '/api/v1/auth',
       maxAge: 30 * 86400000,
     });
   }
+
   @Public()
   @Post('register')
   @Throttle({ default: { limit: 5, ttl: 60000 } })
@@ -43,6 +54,7 @@ export class AuthController {
     this.cookie(res, r.refreshToken);
     return r.result;
   }
+
   @Public()
   @Post('login')
   @HttpCode(200)
@@ -57,6 +69,41 @@ export class AuthController {
     this.cookie(res, r.refreshToken);
     return r.result;
   }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  forgotPassword(
+    @Body(new ZodPipe(ForgotPasswordSchema)) body: z.infer<typeof ForgotPasswordSchema>,
+    @Req() req: AppRequest,
+  ) {
+    this.csrf(req);
+    return this.auth.requestPasswordReset(body);
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(200)
+  @Throttle({ default: { limit: 8, ttl: 60000 } })
+  resetPassword(
+    @Body(new ZodPipe(ResetPasswordSchema)) body: z.infer<typeof ResetPasswordSchema>,
+    @Req() req: AppRequest,
+  ) {
+    this.csrf(req);
+    return this.auth.resetPassword(body);
+  }
+
+  @Post('change-password')
+  @HttpCode(200)
+  changePassword(
+    @Body(new ZodPipe(ChangePasswordSchema)) body: z.infer<typeof ChangePasswordSchema>,
+    @Req() req: AppRequest,
+  ) {
+    this.csrf(req);
+    return this.auth.changePassword(req.user!.id, body);
+  }
+
   @Public()
   @Post('refresh')
   @HttpCode(200)
@@ -66,6 +113,7 @@ export class AuthController {
     this.cookie(res, r.refreshToken);
     return r.result;
   }
+
   @Public()
   @Post('logout')
   @HttpCode(200)
@@ -75,11 +123,13 @@ export class AuthController {
       path: '/api/v1/auth',
       httpOnly: true,
       secure: this.config.get('NODE_ENV') === 'production',
-      sameSite: 'strict',
+      sameSite: this.config.get('NODE_ENV') === 'production' ? 'none' : 'lax',
     });
     return this.auth.logout(req.cookies?.refresh_token);
   }
-  @Get('me') me(@Req() req: AppRequest) {
+
+  @Get('me')
+  me(@Req() req: AppRequest) {
     return this.auth.me(req.user!.id);
   }
 }

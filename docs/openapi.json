@@ -72,9 +72,19 @@
                             "role": {
                               "type": "string",
                               "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                            },
+                            "avatarUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            },
+                            "avatarId": {
+                              "type": "string",
+                              "format": "uuid",
+                              "nullable": true
                             }
                           },
-                          "required": ["id", "name", "email", "role"],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
@@ -105,7 +115,9 @@
                       "id": "44444444-4444-4444-8444-444444444444",
                       "name": "Nguyễn Minh Anh",
                       "email": "minhanh@example.com",
-                      "role": "CUSTOMER"
+                      "role": "CUSTOMER",
+                      "avatarUrl": null,
+                      "avatarId": null
                     },
                     "accessToken": "<JWT_ACCESS_TOKEN>",
                     "expiresIn": 900
@@ -159,6 +171,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -306,9 +328,19 @@
                             "role": {
                               "type": "string",
                               "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                            },
+                            "avatarUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            },
+                            "avatarId": {
+                              "type": "string",
+                              "format": "uuid",
+                              "nullable": true
                             }
                           },
-                          "required": ["id", "name", "email", "role"],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
@@ -339,7 +371,9 @@
                       "id": "44444444-4444-4444-8444-444444444444",
                       "name": "Nguyễn Minh Anh",
                       "email": "minhanh@example.com",
-                      "role": "CUSTOMER"
+                      "role": "CUSTOMER",
+                      "avatarUrl": null,
+                      "avatarId": null
                     },
                     "accessToken": "<JWT_ACCESS_TOKEN>",
                     "expiresIn": 900
@@ -393,6 +427,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -473,6 +517,627 @@
         }
       }
     },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Gửi OTP 6 số qua email nếu tài khoản tồn tại; response không trả OTP.",
+        "operationId": "post_auth_forgot_password",
+        "tags": ["auth"],
+        "security": [],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          },
+          {
+            "name": "X-CSRF-Protection",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["1"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "ok": {
+                          "type": "boolean",
+                          "enum": [true]
+                        }
+                      },
+                      "required": ["ok"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "ok": true
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                  }
+                },
+                "required": ["email"],
+                "additionalProperties": false
+              },
+              "example": {
+                "email": "minhanh@example.com"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Đổi mật khẩu bằng OTP còn hạn; revoke toàn bộ refresh session khi thành công.",
+        "operationId": "post_auth_reset_password",
+        "tags": ["auth"],
+        "security": [],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          },
+          {
+            "name": "X-CSRF-Protection",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["1"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "ok": {
+                          "type": "boolean",
+                          "enum": [true]
+                        }
+                      },
+                      "required": ["ok"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "ok": true
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                  },
+                  "code": {
+                    "type": "string",
+                    "pattern": "^\\d{6}$"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 128
+                  }
+                },
+                "required": ["email", "code", "newPassword"],
+                "additionalProperties": false
+              },
+              "example": {
+                "email": "minhanh@example.com",
+                "code": "123456",
+                "newPassword": "NewDemoPassword_123!"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "summary": "Đổi mật khẩu khi biết mật khẩu hiện tại; revoke toàn bộ refresh session.",
+        "operationId": "post_auth_change_password",
+        "tags": ["auth"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Origin",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:3000"
+            }
+          },
+          {
+            "name": "X-CSRF-Protection",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["1"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "ok": {
+                          "type": "boolean",
+                          "enum": [true]
+                        }
+                      },
+                      "required": ["ok"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "ok": true
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 12,
+                    "maxLength": 128
+                  }
+                },
+                "required": ["oldPassword", "newPassword"],
+                "additionalProperties": false
+              },
+              "example": {
+                "oldPassword": "DemoPassword_123!",
+                "newPassword": "NewDemoPassword_123!"
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/refresh": {
       "post": {
         "summary": "Rotate refresh token. Gửi cookie, Origin, X-CSRF-Protection: 1.",
@@ -538,9 +1203,19 @@
                             "role": {
                               "type": "string",
                               "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                            },
+                            "avatarUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true
+                            },
+                            "avatarId": {
+                              "type": "string",
+                              "format": "uuid",
+                              "nullable": true
                             }
                           },
-                          "required": ["id", "name", "email", "role"],
+                          "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                           "additionalProperties": false
                         }
                       },
@@ -571,7 +1246,9 @@
                       "id": "44444444-4444-4444-8444-444444444444",
                       "name": "Nguyễn Minh Anh",
                       "email": "minhanh@example.com",
-                      "role": "CUSTOMER"
+                      "role": "CUSTOMER",
+                      "avatarUrl": null,
+                      "avatarId": null
                     },
                     "accessToken": "<JWT_ACCESS_TOKEN>",
                     "expiresIn": 900
@@ -625,6 +1302,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -819,6 +1506,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -911,9 +1608,19 @@
                         "role": {
                           "type": "string",
                           "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "avatarId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "nullable": true
                         }
                       },
-                      "required": ["id", "name", "email", "role"],
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
                       "additionalProperties": false
                     },
                     "meta": {
@@ -939,7 +1646,9 @@
                     "id": "44444444-4444-4444-8444-444444444444",
                     "name": "Nguyễn Minh Anh",
                     "email": "minhanh@example.com",
-                    "role": "CUSTOMER"
+                    "role": "CUSTOMER",
+                    "avatarUrl": null,
+                    "avatarId": null
                   },
                   "meta": {
                     "requestId": "example-request-id",
@@ -990,6 +1699,826 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/me": {
+      "get": {
+        "summary": "Hồ sơ hiện tại gồm avatar bền vững theo tài khoản.",
+        "operationId": "get_profile_me",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "avatarId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "nullable": true
+                        }
+                      },
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "id": "44444444-4444-4444-8444-444444444444",
+                    "name": "Nguyễn Minh Anh",
+                    "email": "minhanh@example.com",
+                    "role": "CUSTOMER",
+                    "avatarUrl": null,
+                    "avatarId": null
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/avatar/upload-url": {
+      "post": {
+        "summary": "Cấp signed upload URL cho Supabase Storage; chỉ JPEG/PNG/WebP tối đa 2 MiB.",
+        "operationId": "post_profile_avatar_upload_url",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "uploadId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "signedUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "token": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "publicUrl": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "expiresIn": {
+                          "type": "number",
+                          "enum": [7200]
+                        }
+                      },
+                      "required": [
+                        "uploadId",
+                        "path",
+                        "signedUrl",
+                        "token",
+                        "publicUrl",
+                        "expiresIn"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "uploadId": "77777777-7777-4777-8777-777777777777",
+                    "path": "44444444-4444-4444-8444-444444444444/avatar-77777777-7777-4777-8777-777777777777.jpg",
+                    "signedUrl": "https://example.supabase.co/storage/v1/object/upload/sign/avatars/example.jpg?token=<SIGNED_UPLOAD_TOKEN>",
+                    "token": "<SIGNED_UPLOAD_TOKEN>",
+                    "publicUrl": "https://example.supabase.co/storage/v1/object/public/avatars/44444444-4444-4444-8444-444444444444/avatar.jpg",
+                    "expiresIn": 7200
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contentType": {
+                    "type": "string",
+                    "enum": ["image/jpeg", "image/png", "image/webp"]
+                  },
+                  "sizeBytes": {
+                    "type": "integer",
+                    "exclusiveMinimum": true,
+                    "minimum": 0,
+                    "maximum": 2097152
+                  }
+                },
+                "required": ["contentType", "sizeBytes"],
+                "additionalProperties": false
+              },
+              "example": {
+                "contentType": "image/jpeg",
+                "sizeBytes": 245760
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/avatar/complete": {
+      "post": {
+        "summary": "Xác minh object đã tồn tại rồi lưu avatarUrl/avatarId vào PostgreSQL.",
+        "operationId": "post_profile_avatar_complete",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "avatarId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "nullable": true
+                        }
+                      },
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "id": "44444444-4444-4444-8444-444444444444",
+                    "name": "Nguyễn Minh Anh",
+                    "email": "minhanh@example.com",
+                    "role": "CUSTOMER",
+                    "avatarUrl": null,
+                    "avatarId": null
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uploadId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": ["uploadId"],
+                "additionalProperties": false
+              },
+              "example": {
+                "uploadId": "77777777-7777-4777-8777-777777777777"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profile/avatar": {
+      "delete": {
+        "summary": "Gỡ avatar khỏi hồ sơ; cleanup object cũ theo best-effort.",
+        "operationId": "delete_profile_avatar",
+        "tags": ["profile"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "role": {
+                          "type": "string",
+                          "enum": ["CUSTOMER", "OPERATIONS", "ADMIN"]
+                        },
+                        "avatarUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "avatarId": {
+                          "type": "string",
+                          "format": "uuid",
+                          "nullable": true
+                        }
+                      },
+                      "required": ["id", "name", "email", "role", "avatarUrl", "avatarId"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "id": "44444444-4444-4444-8444-444444444444",
+                    "name": "Nguyễn Minh Anh",
+                    "email": "minhanh@example.com",
+                    "role": "CUSTOMER",
+                    "avatarUrl": null,
+                    "avatarId": null
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -1275,6 +2804,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -1486,6 +3025,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -1758,6 +3307,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -1974,6 +3533,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -2173,6 +3742,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -2291,7 +3870,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -2326,6 +3912,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -2394,6 +3985,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -2436,6 +4028,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": null,
+                    "cashDueAt": null,
                     "cancelledAt": null,
                     "cancelReason": null,
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -2505,6 +4098,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -2673,6 +4276,7 @@
                                 "type": "string",
                                 "enum": [
                                   "PENDING_PAYMENT",
+                                  "AWAITING_CASH",
                                   "PAID",
                                   "CONFIRMED",
                                   "COMPLETED",
@@ -2712,6 +4316,11 @@
                                 "format": "date-time"
                               },
                               "paidAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "cashDueAt": {
                                 "type": "string",
                                 "format": "date-time",
                                 "nullable": true
@@ -2780,6 +4389,7 @@
                               "expiresAt",
                               "createdAt",
                               "paidAt",
+                              "cashDueAt",
                               "cancelledAt",
                               "cancelReason",
                               "tourTitle",
@@ -2838,6 +4448,7 @@
                         "expiresAt": "2026-12-01T01:15:00.000Z",
                         "createdAt": "2026-12-01T01:00:00.000Z",
                         "paidAt": null,
+                        "cashDueAt": null,
                         "cancelledAt": null,
                         "cancelReason": null,
                         "tourTitle": "Đà Nẵng và Hội An",
@@ -2912,6 +4523,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -3006,7 +4627,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -3041,6 +4669,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -3109,6 +4742,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -3151,6 +4785,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": null,
+                    "cashDueAt": null,
                     "cancelledAt": null,
                     "cancelReason": null,
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -3220,6 +4855,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -3314,7 +4959,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -3349,6 +5001,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -3417,6 +5074,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -3459,6 +5117,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": null,
+                    "cashDueAt": null,
                     "cancelledAt": "2026-12-01T01:00:00.000Z",
                     "cancelReason": "Thay đổi kế hoạch cá nhân",
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -3537,6 +5196,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -3604,7 +5273,7 @@
     },
     "/payments": {
       "post": {
-        "summary": "Tạo/lấy giao dịch của đơn thuộc user; một provider cho mỗi đơn. Không nhận số tiền từ client.",
+        "summary": "Tạo/lấy phương thức thanh toán của đơn thuộc user. VNPAY/MOMO/ZALOPAY tạo checkout; CASH chuyển sang AWAITING_CASH và tuyệt đối chưa coi là PAID.",
         "operationId": "post_payments",
         "tags": ["payments"],
         "security": [
@@ -3634,7 +5303,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": ["VNPAY", "MOMO", "ZALOPAY"]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -3755,6 +5424,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -3818,7 +5497,7 @@
                   },
                   "provider": {
                     "type": "string",
-                    "enum": ["VNPAY", "MOMO", "ZALOPAY"]
+                    "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                   }
                 },
                 "required": ["bookingId", "provider"],
@@ -3875,7 +5554,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": ["VNPAY", "MOMO", "ZALOPAY"]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -3996,6 +5675,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -4156,6 +5845,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -4445,6 +6144,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -4648,6 +6357,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -4939,6 +6658,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -5142,6 +6871,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -5409,6 +7148,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -5608,6 +7357,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -5887,6 +7646,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -6028,6 +7797,7 @@
                                 "type": "string",
                                 "enum": [
                                   "PENDING_PAYMENT",
+                                  "AWAITING_CASH",
                                   "PAID",
                                   "CONFIRMED",
                                   "COMPLETED",
@@ -6067,6 +7837,11 @@
                                 "format": "date-time"
                               },
                               "paidAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "cashDueAt": {
                                 "type": "string",
                                 "format": "date-time",
                                 "nullable": true
@@ -6135,6 +7910,7 @@
                               "expiresAt",
                               "createdAt",
                               "paidAt",
+                              "cashDueAt",
                               "cancelledAt",
                               "cancelReason",
                               "tourTitle",
@@ -6193,6 +7969,7 @@
                         "expiresAt": "2026-12-01T01:15:00.000Z",
                         "createdAt": "2026-12-01T01:00:00.000Z",
                         "paidAt": null,
+                        "cashDueAt": null,
                         "cancelledAt": null,
                         "cancelReason": null,
                         "tourTitle": "Đà Nẵng và Hội An",
@@ -6267,6 +8044,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -6361,7 +8148,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -6396,6 +8190,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -6464,6 +8263,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -6506,6 +8306,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": null,
+                    "cashDueAt": null,
                     "cancelledAt": null,
                     "cancelReason": null,
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -6575,6 +8376,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -6669,7 +8480,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -6704,6 +8522,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -6772,6 +8595,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -6814,6 +8638,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": "2026-12-01T01:00:00.000Z",
+                    "cashDueAt": null,
                     "cancelledAt": null,
                     "cancelReason": null,
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -6883,6 +8708,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -6998,7 +8833,14 @@
                         },
                         "status": {
                           "type": "string",
-                          "enum": ["PENDING_PAYMENT", "PAID", "CONFIRMED", "COMPLETED", "CANCELLED"]
+                          "enum": [
+                            "PENDING_PAYMENT",
+                            "AWAITING_CASH",
+                            "PAID",
+                            "CONFIRMED",
+                            "COMPLETED",
+                            "CANCELLED"
+                          ]
                         },
                         "adults": {
                           "type": "integer"
@@ -7033,6 +8875,11 @@
                           "format": "date-time"
                         },
                         "paidAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "cashDueAt": {
                           "type": "string",
                           "format": "date-time",
                           "nullable": true
@@ -7101,6 +8948,7 @@
                         "expiresAt",
                         "createdAt",
                         "paidAt",
+                        "cashDueAt",
                         "cancelledAt",
                         "cancelReason",
                         "tourTitle",
@@ -7143,6 +8991,7 @@
                     "expiresAt": "2026-12-01T01:15:00.000Z",
                     "createdAt": "2026-12-01T01:00:00.000Z",
                     "paidAt": null,
+                    "cashDueAt": null,
                     "cancelledAt": "2026-12-01T01:00:00.000Z",
                     "cancelReason": "Thay đổi kế hoạch cá nhân",
                     "tourTitle": "Đà Nẵng và Hội An",
@@ -7212,6 +9061,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -7345,7 +9204,7 @@
                               },
                               "provider": {
                                 "type": "string",
-                                "enum": ["VNPAY", "MOMO", "ZALOPAY"]
+                                "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                               },
                               "status": {
                                 "type": "string",
@@ -7496,6 +9355,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -7533,6 +9402,259 @@
                 "schema": {
                   "$ref": "#/components/schemas/ApiError"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/payments/{id}/cash-receipt": {
+      "post": {
+        "summary": "Chỉ ghi nhận PAID cho provider CASH sau khi nhân viên thực sự nhận tiền và nhập mã biên nhận.",
+        "operationId": "post_admin_payments__id__cash_receipt",
+        "tags": ["admin"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "bookingId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "INITIATED",
+                            "SUCCEEDED",
+                            "FAILED",
+                            "REFUND_REQUIRED",
+                            "REFUNDED"
+                          ]
+                        },
+                        "amount": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9999999999
+                        },
+                        "currency": {
+                          "type": "string",
+                          "enum": ["VND"]
+                        },
+                        "checkoutUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "nullable": true
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "bookingId",
+                        "provider",
+                        "status",
+                        "amount",
+                        "currency",
+                        "checkoutUrl",
+                        "createdAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "id": "55555555-5555-4555-8555-555555555555",
+                    "bookingId": "33333333-3333-4333-8333-333333333333",
+                    "provider": "CASH",
+                    "status": "SUCCEEDED",
+                    "amount": 10470000,
+                    "currency": "VND",
+                    "checkoutUrl": null,
+                    "createdAt": "2026-12-01T01:00:00.000Z"
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reference": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 100
+                  },
+                  "note": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 500
+                  }
+                },
+                "required": ["reference"],
+                "additionalProperties": false
+              },
+              "example": {
+                "reference": "CASH-20261201-001",
+                "note": "Đã nhận đủ tiền mặt tại quầy"
               }
             }
           }
@@ -7581,7 +9703,7 @@
                         },
                         "provider": {
                           "type": "string",
-                          "enum": ["VNPAY", "MOMO", "ZALOPAY"]
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
                         },
                         "status": {
                           "type": "string",
@@ -7702,6 +9824,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -7964,6 +10096,361 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assistant/provider-status": {
+      "get": {
+        "summary": "Chỉ báo provider nào đã cấu hình; không trả secret.",
+        "operationId": "get_assistant_provider_status",
+        "tags": ["assistant"],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "preferredProvider": {
+                          "type": "string",
+                          "enum": ["GROQ", "GEMINI"],
+                          "nullable": true
+                        },
+                        "groqConfigured": {
+                          "type": "boolean"
+                        },
+                        "geminiConfigured": {
+                          "type": "boolean"
+                        },
+                        "fallbackAvailable": {
+                          "type": "boolean",
+                          "enum": [true]
+                        }
+                      },
+                      "required": [
+                        "preferredProvider",
+                        "groqConfigured",
+                        "geminiConfigured",
+                        "fallbackAvailable"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "preferredProvider": "GROQ",
+                    "groqConfigured": true,
+                    "geminiConfigured": false,
+                    "fallbackAvailable": true
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assistant/provider-probe": {
+      "get": {
+        "summary": "Gọi thử provider thật; providerLive=false nghĩa đang rơi về RULE_BASED.",
+        "operationId": "get_assistant_provider_probe",
+        "tags": ["assistant"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": ["GROQ", "GEMINI", "RULE_BASED"]
+                        },
+                        "providerLive": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": ["mode", "providerLive"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "mode": "GROQ",
+                    "providerLive": true
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -8009,7 +10496,7 @@
     },
     "/assistant/chat": {
       "post": {
-        "summary": "JWT tùy chọn. Backend áp dụng quyền user cho từng công cụ.",
+        "summary": "JWT tùy chọn. Planner chỉ chọn capability đã whitelist; dữ liệu nghiệp vụ lấy từ backend.",
         "operationId": "post_assistant_chat",
         "tags": ["assistant"],
         "security": [
@@ -8035,7 +10522,7 @@
                         },
                         "mode": {
                           "type": "string",
-                          "enum": ["GEMINI", "RULE_BASED"]
+                          "enum": ["GROQ", "GEMINI", "RULE_BASED"]
                         },
                         "actions": {
                           "type": "array",
@@ -8176,6 +10663,16 @@
               }
             }
           },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "See error.code",
             "content": {
@@ -8229,6 +10726,10 @@
                     "minLength": 1,
                     "maxLength": 2000
                   },
+                  "lang": {
+                    "type": "string",
+                    "enum": ["vi", "en"]
+                  },
                   "history": {
                     "type": "array",
                     "items": {
@@ -8255,7 +10756,682 @@
               },
               "example": {
                 "message": "Tìm tour Đà Nẵng",
+                "lang": "vi",
                 "history": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assistant/booking-proposals": {
+      "post": {
+        "summary": "Tạo proposal Redis TTL 10 phút sau khi quote lại giá/chỗ; chưa tạo booking.",
+        "operationId": "post_assistant_booking_proposals",
+        "tags": ["assistant"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "proposalId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "kind": {
+                          "type": "string",
+                          "enum": ["CREATE_BOOKING"]
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "requiresConfirmation": {
+                          "type": "boolean",
+                          "enum": [true]
+                        },
+                        "quote": {
+                          "type": "object",
+                          "properties": {
+                            "scheduleId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "adults": {
+                              "type": "integer"
+                            },
+                            "children": {
+                              "type": "integer"
+                            },
+                            "adultPrice": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9999999999
+                            },
+                            "childPrice": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9999999999
+                            },
+                            "totalAmount": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9999999999
+                            },
+                            "currency": {
+                              "type": "string",
+                              "enum": ["VND"]
+                            },
+                            "availableSeats": {
+                              "type": "integer"
+                            },
+                            "serverTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "scheduleId",
+                            "adults",
+                            "children",
+                            "adultPrice",
+                            "childPrice",
+                            "totalAmount",
+                            "currency",
+                            "availableSeats",
+                            "serverTime"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "provider": {
+                          "type": "string",
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"],
+                          "nullable": true
+                        },
+                        "summary": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "proposalId",
+                        "kind",
+                        "expiresAt",
+                        "requiresConfirmation",
+                        "quote",
+                        "provider",
+                        "summary"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "proposalId": "66666666-6666-4666-8666-666666666666",
+                    "kind": "CREATE_BOOKING",
+                    "expiresAt": "2026-12-01T01:10:00.000Z",
+                    "requiresConfirmation": true,
+                    "quote": {
+                      "scheduleId": "22222222-2222-4222-8222-222222222222",
+                      "adults": 2,
+                      "children": 1,
+                      "adultPrice": 3990000,
+                      "childPrice": 2490000,
+                      "totalAmount": 10470000,
+                      "currency": "VND",
+                      "availableSeats": 22,
+                      "serverTime": "2026-12-01T01:00:00.000Z"
+                    },
+                    "provider": "VNPAY",
+                    "summary": "Tạo đơn giữ chỗ 15 phút cho 3 khách, tổng 10.470.000 VND."
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "adults": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  },
+                  "children": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "scheduleId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "contactName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "format": "email",
+                    "maxLength": 254
+                  },
+                  "contactPhone": {
+                    "type": "string",
+                    "pattern": "^(?:\\+84|0)[0-9]{9,10}$"
+                  },
+                  "provider": {
+                    "type": "string",
+                    "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"]
+                  }
+                },
+                "required": [
+                  "adults",
+                  "children",
+                  "scheduleId",
+                  "contactName",
+                  "contactEmail",
+                  "contactPhone"
+                ],
+                "additionalProperties": false
+              },
+              "example": {
+                "scheduleId": "22222222-2222-4222-8222-222222222222",
+                "adults": 2,
+                "children": 1,
+                "contactName": "Nguyễn Minh Anh",
+                "contactEmail": "minhanh@example.com",
+                "contactPhone": "0901234567",
+                "provider": "VNPAY"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assistant/booking-proposals/{id}/confirm": {
+      "post": {
+        "summary": "Chỉ sau explicit confirmation mới tạo booking idempotent. Thanh toán vẫn dùng payment API riêng.",
+        "operationId": "post_assistant_booking_proposals__id__confirm",
+        "tags": ["assistant"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "booking": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "scheduleId": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "PENDING_PAYMENT",
+                                "AWAITING_CASH",
+                                "PAID",
+                                "CONFIRMED",
+                                "COMPLETED",
+                                "CANCELLED"
+                              ]
+                            },
+                            "adults": {
+                              "type": "integer"
+                            },
+                            "children": {
+                              "type": "integer"
+                            },
+                            "totalAmount": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9999999999
+                            },
+                            "currency": {
+                              "type": "string",
+                              "enum": ["VND"]
+                            },
+                            "contactName": {
+                              "type": "string"
+                            },
+                            "contactEmail": {
+                              "type": "string"
+                            },
+                            "contactPhone": {
+                              "type": "string"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "paidAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "nullable": true
+                            },
+                            "cashDueAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "nullable": true
+                            },
+                            "cancelledAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "nullable": true
+                            },
+                            "cancelReason": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "tourTitle": {
+                              "type": "string"
+                            },
+                            "departureAt": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "details": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "kind": {
+                                    "type": "string",
+                                    "enum": ["ADULT", "CHILD"]
+                                  },
+                                  "quantity": {
+                                    "type": "integer",
+                                    "exclusiveMinimum": true,
+                                    "minimum": 0
+                                  },
+                                  "unitPrice": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9999999999
+                                  },
+                                  "lineTotal": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9999999999
+                                  }
+                                },
+                                "required": ["kind", "quantity", "unitPrice", "lineTotal"],
+                                "additionalProperties": false
+                              }
+                            },
+                            "serverTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "scheduleId",
+                            "status",
+                            "adults",
+                            "children",
+                            "totalAmount",
+                            "currency",
+                            "contactName",
+                            "contactEmail",
+                            "contactPhone",
+                            "expiresAt",
+                            "createdAt",
+                            "paidAt",
+                            "cashDueAt",
+                            "cancelledAt",
+                            "cancelReason",
+                            "tourTitle",
+                            "departureAt",
+                            "details",
+                            "serverTime"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "selectedProvider": {
+                          "type": "string",
+                          "enum": ["VNPAY", "MOMO", "ZALOPAY", "CASH"],
+                          "nullable": true
+                        },
+                        "nextAction": {
+                          "type": "string",
+                          "enum": ["OPEN_BOOKING"]
+                        }
+                      },
+                      "required": ["booking", "selectedProvider", "nextAction"],
+                      "additionalProperties": false
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "requestId": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": ["requestId", "timestamp"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["data", "meta"],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "data": {
+                    "booking": {
+                      "id": "33333333-3333-4333-8333-333333333333",
+                      "scheduleId": "22222222-2222-4222-8222-222222222222",
+                      "adults": 2,
+                      "children": 1,
+                      "contactName": "Nguyễn Minh Anh",
+                      "contactEmail": "minhanh@example.com",
+                      "contactPhone": "0901234567",
+                      "status": "PENDING_PAYMENT",
+                      "totalAmount": 10470000,
+                      "currency": "VND",
+                      "expiresAt": "2026-12-01T01:15:00.000Z",
+                      "createdAt": "2026-12-01T01:00:00.000Z",
+                      "paidAt": null,
+                      "cashDueAt": null,
+                      "cancelledAt": null,
+                      "cancelReason": null,
+                      "tourTitle": "Đà Nẵng và Hội An",
+                      "departureAt": "2026-12-15T01:00:00.000Z",
+                      "details": [
+                        {
+                          "kind": "ADULT",
+                          "quantity": 2,
+                          "unitPrice": 3990000,
+                          "lineTotal": 7980000
+                        },
+                        {
+                          "kind": "CHILD",
+                          "quantity": 1,
+                          "unitPrice": 2490000,
+                          "lineTotal": 2490000
+                        }
+                      ],
+                      "serverTime": "2026-12-01T01:00:00.000Z"
+                    },
+                    "selectedProvider": "VNPAY",
+                    "nextAction": "OPEN_BOOKING"
+                  },
+                  "meta": {
+                    "requestId": "example-request-id",
+                    "timestamp": "2026-12-01T01:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
               }
             }
           }
@@ -8359,6 +11535,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {
@@ -8508,6 +11694,16 @@
             }
           },
           "409": {
+            "description": "See error.code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "410": {
             "description": "See error.code",
             "content": {
               "application/json": {

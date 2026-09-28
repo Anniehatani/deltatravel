@@ -29,24 +29,33 @@ export class TimeoutDispatcher {
     try {
       // Sweep first: even a lost Redis dataset cannot strand expired inventory.
       const expired = await this.db.booking.findMany({
-        where: { status: 'PENDING_PAYMENT', expiresAt: { lte: new Date() } },
+        where: {
+          OR: [
+            { status: 'PENDING_PAYMENT', expiresAt: { lte: new Date() } },
+            { status: 'AWAITING_CASH', cashDueAt: { lte: new Date() } },
+          ],
+        },
         select: { id: true },
         take: 100,
-        orderBy: { expiresAt: 'asc' },
+        orderBy: { createdAt: 'asc' },
       });
       for (const b of expired) await this.bookings.expire(b.id);
       const rows = await this.db.booking.findMany({
-        where: { status: 'PENDING_PAYMENT', timeoutEnqueuedAt: null },
+        where: {
+          status: { in: ['PENDING_PAYMENT', 'AWAITING_CASH'] },
+          timeoutEnqueuedAt: null,
+        },
         take: 100,
         orderBy: { createdAt: 'asc' },
       });
       for (const b of rows) {
+        const deadline = b.status === 'AWAITING_CASH' && b.cashDueAt ? b.cashDueAt : b.expiresAt;
         await this.queue.add(
           'expire',
           { bookingId: b.id },
           {
-            jobId: `expire_${b.id}`,
-            delay: Math.max(0, b.expiresAt.getTime() - Date.now()),
+            jobId: `expire_${b.id}_${deadline.getTime()}`,
+            delay: Math.max(0, deadline.getTime() - Date.now()),
             attempts: 5,
             backoff: { type: 'exponential', delay: 1000 },
             removeOnComplete: { age: 86400 },

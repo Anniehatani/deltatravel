@@ -8,7 +8,7 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 - JSON UTF-8. Tên trường camelCase; ID UUID; tiền là số nguyên VND không âm. Database dùng BIGINT, response chuyển số nguyên trong giới hạn an toàn.
 - Ngày giờ ISO 8601 có offset, lưu UTC, UI hiển thị Asia/Ho_Chi_Minh. So sánh 72 giờ theo milliseconds, không trừ ngày lịch.
 - Response thành công: {data,meta:{requestId,timestamp}}. Lỗi: {error:{code,message,details?},meta}. Webhook dùng định dạng riêng ở cuối tài liệu.
-- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=Strict, Secure ở production.
+- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=None và Secure ở production để frontend Netlify dùng API Render khác site.
 - Auth POST: Origin phải bằng WEB_ORIGIN, X-CSRF-Protection: 1, credentials: include. curl/Postman cũng phải gửi hai header này.
 - Pagination: page mặc định 1, pageSize mặc định 20, tối đa 100; response items,page,pageSize,total. q/destination tùy chọn.
 - Guest là chưa đăng nhập, không phải một giá trị role trong DB. User = mọi tài khoản đang hoạt động, dữ liệu cá nhân vẫn lọc theo userId.
@@ -28,42 +28,54 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 
 ## Endpoint index
 
-| Method | Path                               | Quyền            | Request body           | Data response         | HTTP |
-| ------ | ---------------------------------- | ---------------- | ---------------------- | --------------------- | ---- |
-| POST   | /auth/register                     | Guest            | RegisterSchema         | AuthResultSchema      | 201  |
-| POST   | /auth/login                        | Guest            | LoginSchema            | AuthResultSchema      | 200  |
-| POST   | /auth/refresh                      | Cookie           | EmptySchema            | AuthResultSchema      | 200  |
-| POST   | /auth/logout                       | Cookie           | EmptySchema            | AckSchema             | 200  |
-| GET    | /auth/me                           | User             | Không                  | UserSchema            | 200  |
-| GET    | /tours                             | Guest            | Không                  | TourSchema[]          | 200  |
-| GET    | /tours/{id}                        | Guest            | Không                  | TourSchema            | 200  |
-| GET    | /tours/{id}/schedules              | Guest            | Không                  | ScheduleSchema[]      | 200  |
-| GET    | /schedules/{id}/availability       | Guest            | Không                  | ScheduleSchema        | 200  |
-| POST   | /bookings/quote                    | Guest            | QuoteSchema            | QuoteResultSchema     | 200  |
-| POST   | /bookings                          | CUSTOMER         | CreateBookingSchema    | BookingSchema         | 201  |
-| GET    | /bookings                          | User             | Không                  | BookingSchema[]       | 200  |
-| GET    | /bookings/{id}                     | User             | Không                  | BookingSchema         | 200  |
-| POST   | /bookings/{id}/cancel              | User             | CancelSchema           | BookingSchema         | 200  |
-| POST   | /payments                          | User             | CreatePaymentSchema    | PaymentSchema         | 200  |
-| GET    | /payments/{id}                     | User             | Không                  | PaymentSchema         | 200  |
-| GET    | /admin/summary                     | ADMIN,OPERATIONS | Không                  | SummarySchema         | 200  |
-| GET    | /admin/tours                       | ADMIN,OPERATIONS | Không                  | TourSchema[]          | 200  |
-| POST   | /admin/tours                       | ADMIN,OPERATIONS | CreateTourSchema       | TourSchema            | 201  |
-| PATCH  | /admin/tours/{id}                  | ADMIN,OPERATIONS | UpdateTourSchema       | TourSchema            | 200  |
-| DELETE | /admin/tours/{id}                  | ADMIN            | Không                  | AckSchema             | 200  |
-| GET    | /admin/schedules                   | ADMIN,OPERATIONS | Không                  | ScheduleSchema[]      | 200  |
-| POST   | /admin/schedules                   | ADMIN,OPERATIONS | CreateScheduleSchema   | ScheduleSchema        | 201  |
-| PATCH  | /admin/schedules/{id}              | ADMIN,OPERATIONS | UpdateScheduleSchema   | ScheduleSchema        | 200  |
-| GET    | /admin/bookings                    | ADMIN,OPERATIONS | Không                  | BookingSchema[]       | 200  |
-| GET    | /admin/bookings/{id}               | ADMIN,OPERATIONS | Không                  | BookingSchema         | 200  |
-| PATCH  | /admin/bookings/{id}/status        | ADMIN,OPERATIONS | TransitionSchema       | BookingSchema         | 200  |
-| POST   | /admin/bookings/{id}/cancel        | ADMIN,OPERATIONS | CancelSchema           | BookingSchema         | 200  |
-| GET    | /admin/payments                    | ADMIN,OPERATIONS | Không                  | PaymentSchema[]       | 200  |
-| POST   | /admin/payments/{id}/refund-record | ADMIN            | RefundRecordSchema     | PaymentSchema         | 200  |
-| GET    | /admin/audit-logs                  | ADMIN            | Không                  | AuditSchema[]         | 200  |
-| POST   | /assistant/chat                    | Guest            | AssistantRequestSchema | AssistantResultSchema | 200  |
-| GET    | /health/live                       | Guest            | Không                  | HealthSchema          | 200  |
-| GET    | /health/ready                      | Guest            | Không                  | HealthSchema          | 200  |
+| Method | Path                                      | Quyền            | Request body                   | Data response                        | HTTP |
+| ------ | ----------------------------------------- | ---------------- | ------------------------------ | ------------------------------------ | ---- |
+| POST   | /auth/register                            | Guest            | RegisterSchema                 | AuthResultSchema                     | 201  |
+| POST   | /auth/login                               | Guest            | LoginSchema                    | AuthResultSchema                     | 200  |
+| POST   | /auth/forgot-password                     | Guest            | ForgotPasswordSchema           | AckSchema                            | 200  |
+| POST   | /auth/reset-password                      | Guest            | ResetPasswordSchema            | AckSchema                            | 200  |
+| POST   | /auth/change-password                     | User             | ChangePasswordSchema           | AckSchema                            | 200  |
+| POST   | /auth/refresh                             | Cookie           | EmptySchema                    | AuthResultSchema                     | 200  |
+| POST   | /auth/logout                              | Cookie           | EmptySchema                    | AckSchema                            | 200  |
+| GET    | /auth/me                                  | User             | Không                          | UserSchema                           | 200  |
+| GET    | /profile/me                               | User             | Không                          | UserSchema                           | 200  |
+| POST   | /profile/avatar/upload-url                | User             | AvatarUploadRequestSchema      | AvatarUploadTicketSchema             | 200  |
+| POST   | /profile/avatar/complete                  | User             | AvatarCompleteSchema           | UserSchema                           | 200  |
+| DELETE | /profile/avatar                           | User             | Không                          | UserSchema                           | 200  |
+| GET    | /tours                                    | Guest            | Không                          | TourSchema[]                         | 200  |
+| GET    | /tours/{id}                               | Guest            | Không                          | TourSchema                           | 200  |
+| GET    | /tours/{id}/schedules                     | Guest            | Không                          | ScheduleSchema[]                     | 200  |
+| GET    | /schedules/{id}/availability              | Guest            | Không                          | ScheduleSchema                       | 200  |
+| POST   | /bookings/quote                           | Guest            | QuoteSchema                    | QuoteResultSchema                    | 200  |
+| POST   | /bookings                                 | CUSTOMER         | CreateBookingSchema            | BookingSchema                        | 201  |
+| GET    | /bookings                                 | User             | Không                          | BookingSchema[]                      | 200  |
+| GET    | /bookings/{id}                            | User             | Không                          | BookingSchema                        | 200  |
+| POST   | /bookings/{id}/cancel                     | User             | CancelSchema                   | BookingSchema                        | 200  |
+| POST   | /payments                                 | User             | CreatePaymentSchema            | PaymentSchema                        | 200  |
+| GET    | /payments/{id}                            | User             | Không                          | PaymentSchema                        | 200  |
+| GET    | /admin/summary                            | ADMIN,OPERATIONS | Không                          | SummarySchema                        | 200  |
+| GET    | /admin/tours                              | ADMIN,OPERATIONS | Không                          | TourSchema[]                         | 200  |
+| POST   | /admin/tours                              | ADMIN,OPERATIONS | CreateTourSchema               | TourSchema                           | 201  |
+| PATCH  | /admin/tours/{id}                         | ADMIN,OPERATIONS | UpdateTourSchema               | TourSchema                           | 200  |
+| DELETE | /admin/tours/{id}                         | ADMIN            | Không                          | AckSchema                            | 200  |
+| GET    | /admin/schedules                          | ADMIN,OPERATIONS | Không                          | ScheduleSchema[]                     | 200  |
+| POST   | /admin/schedules                          | ADMIN,OPERATIONS | CreateScheduleSchema           | ScheduleSchema                       | 201  |
+| PATCH  | /admin/schedules/{id}                     | ADMIN,OPERATIONS | UpdateScheduleSchema           | ScheduleSchema                       | 200  |
+| GET    | /admin/bookings                           | ADMIN,OPERATIONS | Không                          | BookingSchema[]                      | 200  |
+| GET    | /admin/bookings/{id}                      | ADMIN,OPERATIONS | Không                          | BookingSchema                        | 200  |
+| PATCH  | /admin/bookings/{id}/status               | ADMIN,OPERATIONS | TransitionSchema               | BookingSchema                        | 200  |
+| POST   | /admin/bookings/{id}/cancel               | ADMIN,OPERATIONS | CancelSchema                   | BookingSchema                        | 200  |
+| GET    | /admin/payments                           | ADMIN,OPERATIONS | Không                          | PaymentSchema[]                      | 200  |
+| POST   | /admin/payments/{id}/cash-receipt         | ADMIN,OPERATIONS | CashReceiptSchema              | PaymentSchema                        | 200  |
+| POST   | /admin/payments/{id}/refund-record        | ADMIN            | RefundRecordSchema             | PaymentSchema                        | 200  |
+| GET    | /admin/audit-logs                         | ADMIN            | Không                          | AuditSchema[]                        | 200  |
+| GET    | /assistant/provider-status                | Guest            | Không                          | AssistantProviderStatusSchema        | 200  |
+| GET    | /assistant/provider-probe                 | ADMIN,OPERATIONS | Không                          | AssistantProbeResultSchema           | 200  |
+| POST   | /assistant/chat                           | Guest            | AssistantRequestSchema         | AssistantResultSchema                | 200  |
+| POST   | /assistant/booking-proposals              | CUSTOMER         | AssistantBookingProposalSchema | AssistantBookingProposalResultSchema | 200  |
+| POST   | /assistant/booking-proposals/{id}/confirm | CUSTOMER         | Không                          | AssistantBookingConfirmResultSchema  | 200  |
+| GET    | /health/live                              | Guest            | Không                          | HealthSchema                         | 200  |
+| GET    | /health/ready                             | Guest            | Không                          | HealthSchema                         | 200  |
 
 ## POST /auth/register
 
@@ -88,7 +100,9 @@ Response:
       "id": "44444444-4444-4444-8444-444444444444",
       "name": "Nguyễn Minh Anh",
       "email": "minhanh@example.com",
-      "role": "CUSTOMER"
+      "role": "CUSTOMER",
+      "avatarUrl": null,
+      "avatarId": null
     },
     "accessToken": "<JWT_ACCESS_TOKEN>",
     "expiresIn": 900
@@ -122,10 +136,93 @@ Response:
       "id": "44444444-4444-4444-8444-444444444444",
       "name": "Nguyễn Minh Anh",
       "email": "minhanh@example.com",
-      "role": "CUSTOMER"
+      "role": "CUSTOMER",
+      "avatarUrl": null,
+      "avatarId": null
     },
     "accessToken": "<JWT_ACCESS_TOKEN>",
     "expiresIn": 900
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /auth/forgot-password
+
+Quyền: Guest. HTTP thành công: 200. Gửi OTP 6 số qua email nếu tài khoản tồn tại; response không trả OTP.
+
+Request (ForgotPasswordSchema):
+
+```json
+{
+  "email": "minhanh@example.com"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "ok": true
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /auth/reset-password
+
+Quyền: Guest. HTTP thành công: 200. Đổi mật khẩu bằng OTP còn hạn; revoke toàn bộ refresh session khi thành công.
+
+Request (ResetPasswordSchema):
+
+```json
+{
+  "email": "minhanh@example.com",
+  "code": "123456",
+  "newPassword": "NewDemoPassword_123!"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "ok": true
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /auth/change-password
+
+Quyền: User. HTTP thành công: 200. Đổi mật khẩu khi biết mật khẩu hiện tại; revoke toàn bộ refresh session.
+
+Request (ChangePasswordSchema):
+
+```json
+{
+  "oldPassword": "DemoPassword_123!",
+  "newPassword": "NewDemoPassword_123!"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "ok": true
   },
   "meta": {
     "requestId": "example-request-id",
@@ -153,7 +250,9 @@ Response:
       "id": "44444444-4444-4444-8444-444444444444",
       "name": "Nguyễn Minh Anh",
       "email": "minhanh@example.com",
-      "role": "CUSTOMER"
+      "role": "CUSTOMER",
+      "avatarUrl": null,
+      "avatarId": null
     },
     "accessToken": "<JWT_ACCESS_TOKEN>",
     "expiresIn": 900
@@ -201,7 +300,118 @@ Response:
     "id": "44444444-4444-4444-8444-444444444444",
     "name": "Nguyễn Minh Anh",
     "email": "minhanh@example.com",
-    "role": "CUSTOMER"
+    "role": "CUSTOMER",
+    "avatarUrl": null,
+    "avatarId": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## GET /profile/me
+
+Quyền: User. HTTP thành công: 200. Hồ sơ hiện tại gồm avatar bền vững theo tài khoản.
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "44444444-4444-4444-8444-444444444444",
+    "name": "Nguyễn Minh Anh",
+    "email": "minhanh@example.com",
+    "role": "CUSTOMER",
+    "avatarUrl": null,
+    "avatarId": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /profile/avatar/upload-url
+
+Quyền: User. HTTP thành công: 200. Cấp signed upload URL cho Supabase Storage; chỉ JPEG/PNG/WebP tối đa 2 MiB.
+
+Request (AvatarUploadRequestSchema):
+
+```json
+{
+  "contentType": "image/jpeg",
+  "sizeBytes": 245760
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "uploadId": "77777777-7777-4777-8777-777777777777",
+    "path": "44444444-4444-4444-8444-444444444444/avatar-77777777-7777-4777-8777-777777777777.jpg",
+    "signedUrl": "https://example.supabase.co/storage/v1/object/upload/sign/avatars/example.jpg?token=<SIGNED_UPLOAD_TOKEN>",
+    "token": "<SIGNED_UPLOAD_TOKEN>",
+    "publicUrl": "https://example.supabase.co/storage/v1/object/public/avatars/44444444-4444-4444-8444-444444444444/avatar.jpg",
+    "expiresIn": 7200
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /profile/avatar/complete
+
+Quyền: User. HTTP thành công: 200. Xác minh object đã tồn tại rồi lưu avatarUrl/avatarId vào PostgreSQL.
+
+Request (AvatarCompleteSchema):
+
+```json
+{
+  "uploadId": "77777777-7777-4777-8777-777777777777"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "44444444-4444-4444-8444-444444444444",
+    "name": "Nguyễn Minh Anh",
+    "email": "minhanh@example.com",
+    "role": "CUSTOMER",
+    "avatarUrl": null,
+    "avatarId": null
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## DELETE /profile/avatar
+
+Quyền: User. HTTP thành công: 200. Gỡ avatar khỏi hồ sơ; cleanup object cũ theo best-effort.
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "44444444-4444-4444-8444-444444444444",
+    "name": "Nguyễn Minh Anh",
+    "email": "minhanh@example.com",
+    "role": "CUSTOMER",
+    "avatarUrl": null,
+    "avatarId": null
   },
   "meta": {
     "requestId": "example-request-id",
@@ -407,6 +617,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": null,
+    "cashDueAt": null,
     "cancelledAt": null,
     "cancelReason": null,
     "tourTitle": "Đà Nẵng và Hội An",
@@ -460,6 +671,7 @@ Response:
         "expiresAt": "2026-12-01T01:15:00.000Z",
         "createdAt": "2026-12-01T01:00:00.000Z",
         "paidAt": null,
+        "cashDueAt": null,
         "cancelledAt": null,
         "cancelReason": null,
         "tourTitle": "Đà Nẵng và Hội An",
@@ -514,6 +726,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": null,
+    "cashDueAt": null,
     "cancelledAt": null,
     "cancelReason": null,
     "tourTitle": "Đà Nẵng và Hội An",
@@ -571,6 +784,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": null,
+    "cashDueAt": null,
     "cancelledAt": "2026-12-01T01:00:00.000Z",
     "cancelReason": "Thay đổi kế hoạch cá nhân",
     "tourTitle": "Đà Nẵng và Hội An",
@@ -600,7 +814,7 @@ Response:
 
 ## POST /payments
 
-Quyền: User. HTTP thành công: 200. Tạo/lấy giao dịch của đơn thuộc user; một provider cho mỗi đơn. Không nhận số tiền từ client.
+Quyền: User. HTTP thành công: 200. Tạo/lấy phương thức thanh toán của đơn thuộc user. VNPAY/MOMO/ZALOPAY tạo checkout; CASH chuyển sang AWAITING_CASH và tuyệt đối chưa coi là PAID.
 
 Request (CreatePaymentSchema):
 
@@ -945,6 +1159,7 @@ Response:
         "expiresAt": "2026-12-01T01:15:00.000Z",
         "createdAt": "2026-12-01T01:00:00.000Z",
         "paidAt": null,
+        "cashDueAt": null,
         "cancelledAt": null,
         "cancelReason": null,
         "tourTitle": "Đà Nẵng và Hội An",
@@ -999,6 +1214,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": null,
+    "cashDueAt": null,
     "cancelledAt": null,
     "cancelReason": null,
     "tourTitle": "Đà Nẵng và Hội An",
@@ -1056,6 +1272,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": "2026-12-01T01:00:00.000Z",
+    "cashDueAt": null,
     "cancelledAt": null,
     "cancelReason": null,
     "tourTitle": "Đà Nẵng và Hội An",
@@ -1113,6 +1330,7 @@ Response:
     "expiresAt": "2026-12-01T01:15:00.000Z",
     "createdAt": "2026-12-01T01:00:00.000Z",
     "paidAt": null,
+    "cashDueAt": null,
     "cancelledAt": "2026-12-01T01:00:00.000Z",
     "cancelReason": "Thay đổi kế hoạch cá nhân",
     "tourTitle": "Đà Nẵng và Hội An",
@@ -1166,6 +1384,40 @@ Response:
     "page": 1,
     "pageSize": 20,
     "total": 1
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /admin/payments/{id}/cash-receipt
+
+Quyền: ADMIN,OPERATIONS. HTTP thành công: 200. Chỉ ghi nhận PAID cho provider CASH sau khi nhân viên thực sự nhận tiền và nhập mã biên nhận.
+
+Request (CashReceiptSchema):
+
+```json
+{
+  "reference": "CASH-20261201-001",
+  "note": "Đã nhận đủ tiền mặt tại quầy"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "id": "55555555-5555-4555-8555-555555555555",
+    "bookingId": "33333333-3333-4333-8333-333333333333",
+    "provider": "CASH",
+    "status": "SUCCEEDED",
+    "amount": 10470000,
+    "currency": "VND",
+    "checkoutUrl": null,
+    "createdAt": "2026-12-01T01:00:00.000Z"
   },
   "meta": {
     "requestId": "example-request-id",
@@ -1243,15 +1495,56 @@ Response:
 }
 ```
 
+## GET /assistant/provider-status
+
+Quyền: Guest. HTTP thành công: 200. Chỉ báo provider nào đã cấu hình; không trả secret.
+
+Response:
+
+```json
+{
+  "data": {
+    "preferredProvider": "GROQ",
+    "groqConfigured": true,
+    "geminiConfigured": false,
+    "fallbackAvailable": true
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## GET /assistant/provider-probe
+
+Quyền: ADMIN,OPERATIONS. HTTP thành công: 200. Gọi thử provider thật; providerLive=false nghĩa đang rơi về RULE_BASED.
+
+Response:
+
+```json
+{
+  "data": {
+    "mode": "GROQ",
+    "providerLive": true
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
 ## POST /assistant/chat
 
-Quyền: Guest. HTTP thành công: 200. JWT tùy chọn. Backend áp dụng quyền user cho từng công cụ.
+Quyền: Guest. HTTP thành công: 200. JWT tùy chọn. Planner chỉ chọn capability đã whitelist; dữ liệu nghiệp vụ lấy từ backend.
 
 Request (AssistantRequestSchema):
 
 ```json
 {
   "message": "Tìm tour Đà Nẵng",
+  "lang": "vi",
   "history": []
 }
 ```
@@ -1277,6 +1570,108 @@ Response:
         "label": "Đà Nẵng và Hội An"
       }
     ]
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /assistant/booking-proposals
+
+Quyền: CUSTOMER. HTTP thành công: 200. Tạo proposal Redis TTL 10 phút sau khi quote lại giá/chỗ; chưa tạo booking.
+
+Request (AssistantBookingProposalSchema):
+
+```json
+{
+  "scheduleId": "22222222-2222-4222-8222-222222222222",
+  "adults": 2,
+  "children": 1,
+  "contactName": "Nguyễn Minh Anh",
+  "contactEmail": "minhanh@example.com",
+  "contactPhone": "0901234567",
+  "provider": "VNPAY"
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "proposalId": "66666666-6666-4666-8666-666666666666",
+    "kind": "CREATE_BOOKING",
+    "expiresAt": "2026-12-01T01:10:00.000Z",
+    "requiresConfirmation": true,
+    "quote": {
+      "scheduleId": "22222222-2222-4222-8222-222222222222",
+      "adults": 2,
+      "children": 1,
+      "adultPrice": 3990000,
+      "childPrice": 2490000,
+      "totalAmount": 10470000,
+      "currency": "VND",
+      "availableSeats": 22,
+      "serverTime": "2026-12-01T01:00:00.000Z"
+    },
+    "provider": "VNPAY",
+    "summary": "Tạo đơn giữ chỗ 15 phút cho 3 khách, tổng 10.470.000 VND."
+  },
+  "meta": {
+    "requestId": "example-request-id",
+    "timestamp": "2026-12-01T01:00:00.000Z"
+  }
+}
+```
+
+## POST /assistant/booking-proposals/{id}/confirm
+
+Quyền: CUSTOMER. HTTP thành công: 200. Chỉ sau explicit confirmation mới tạo booking idempotent. Thanh toán vẫn dùng payment API riêng.
+
+Response:
+
+```json
+{
+  "data": {
+    "booking": {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "scheduleId": "22222222-2222-4222-8222-222222222222",
+      "adults": 2,
+      "children": 1,
+      "contactName": "Nguyễn Minh Anh",
+      "contactEmail": "minhanh@example.com",
+      "contactPhone": "0901234567",
+      "status": "PENDING_PAYMENT",
+      "totalAmount": 10470000,
+      "currency": "VND",
+      "expiresAt": "2026-12-01T01:15:00.000Z",
+      "createdAt": "2026-12-01T01:00:00.000Z",
+      "paidAt": null,
+      "cashDueAt": null,
+      "cancelledAt": null,
+      "cancelReason": null,
+      "tourTitle": "Đà Nẵng và Hội An",
+      "departureAt": "2026-12-15T01:00:00.000Z",
+      "details": [
+        {
+          "kind": "ADULT",
+          "quantity": 2,
+          "unitPrice": 3990000,
+          "lineTotal": 7980000
+        },
+        {
+          "kind": "CHILD",
+          "quantity": 1,
+          "unitPrice": 2490000,
+          "lineTotal": 2490000
+        }
+      ],
+      "serverTime": "2026-12-01T01:00:00.000Z"
+    },
+    "selectedProvider": "VNPAY",
+    "nextAction": "OPEN_BOOKING"
   },
   "meta": {
     "requestId": "example-request-id",
@@ -1404,6 +1799,6 @@ Replay hợp lệ không đổi trạng thái hoặc trả chỗ lần hai. Sai 
 }
 ```
 
-Mã nghiệp vụ ổn định: VALIDATION_ERROR, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, CSRF_REJECTED, NOT_FOUND, CONFLICT, IDEMPOTENCY_CONFLICT, INSUFFICIENT_SEATS, SCHEDULE_UNAVAILABLE, CANCELLATION_NOT_ALLOWED, INVALID_TRANSITION, TOUR_NOT_STARTED, CAPACITY_BELOW_RESERVED, BOOKING_NOT_PAYABLE, PAYMENT_PROVIDER_LOCKED, PROVIDER_NOT_CONFIGURED, PROVIDER_AMOUNT_LIMIT, PROVIDER_TIME_LIMIT, PROVIDER_UNAVAILABLE, INVALID_PROVIDER_RESPONSE, INVALID_SIGNATURE, MERCHANT_MISMATCH, AMOUNT_MISMATCH, TRANSACTION_MISMATCH, REFUND_NOT_REQUIRED, REFUND_REFERENCE_CONFLICT, RETRY_TRANSACTION, RATE_LIMITED.
+Mã nghiệp vụ ổn định: VALIDATION_ERROR, INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, CSRF_REJECTED, NOT_FOUND, CONFLICT, IDEMPOTENCY_CONFLICT, INSUFFICIENT_SEATS, SCHEDULE_UNAVAILABLE, CANCELLATION_NOT_ALLOWED, INVALID_TRANSITION, TOUR_NOT_STARTED, CAPACITY_BELOW_RESERVED, BOOKING_NOT_PAYABLE, PAYMENT_PROVIDER_LOCKED, PROVIDER_NOT_CONFIGURED, PROVIDER_AMOUNT_LIMIT, PROVIDER_TIME_LIMIT, PROVIDER_UNAVAILABLE, INVALID_PROVIDER_RESPONSE, INVALID_SIGNATURE, MERCHANT_MISMATCH, AMOUNT_MISMATCH, TRANSACTION_MISMATCH, REFUND_NOT_REQUIRED, REFUND_REFERENCE_CONFLICT, RETRY_TRANSACTION, RATE_LIMITED, MAIL_UNAVAILABLE, INVALID_RESET_CODE, INVALID_CURRENT_PASSWORD, PROPOSAL_NOT_FOUND, PROPOSAL_EXPIRED.
 
 Chi tiết từng trường và required/optional nằm trong openapi.json và packages/shared/src/index.ts. OpenAPI bao gồm schema request/response; các ví dụ ở tài liệu này được Zod kiểm tra khi sinh.

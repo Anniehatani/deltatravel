@@ -22,6 +22,7 @@ import {
   CancelSchema,
   TransitionSchema,
   RefundRecordSchema,
+  CashReceiptSchema,
 } from '@tour/shared';
 import { Roles } from '../auth/guards';
 import { ZodPipe, AppRequest } from '../common/http';
@@ -107,6 +108,15 @@ export class AdminController {
     @Query(new ZodPipe(PaginationSchema)) q: z.infer<typeof PaginationSchema>,
   ) {
     return this.admin.payments(q);
+  }
+  @Post('payments/:id/cash-receipt')
+  @HttpCode(200)
+  cashReceipt(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body(new ZodPipe(CashReceiptSchema)) b: z.infer<typeof CashReceiptSchema>,
+    @Req() r: AppRequest,
+  ) {
+    return this.admin.recordCashPayment(id, b, r.user!.id);
   }
   @Roles('ADMIN')
   @Post('payments/:id/refund-record')

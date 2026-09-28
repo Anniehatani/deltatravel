@@ -53,8 +53,8 @@ export function GlassLanguageSwitcher({
               ? 'text-white scale-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]'
               : 'text-black scale-100'
             : isTransparent
-            ? 'text-white/70 hover:text-white scale-95'
-            : 'text-neutral-600 hover:text-black scale-95'
+              ? 'text-white/70 hover:text-white scale-95'
+              : 'text-neutral-600 hover:text-black scale-95'
         }`}
         title="Tiếng Việt"
       >
@@ -72,8 +72,8 @@ export function GlassLanguageSwitcher({
               ? 'text-white scale-100 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]'
               : 'text-black scale-100'
             : isTransparent
-            ? 'text-white/70 hover:text-white scale-95'
-            : 'text-neutral-600 hover:text-black scale-95'
+              ? 'text-white/70 hover:text-white scale-95'
+              : 'text-neutral-600 hover:text-black scale-95'
         }`}
         title="English"
       >

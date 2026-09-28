@@ -41,13 +41,28 @@ export const DICTIONARY: Translations = {
     en: 'Discover 3-region Vietnam journeys, look up booking policies, or check your reservations seamlessly.',
   },
   asst_suggestions_title: { vi: 'Gợi ý câu hỏi thường gặp', en: 'Frequently Asked Questions' },
-  asst_q1: { vi: 'Gợi ý tour du lịch biển nghỉ dưỡng cao cấp?', en: 'Recommend luxury beach resort tours?' },
-  asst_q2: { vi: 'Chính sách hủy và thời hạn 72 giờ như thế nào?', en: 'How does the 72-hour cancellation policy work?' },
-  asst_q3: { vi: 'Quy trình giữ chỗ 15 phút và thanh toán ra sao?', en: 'How does the 15-minute hold and payment process work?' },
-  asst_q4: { vi: 'Có những hành trình di sản miền Trung nào?', en: 'What heritage journeys are available in Central Vietnam?' },
+  asst_q1: {
+    vi: 'Gợi ý tour du lịch biển nghỉ dưỡng cao cấp?',
+    en: 'Recommend luxury beach resort tours?',
+  },
+  asst_q2: {
+    vi: 'Chính sách hủy và thời hạn 72 giờ như thế nào?',
+    en: 'How does the 72-hour cancellation policy work?',
+  },
+  asst_q3: {
+    vi: 'Quy trình giữ chỗ 15 phút và thanh toán ra sao?',
+    en: 'How does the 15-minute hold and payment process work?',
+  },
+  asst_q4: {
+    vi: 'Có những hành trình di sản miền Trung nào?',
+    en: 'What heritage journeys are available in Central Vietnam?',
+  },
   asst_verified: { vi: 'đã xác thực', en: 'verified' },
   asst_sources_title: { vi: 'Cơ sở dữ liệu trích xuất:', en: 'Verified Knowledge Sources:' },
-  asst_waiting: { vi: 'Trợ lý đang truy xuất dữ liệu tour và chính sách...', en: 'Concierge is retrieving tour data and policies...' },
+  asst_waiting: {
+    vi: 'Trợ lý đang truy xuất dữ liệu tour và chính sách...',
+    en: 'Concierge is retrieving tour data and policies...',
+  },
   asst_placeholder: {
     vi: 'Hỏi về địa điểm, giá vé trẻ em, lịch khởi hành hoặc chính sách hủy...',
     en: 'Ask about destinations, child pricing, departure schedules, or cancellation policy...',
@@ -60,7 +75,10 @@ export const DICTIONARY: Translations = {
   asst_groq_badge: { vi: 'Trí tuệ nhân tạo Groq LPU', en: 'Groq LPU AI Concierge' },
   asst_smart_badge: { vi: 'Trợ lý thông minh', en: 'Smart Assistant' },
   asst_rule_badge: { vi: 'Hệ thống tra cứu', en: 'Lookup System' },
-  asst_connect_error: { vi: 'Chưa thể kết nối tới dịch vụ trợ lý.', en: 'Unable to connect to concierge service.' },
+  asst_connect_error: {
+    vi: 'Chưa thể kết nối tới dịch vụ trợ lý.',
+    en: 'Unable to connect to concierge service.',
+  },
 
   // Hero
   hero_tag: { vi: 'DELTA PRIVÉ • BỘ SƯU TẬP 2026', en: 'DELTA PRIVÉ • 2026 COLLECTION' },
@@ -70,15 +88,24 @@ export const DICTIONARY: Translations = {
     vi: 'Khám phá non sông gấm vóc 3 miền Bắc — Trung — Nam với chuẩn mực dịch vụ thượng lưu, lịch trình cá nhân hóa và đặc quyền 5 sao trọn gói.',
     en: 'Discover the timeless wonders across Northern, Central, and Southern Vietnam with royal service standards, bespoke itineraries, and 5-star privileges.',
   },
-  hero_scroll_hint: { vi: 'Cuộn chuột để chiêm ngưỡng tuyệt tác', en: 'Scroll down to explore the collection' },
+  hero_scroll_hint: {
+    vi: 'Cuộn chuột để chiêm ngưỡng tuyệt tác',
+    en: 'Scroll down to explore the collection',
+  },
   hero_stage2_tag: { vi: 'TAM GIÁC DI SẢN 3 MIỀN', en: '3 ICONIC REALMS' },
-  hero_stage2_title: { vi: 'Bản Hòa Ca Thiên Nhiên & Di Sản', en: 'A Symphony of Nature & Heritage' },
+  hero_stage2_title: {
+    vi: 'Bản Hòa Ca Thiên Nhiên & Di Sản',
+    en: 'A Symphony of Nature & Heritage',
+  },
   hero_stage2_desc: {
     vi: 'Từ đỉnh Fansipan mờ sương, Cố đô Huế trầm mặc, Cầu Vàng Đà Nẵng đến Đảo Ngọc Phú Quốc — mỗi bước chân là một dấu ấn xa hoa khó quên.',
     en: 'From misty Fansipan and royal Hue to the Golden Bridge and tropical Phu Quoc — every moment is curated for unforgettable elegance.',
   },
   hero_stage3_tag: { vi: 'BỘ SƯU TẬP HÀNH TRÌNH THƯỢNG LƯU', en: 'BESPOKE TRAVEL COLLECTION' },
-  hero_stage3_title: { vi: 'Khởi Đầu Kỳ Nghỉ Độc Bản Của Quý Khách', en: 'Begin Your Bespoke Vacation' },
+  hero_stage3_title: {
+    vi: 'Khởi Đầu Kỳ Nghỉ Độc Bản Của Quý Khách',
+    en: 'Begin Your Bespoke Vacation',
+  },
   hero_stage3_desc: {
     vi: 'Tuyển tập 09 hành trình được thiết kế riêng bởi các chuyên gia lữ hành hàng đầu.',
     en: 'A curated selection of 09 signature voyages tailored by premier travel connoisseurs.',
@@ -87,7 +114,10 @@ export const DICTIONARY: Translations = {
   btn_tour_central: { vi: 'Tour Miền Trung', en: 'Central Tours' },
   btn_tour_south: { vi: 'Tour Miền Nam', en: 'Southern Tours' },
   hero_btn_explore_all: { vi: 'Khám Phá Toàn Bộ Hành Trình', en: 'Explore All Journeys' },
-  search_placeholder: { vi: 'Hạ Long, Sa Pa, Đà Nẵng, Phú Quốc...', en: 'Ha Long, Sa Pa, Da Nang, Phu Quoc...' },
+  search_placeholder: {
+    vi: 'Hạ Long, Sa Pa, Đà Nẵng, Phú Quốc...',
+    en: 'Ha Long, Sa Pa, Da Nang, Phu Quoc...',
+  },
   btn_search: { vi: 'Tìm tour', en: 'Search' },
 
   // Regions section
@@ -155,33 +185,51 @@ export const DICTIONARY: Translations = {
   },
 
   // 3 Regions Homepage Section
-  sec_3regions_tag: { vi: 'TAM GIÁC DI SẢN • ARCHITECTURE & NATURE', en: 'HERITAGE TRIANGLE • ARCHITECTURE & NATURE' },
-  sec_3regions_title: { vi: 'Ba Phân Vùng Tuyệt Tác Việt Nam', en: 'Three Masterpiece Realms of Vietnam' },
+  sec_3regions_tag: {
+    vi: 'TAM GIÁC DI SẢN • ARCHITECTURE & NATURE',
+    en: 'HERITAGE TRIANGLE • ARCHITECTURE & NATURE',
+  },
+  sec_3regions_title: {
+    vi: 'Ba Phân Vùng Tuyệt Tác Việt Nam',
+    en: 'Three Masterpiece Realms of Vietnam',
+  },
   sec_3regions_desc: {
     vi: 'Mỗi vùng miền là một bản hòa ca giữa thiên nhiên nguyên sơ và tinh hoa di sản, được kiến tạo để mang lại trải nghiệm nghỉ dưỡng xa hoa trọn vẹn nhất.',
     en: 'Each region is a harmonious symphony of pristine nature and cultural heritage, curated to deliver the ultimate luxury vacation.',
   },
   reg_bac_name: { vi: 'Miền Bắc', en: 'Northern Vietnam' },
-  reg_bac_tag: { vi: 'KỲ QUAN NON NƯỚC & NÓC NHÀ ĐÔNG DƯƠNG', en: 'SCENIC WONDERS & INDOCHINA ROOFTOP' },
+  reg_bac_tag: {
+    vi: 'KỲ QUAN NON NƯỚC & NÓC NHÀ ĐÔNG DƯƠNG',
+    en: 'SCENIC WONDERS & INDOCHINA ROOFTOP',
+  },
   reg_bac_desc: {
     vi: 'Hạ Long vịnh kỳ quan đá vôi nghìn năm, biển mây Fansipan bồng bềnh và quần thể Tràng An linh thiêng.',
     en: 'Thousand-year limestone wonders of Ha Long, floating cloudscapes atop Mount Fansipan, and sacred Trang An.',
   },
   reg_trung_name: { vi: 'Miền Trung', en: 'Central Vietnam' },
-  reg_trung_tag: { vi: 'HOÀNG TRIỀU CỐ ĐÔ & BIỂN NGỌC BÍCH', en: 'IMPERIAL DYNASTY & EMERALD SEAS' },
+  reg_trung_tag: {
+    vi: 'HOÀNG TRIỀU CỐ ĐÔ & BIỂN NGỌC BÍCH',
+    en: 'IMPERIAL DYNASTY & EMERALD SEAS',
+  },
   reg_trung_desc: {
     vi: 'Kiệt tác Cầu Vàng Bà Nà Hills, lồng đèn phố cổ Hội An và di sản Đại Nội Huế trầm mặc hữu tình.',
     en: 'Iconic Golden Bridge of Ba Na Hills, radiant lanterns of Hoi An ancient town, and poetic Hue Imperial Citadel.',
   },
   reg_nam_name: { vi: 'Miền Nam', en: 'Southern Vietnam' },
-  reg_nam_tag: { vi: 'THIÊN ĐƯỜNG ĐẢO NGỌC & MIỆT VƯỜN SÔNG NƯỚC', en: 'TROPICAL PARADISE & MEKONG RIVERWAYS' },
+  reg_nam_tag: {
+    vi: 'THIÊN ĐƯỜNG ĐẢO NGỌC & MIỆT VƯỜN SÔNG NƯỚC',
+    en: 'TROPICAL PARADISE & MEKONG RIVERWAYS',
+  },
   reg_nam_desc: {
     vi: 'Bờ cát trắng biển xanh ngọc Phú Quốc, rực rỡ chợ nổi Cái Răng miền Tây và đỉnh thiêng mây ngàn Tây Ninh.',
     en: 'Powdery white beaches of Phu Quoc island, bustling Cai Rang floating market, and mist-veiled Mount Ba Den.',
   },
 
   // Haute Collection
-  haute_tag: { vi: 'HAUTE COLLECTION • BỘ SƯU TẬP TINH HOA', en: 'HAUTE COLLECTION • SIGNATURE VOYAGES' },
+  haute_tag: {
+    vi: 'HAUTE COLLECTION • BỘ SƯU TẬP TINH HOA',
+    en: 'HAUTE COLLECTION • SIGNATURE VOYAGES',
+  },
   haute_title: { vi: 'Những Hành Trình Độc Bản 2026', en: 'Bespoke Journeys of 2026' },
   haute_desc: {
     vi: 'Tuyển tập 09 kiệt tác hành trình trọn gói được thiết kế tỉ mỉ bởi các chuyên gia lữ hành hàng đầu.',
@@ -218,7 +266,10 @@ export const DICTIONARY: Translations = {
 
   // Bespoke Banner
   bespoke_tag: { vi: 'BESPOKE TRAVEL CONCIERGE', en: 'BESPOKE TRAVEL CONCIERGE' },
-  bespoke_title: { vi: 'Đặc Quyền Thiết Kế Hành Trình Riêng Biệt', en: 'Bespoke Itinerary Curation Privileges' },
+  bespoke_title: {
+    vi: 'Đặc Quyền Thiết Kế Hành Trình Riêng Biệt',
+    en: 'Bespoke Itinerary Curation Privileges',
+  },
   bespoke_desc: {
     vi: 'Trò chuyện cùng AI Concierge hoặc Chuyên gia Lữ hành cao cấp để may đo lịch trình độc bản theo sở thích, số ngày và ngân sách riêng của gia đình Quý khách.',
     en: 'Converse with our AI Concierge or Private Travel Specialists to tailor a one-of-a-kind voyage matching your family’s desires, duration, and budget.',
@@ -246,14 +297,23 @@ export const DICTIONARY: Translations = {
   tours_tab_nam_sub: { vi: 'Đảo Ngọc & Sông Nước', en: 'Emerald Isle & Rivers' },
   tours_counter_prefix: { vi: 'BỘ SƯU TẬP', en: 'COLLECTION' },
   tours_counter_suffix: { vi: 'HÀNH TRÌNH TINH HOA', en: 'SIGNATURE JOURNEYS' },
-  tours_counter_all: { vi: 'BỘ SƯU TẬP KIỆT TÁC • 09 HÀNH TRÌNH ĐỘC BẢN', en: 'MASTERPIECE COLLECTION • 09 BESPOKE JOURNEYS' },
-  tours_guarantee_text: { vi: 'Cam kết dịch vụ 5 sao & bảo hiểm du lịch trọn gói', en: '5-Star service guarantee & comprehensive insurance' },
+  tours_counter_all: {
+    vi: 'BỘ SƯU TẬP KIỆT TÁC • 09 HÀNH TRÌNH ĐỘC BẢN',
+    en: 'MASTERPIECE COLLECTION • 09 BESPOKE JOURNEYS',
+  },
+  tours_guarantee_text: {
+    vi: 'Cam kết dịch vụ 5 sao & bảo hiểm du lịch trọn gói',
+    en: '5-Star service guarantee & comprehensive insurance',
+  },
 
   // Tour Details & Itinerary
   detail_breadcrumb_home: { vi: 'DELTA TRAVEL', en: 'DELTA TRAVEL' },
   detail_origin_vn: { vi: 'Xuất phát: Việt Nam', en: 'Departure: Vietnam' },
   detail_itinerary_badge: { vi: 'TRẢI NGHIỆM ĐỘC BẢN', en: 'BESPOKE EXPERIENCE' },
-  detail_itinerary_title: { vi: 'Lịch Trình Chi Tiết Từng Ngày', en: 'Detailed Day-by-Day Itinerary' },
+  detail_itinerary_title: {
+    vi: 'Lịch Trình Chi Tiết Từng Ngày',
+    en: 'Detailed Day-by-Day Itinerary',
+  },
   detail_itinerary_desc: {
     vi: 'Thiết kế tỉ mỉ kết hợp trọn vẹn giữa thưởng ngoạn danh lam thắng cảnh và nghỉ dưỡng cao cấp.',
     en: 'Meticulously crafted balancing breathtaking sightseeing with luxury relaxation.',
@@ -262,7 +322,10 @@ export const DICTIONARY: Translations = {
   detail_day_prefix: { vi: 'NGÀY', en: 'DAY' },
   detail_cuisine: { vi: 'Ẩm thực:', en: 'Cuisine:' },
   detail_lodging: { vi: 'Lưu trú:', en: 'Lodging:' },
-  detail_commit_title: { vi: 'Cam Kết Dịch Vụ DELTA TRAVEL', en: 'DELTA TRAVEL Service Commitments' },
+  detail_commit_title: {
+    vi: 'Cam Kết Dịch Vụ DELTA TRAVEL',
+    en: 'DELTA TRAVEL Service Commitments',
+  },
   detail_commit_1: {
     vi: 'Khách sạn & điểm lưu trú sạch sẽ, tiện nghi và đạt chuẩn chất lượng.',
     en: 'Pristine, elegant, and rigorously inspected hotel and resort accommodations.',
@@ -306,13 +369,25 @@ export const DICTIONARY: Translations = {
     en: 'From golden sunset yacht cruises to private fine-dining inside timeless imperial citadels.',
   },
   exp_1_title: { vi: 'Du Thuyền Thượng Lưu', en: 'Luxury Yacht Cruises' },
-  exp_1_desc: { vi: 'Thưởng ngoạn vịnh kỳ quan trên du thuyền 5 sao chuẩn quốc tế với phòng ban công riêng.', en: 'Sail across UNESCO heritage bays on luxury suites with private ocean-view balconies.' },
+  exp_1_desc: {
+    vi: 'Thưởng ngoạn vịnh kỳ quan trên du thuyền 5 sao chuẩn quốc tế với phòng ban công riêng.',
+    en: 'Sail across UNESCO heritage bays on luxury suites with private ocean-view balconies.',
+  },
   exp_2_title: { vi: 'Bay Trực Thăng / Cáp Treo Mây', en: 'Helicopter & Cloud Cable Cars' },
-  exp_2_desc: { vi: 'Chiêm ngưỡng toàn cảnh núi rừng Tây Bắc và biển đảo từ độ cao ngoạn mục.', en: 'Gaze over panoramic mountain ranges and turquoise islands from breathtaking heights.' },
+  exp_2_desc: {
+    vi: 'Chiêm ngưỡng toàn cảnh núi rừng Tây Bắc và biển đảo từ độ cao ngoạn mục.',
+    en: 'Gaze over panoramic mountain ranges and turquoise islands from breathtaking heights.',
+  },
   exp_3_title: { vi: 'Ẩm Thực Tinh Hoa Di Sản', en: 'Royal Gastronomy' },
-  exp_3_desc: { vi: 'Thưởng thức thực đơn cung đình Huế và hải sản tươi sống được bếp trưởng 5 sao chế biến riêng.', en: 'Savor imperial banquets and fresh seafood curated by renowned 5-star executive chefs.' },
+  exp_3_desc: {
+    vi: 'Thưởng thức thực đơn cung đình Huế và hải sản tươi sống được bếp trưởng 5 sao chế biến riêng.',
+    en: 'Savor imperial banquets and fresh seafood curated by renowned 5-star executive chefs.',
+  },
   exp_4_title: { vi: 'Văn Hóa & Làng Nghề Nghìn Năm', en: 'Living Heritage' },
-  exp_4_desc: { vi: 'Gặp gỡ nghệ nhân bản địa, lắng nghe ca trù, nhã nhạc cung đình và tìm hiểu phong tục cổ.', en: 'Meet master artisans, listen to UNESCO court music, and immerse in authentic traditions.' },
+  exp_4_desc: {
+    vi: 'Gặp gỡ nghệ nhân bản địa, lắng nghe ca trù, nhã nhạc cung đình và tìm hiểu phong tục cổ.',
+    en: 'Meet master artisans, listen to UNESCO court music, and immerse in authentic traditions.',
+  },
 
   // How It Works / 4-Step Process
   proc_tag: { vi: 'QUY TRÌNH ĐẶT TOUR TINH GỌN', en: 'SEAMLESS BOOKING PROCESS' },
@@ -322,13 +397,25 @@ export const DICTIONARY: Translations = {
     en: 'Experience a frictionless online booking flow with instant secure seat reservation.',
   },
   proc_1_title: { vi: '1. Chọn Tuyệt Tác Hành Trình', en: '1. Select Your Itinerary' },
-  proc_1_desc: { vi: 'Khám phá bộ sưu tập 09 hành trình độc bản hoặc trò chuyện với Trợ lý AI để chọn tour phù hợp.', en: 'Explore our curated collection of 09 signature voyages or consult our AI Assistant.' },
+  proc_1_desc: {
+    vi: 'Khám phá bộ sưu tập 09 hành trình độc bản hoặc trò chuyện với Trợ lý AI để chọn tour phù hợp.',
+    en: 'Explore our curated collection of 09 signature voyages or consult our AI Assistant.',
+  },
   proc_2_title: { vi: '2. Kiểm Tra Lịch & Giá Minh Bạch', en: '2. Check Live Dates & Pricing' },
-  proc_2_desc: { vi: 'Xem số chỗ trống thực tế theo thời gian thực và tổng chi phí rõ ràng, không phụ phí phát sinh.', en: 'View real-time seat availability and clear all-inclusive pricing with zero hidden fees.' },
+  proc_2_desc: {
+    vi: 'Xem số chỗ trống thực tế theo thời gian thực và tổng chi phí rõ ràng, không phụ phí phát sinh.',
+    en: 'View real-time seat availability and clear all-inclusive pricing with zero hidden fees.',
+  },
   proc_3_title: { vi: '3. Khóa Chỗ An Toàn 15 Phút', en: '3. 15-Minute Secure Slot Lock' },
-  proc_3_desc: { vi: 'Hệ thống tự động giữ chỗ ưu tiên trong 15 phút để bạn hoàn tất xác nhận thanh toán an toàn.', en: 'Our system instantly reserves your preferred seats for 15 minutes to finalize booking.' },
+  proc_3_desc: {
+    vi: 'Hệ thống tự động giữ chỗ ưu tiên trong 15 phút để bạn hoàn tất xác nhận thanh toán an toàn.',
+    en: 'Our system instantly reserves your preferred seats for 15 minutes to finalize booking.',
+  },
   proc_4_title: { vi: '4. Tận Hưởng Kỳ Nghỉ Hoàn Mỹ', en: '4. Embark on Your Journey' },
-  proc_4_desc: { vi: 'Quản gia lữ hành riêng đón tiếp chu đáo và đồng hành cùng Quý khách suốt chuyến đi.', en: 'Your dedicated travel butler welcomes and escorts you throughout the royal journey.' },
+  proc_4_desc: {
+    vi: 'Quản gia lữ hành riêng đón tiếp chu đáo và đồng hành cùng Quý khách suốt chuyến đi.',
+    en: 'Your dedicated travel butler welcomes and escorts you throughout the royal journey.',
+  },
 
   // Key Statistics
   stats_1_num: { vi: '25,000+', en: '25,000+' },
@@ -371,18 +458,33 @@ export const DICTIONARY: Translations = {
 
   // Footer
   footer_trust_1_title: { vi: 'Chất Lượng Đảm Bảo', en: 'Verified Quality' },
-  footer_trust_1_desc: { vi: '100% Tour tuyển chọn chu đáo, hướng dẫn tận tình', en: '100% Handpicked luxury tours with dedicated guidance' },
+  footer_trust_1_desc: {
+    vi: '100% Tour tuyển chọn chu đáo, hướng dẫn tận tình',
+    en: '100% Handpicked luxury tours with dedicated guidance',
+  },
   footer_trust_2_title: { vi: 'Giữ Chỗ Tiện Lợi', en: 'Seamless Booking' },
-  footer_trust_2_desc: { vi: 'Khóa chỗ trực tuyến an toàn trong 15 phút', en: 'Instant online slot reservation held safely for 15 minutes' },
+  footer_trust_2_desc: {
+    vi: 'Khóa chỗ trực tuyến an toàn trong 15 phút',
+    en: 'Instant online slot reservation held safely for 15 minutes',
+  },
   footer_trust_3_title: { vi: 'Hỗ Trợ Tận Tâm 24/7', en: '24/7 Concierge Support' },
-  footer_trust_3_desc: { vi: 'Đồng hành cùng bạn trên mọi nẻo đường quê hương', en: 'Accompanying you across every journey across Vietnam' },
+  footer_trust_3_desc: {
+    vi: 'Đồng hành cùng bạn trên mọi nẻo đường quê hương',
+    en: 'Accompanying you across every journey across Vietnam',
+  },
   footer_col_regions: { vi: 'Khám Phá 3 Miền', en: 'Explore 3 Regions' },
   footer_col_services: { vi: 'Dịch Vụ & Đơn Hàng', en: 'Services & Orders' },
   footer_col_contact: { vi: 'Liên Hệ Hỗ Trợ', en: 'Contact & Support' },
   footer_hotline_text: { vi: 'Tổng đài: 1900 6868', en: 'Hotline: 1900 6868' },
   footer_cities_text: { vi: 'Hà Nội — Đà Nẵng — TP.HCM', en: 'Hanoi — Da Nang — Ho Chi Minh City' },
-  footer_rights_text: { vi: '© 2026 DELTA TRAVEL. Bảo lưu mọi quyền.', en: '© 2026 DELTA TRAVEL. All rights reserved.' },
-  footer_tagline_text: { vi: 'Du lịch Việt Nam an tâm, trọn vẹn và gần gũi.', en: 'Experience Vietnam with tranquility, distinction, and elegance.' },
+  footer_rights_text: {
+    vi: '© 2026 DELTA TRAVEL. Bảo lưu mọi quyền.',
+    en: '© 2026 DELTA TRAVEL. All rights reserved.',
+  },
+  footer_tagline_text: {
+    vi: 'Du lịch Việt Nam an tâm, trọn vẹn và gần gũi.',
+    en: 'Experience Vietnam with tranquility, distinction, and elegance.',
+  },
 
   // Authentication & RequireAuth
   auth_checking: { vi: 'Đang kiểm tra phiên đăng nhập...', en: 'Verifying session...' },
@@ -403,7 +505,10 @@ export const DICTIONARY: Translations = {
   login_page_title: { vi: 'Đăng nhập', en: 'Sign In' },
   login_page_desc: { vi: 'Tiếp tục hành trình của bạn.', en: 'Continue your journey.' },
   register_page_title: { vi: 'Tạo tài khoản', en: 'Create Account' },
-  register_page_desc: { vi: 'Quản lý các hành trình của bạn tại một nơi.', en: 'Manage all your journeys in one place.' },
+  register_page_desc: {
+    vi: 'Quản lý các hành trình của bạn tại một nơi.',
+    en: 'Manage all your journeys in one place.',
+  },
   auth_member_system: { vi: 'Hệ Thống Thành Viên', en: 'Membership Portal' },
   auth_welcome_back: { vi: 'Chào Mừng Trở Lại', en: 'Welcome Back' },
   auth_create_account: { vi: 'Đăng Ký Tài Khoản', en: 'Create Account' },
@@ -438,7 +543,10 @@ export const DICTIONARY: Translations = {
   },
   acc_change_avatar: { vi: 'Đổi ảnh', en: 'Change Photo' },
   acc_upload_hint: { vi: 'Tải ảnh lên từ thiết bị', en: 'Upload from device' },
-  acc_adjust_btn_show: { vi: 'Căn chỉnh ảnh (Zoom / Vị trí)', en: 'Adjust Photo (Zoom / Position)' },
+  acc_adjust_btn_show: {
+    vi: 'Căn chỉnh ảnh (Zoom / Vị trí)',
+    en: 'Adjust Photo (Zoom / Position)',
+  },
   acc_adjust_btn_hide: { vi: 'Ẩn bộ căn chỉnh', en: 'Hide Adjuster' },
   acc_adjust_drag_hint: { vi: 'Kéo rê trên ảnh để dịch vị trí', en: 'Drag photo to reposition' },
   acc_adjust_vert: { vi: 'Căn dọc:', en: 'Vertical:' },
@@ -451,7 +559,10 @@ export const DICTIONARY: Translations = {
   acc_email_label: { vi: 'Địa chỉ Email', en: 'Email Address' },
   acc_phone_label: { vi: 'Số điện thoại liên hệ', en: 'Contact Phone Number' },
   acc_phone_placeholder: { vi: 'Ví dụ: 0988 123 456', en: 'e.g. +84 988 123 456' },
-  acc_save_success: { vi: 'Đã cập nhật thông tin & ảnh đại diện thành công!', en: 'Profile information & avatar updated successfully!' },
+  acc_save_success: {
+    vi: 'Đã cập nhật thông tin & ảnh đại diện thành công!',
+    en: 'Profile information & avatar updated successfully!',
+  },
   acc_btn_save: { vi: 'Lưu Thay Đổi', en: 'Save Changes' },
   acc_btn_logout: { vi: 'Đăng xuất', en: 'Log Out' },
 
@@ -480,7 +591,10 @@ export const DICTIONARY: Translations = {
     vi: 'Bạn có chắc chắn muốn hủy đơn này không? Kho chỗ và vé đã giữ sẽ được giải phóng ngay lập tức.',
     en: 'Are you sure you want to cancel this booking? Reserved seats and tickets will be released immediately.',
   },
-  bk_cancel_reason_label: { vi: 'Chọn hoặc nhập lý do hủy:', en: 'Select or enter cancellation reason:' },
+  bk_cancel_reason_label: {
+    vi: 'Chọn hoặc nhập lý do hủy:',
+    en: 'Select or enter cancellation reason:',
+  },
   bk_cancel_reason_placeholder: { vi: 'Nhập lý do chi tiết...', en: 'Enter detailed reason...' },
   bk_cancel_btn_close: { vi: 'Đóng lại', en: 'Close' },
   bk_cancel_btn_confirm: { vi: 'Xác Nhận Hủy Đơn', en: 'Confirm Cancellation' },
@@ -495,13 +609,19 @@ export const DICTIONARY: Translations = {
     en: 'This booking ID does not exist or you do not have permission to view it.',
   },
   bk_detail_retry: { vi: 'Thử lại', en: 'Retry' },
-  bk_status_pending_title: { vi: 'Chờ Thanh Toán — Khóa Chỗ An Toàn Trong 15 Phút', en: 'Pending Payment — 15-Minute Safe Seat Lock' },
+  bk_status_pending_title: {
+    vi: 'Chờ Thanh Toán — Khóa Chỗ An Toàn Trong 15 Phút',
+    en: 'Pending Payment — 15-Minute Safe Seat Lock',
+  },
   bk_status_pending_sub: {
     vi: 'Vui lòng chọn phương thức thanh toán trực tiếp hoặc trực tuyến bên dưới.',
     en: 'Please select a direct or online payment method below.',
   },
   bk_status_remaining: { vi: 'Còn lại', en: 'Time Left' },
-  bk_status_confirmed_title: { vi: 'Đã Xác Nhận Đơn Hàng — Thanh Toán Trực Tiếp', en: 'Booking Confirmed — Direct Payment' },
+  bk_status_confirmed_title: {
+    vi: 'Đã Xác Nhận Đơn Hàng — Thanh Toán Trực Tiếp',
+    en: 'Booking Confirmed — Direct Payment',
+  },
   bk_status_confirmed_sub: {
     vi: 'Đơn đặt tour của Quý khách đã được bảo lưu thành công trên hệ thống. Quý khách vui lòng thanh toán trực tiếp tại văn phòng Delta Travel hoặc cho Hướng dẫn viên đón đoàn tại điểm hẹn trước giờ khởi hành.',
     en: 'Your tour reservation has been successfully confirmed. Please pay in cash/card at any Delta Travel office or directly to your Tour Leader prior to departure.',
@@ -555,7 +675,10 @@ export const DICTIONARY: Translations = {
   bk_total_summary: { vi: 'Tổng thanh toán', en: 'Total Payment' },
   bk_status_label: { vi: 'Trạng thái:', en: 'Status:' },
   bk_payment_method_label: { vi: 'Phương Thức Thanh Toán', en: 'Payment Method' },
-  bk_pay_direct_label: { vi: 'Thanh toán trực tiếp (Tại quầy / Cho HDV)', en: 'Direct Payment (At Office / To Tour Leader)' },
+  bk_pay_direct_label: {
+    vi: 'Thanh toán trực tiếp (Tại quầy / Cho HDV)',
+    en: 'Direct Payment (At Office / To Tour Leader)',
+  },
   bk_pay_direct_desc: {
     vi: 'Thanh toán bằng tiền mặt hoặc thẻ tại văn phòng Delta Travel (Hà Nội, Đà Nẵng, TP.HCM) hoặc cho Hướng dẫn viên khi đón tour.',
     en: 'Pay by cash or card at Delta Travel offices (Hanoi, Da Nang, HCMC) or directly to the Tour Leader upon tour pickup.',
@@ -604,7 +727,10 @@ export const DICTIONARY: Translations = {
   chk_passenger_section: { vi: 'Số Lượng Hành Khách', en: 'Passenger Configuration' },
   chk_adult_desc: { vi: 'Từ 12 tuổi trở lên', en: '12 years and older' },
   chk_child_desc: { vi: 'Dưới 12 tuổi', en: 'Under 12 years old' },
-  chk_realtime_seats: { vi: 'Kho chỗ khả dụng thời gian thực:', en: 'Real-time seat availability:' },
+  chk_realtime_seats: {
+    vi: 'Kho chỗ khả dụng thời gian thực:',
+    en: 'Real-time seat availability:',
+  },
   chk_cant_check_seats: { vi: 'Chưa kiểm tra được chỗ', en: 'Unable to check seats' },
   chk_checking_seats: { vi: 'Đang kiểm tra kho chỗ...', en: 'Checking seat inventory...' },
   chk_remaining_seats: { vi: 'Còn lại', en: 'Remaining' },
@@ -621,8 +747,14 @@ export const DICTIONARY: Translations = {
   chk_rep_name_label: { vi: 'Họ và tên người đại diện *', en: 'Full name of representative *' },
   chk_rep_email_label: { vi: 'Địa chỉ Email *', en: 'Email Address *' },
   chk_rep_phone_label: { vi: 'Số điện thoại liên hệ *', en: 'Contact Phone Number *' },
-  chk_phone_format_hint: { vi: 'Định dạng: 09... hoặc +84... (10 số)', en: 'Format: 09... or +84... (10 digits)' },
-  chk_security_note: { vi: 'Bảo mật dữ liệu cá nhân & Giao dịch an toàn', en: 'Personal data encryption & secure transaction' },
+  chk_phone_format_hint: {
+    vi: 'Định dạng: 09... hoặc +84... (10 số)',
+    en: 'Format: 09... or +84... (10 digits)',
+  },
+  chk_security_note: {
+    vi: 'Bảo mật dữ liệu cá nhân & Giao dịch an toàn',
+    en: 'Personal data encryption & secure transaction',
+  },
   chk_summary_section: { vi: 'Tóm Tắt Giữ Chỗ', en: 'Reservation Summary' },
   chk_departure_prefix: { vi: 'Khởi hành:', en: 'Departure:' },
   chk_dep_location: { vi: 'Xuất phát tại Việt Nam', en: 'Departing from Vietnam' },
@@ -646,18 +778,39 @@ export const DICTIONARY: Translations = {
   // Preloader
   preloader_skip: { vi: 'Khám phá ngay', en: 'Explore Now' },
   preloader_collection: { vi: 'BỘ SƯU TẬP 2026', en: '2026 COLLECTION' },
-  preloader_heritage_tag: { vi: 'HÀNH TRÌNH DI SẢN 3 MIỀN VIỆT NAM', en: '3-REGION VIETNAM HERITAGE EXPEDITIONS' },
+  preloader_heritage_tag: {
+    vi: 'HÀNH TRÌNH DI SẢN 3 MIỀN VIỆT NAM',
+    en: '3-REGION VIETNAM HERITAGE EXPEDITIONS',
+  },
   preloader_headline: { vi: 'NHỮNG HÀNH TRÌNH ĐỘC BẢN', en: 'BESPOKE SIGNATURE JOURNEYS' },
   preloader_desc: {
     vi: 'Khám phá tinh hoa cảnh sắc Việt Nam từ biển đảo kỳ vĩ đến đỉnh trời mây ngàn.',
     en: 'Discover the timeless elegance of Vietnam from majestic bays to cloud-veiled peaks.',
   },
-  preloader_status_1: { vi: 'Khởi tạo tọa độ không gian & kết nối vệ tinh...', en: 'Initializing coordinates & satellite connection...' },
-  preloader_status_2: { vi: 'Định vị bán đảo Đông Dương & dải đất hình chữ S...', en: 'Positioning Indochina peninsula & Vietnam S-shaped territory...' },
-  preloader_status_3: { vi: 'Nạp các tuyệt tác di sản 3 miền Bắc - Trung - Nam...', en: 'Loading 3-region heritage collections...' },
-  preloader_status_4: { vi: 'Chuẩn bị hoàn tất không gian số...', en: 'Finalizing digital experience...' },
-  preloader_status_ready: { vi: 'Chào mừng Quý khách đến với DELTA TRAVEL', en: 'Welcome to DELTA TRAVEL' },
-  preloader_status_frozen: { vi: 'Đã định vị thành công. Đang tải nốt những dữ liệu cuối cùng...', en: 'Positioned successfully. Loading final assets...' },
+  preloader_status_1: {
+    vi: 'Khởi tạo tọa độ không gian & kết nối vệ tinh...',
+    en: 'Initializing coordinates & satellite connection...',
+  },
+  preloader_status_2: {
+    vi: 'Định vị bán đảo Đông Dương & dải đất hình chữ S...',
+    en: 'Positioning Indochina peninsula & Vietnam S-shaped territory...',
+  },
+  preloader_status_3: {
+    vi: 'Nạp các tuyệt tác di sản 3 miền Bắc - Trung - Nam...',
+    en: 'Loading 3-region heritage collections...',
+  },
+  preloader_status_4: {
+    vi: 'Chuẩn bị hoàn tất không gian số...',
+    en: 'Finalizing digital experience...',
+  },
+  preloader_status_ready: {
+    vi: 'Chào mừng Quý khách đến với DELTA TRAVEL',
+    en: 'Welcome to DELTA TRAVEL',
+  },
+  preloader_status_frozen: {
+    vi: 'Đã định vị thành công. Đang tải nốt những dữ liệu cuối cùng...',
+    en: 'Positioned successfully. Loading final assets...',
+  },
 };
 
 interface LanguageContextType {
@@ -694,9 +847,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
-      {children}
-    </LanguageContext.Provider>
+    <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>
   );
 }
 

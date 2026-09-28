@@ -14,7 +14,7 @@ import { HOLD_MS } from '@tour/shared';
 const db = new PrismaService();
 const bookings = new BookingsService(db);
 const gateway = new Gateways(new ConfigService({}));
-const payments = new PaymentsService(db, gateway);
+const payments = new PaymentsService(db, gateway, new ConfigService({ CASH_HOLD_MINUTES: 1440 }));
 const admin = new AdminService(db, {
   read: async () => null,
   write: async () => {},
@@ -270,6 +270,31 @@ describe('database business invariants', () => {
       'CANCELLED',
     );
   });
+  it('supports cash reservation without pretending it is paid', async () => {
+    const s = await schedule();
+    const b = await bookings.create(userId, input(s.id), randomUUID());
+    const p = await payments.create(userId, b.id, 'CASH', '127.0.0.1');
+    expect(p.provider).toBe('CASH');
+    expect(p.status).toBe('INITIATED');
+    const stored = await bookings.get(b.id, userId);
+    expect(stored.status).toBe('AWAITING_CASH');
+    expect(stored.cashDueAt).not.toBeNull();
+  });
+
+  it('records cash only after operations confirms receipt', async () => {
+    const s = await schedule();
+    const b = await bookings.create(userId, input(s.id), randomUUID());
+    const p = await payments.create(userId, b.id, 'CASH', '127.0.0.1');
+    expect((await bookings.get(b.id, userId)).status).toBe('AWAITING_CASH');
+    const received = await admin.recordCashPayment(
+      p.id,
+      { reference: 'CASH-' + randomUUID(), note: 'Đã nhận đủ tiền mặt' },
+      userId,
+    );
+    expect(received.status).toBe('SUCCEEDED');
+    expect((await bookings.get(b.id, userId)).status).toBe('PAID');
+  });
+
   it('settles a free tour without contacting a gateway', async () => {
     const s = await schedule(10, 0);
     const b = await bookings.create(userId, input(s.id), randomUUID());

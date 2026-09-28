@@ -71,9 +71,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
       setAvatarUrl(updated.avatarUrl);
       updateUser(updated);
       setAvatarMessage(
-        lang === 'en'
-          ? 'Profile photo saved securely.'
-          : 'Ảnh đại diện đã được lưu lên hệ thống.',
+        lang === 'en' ? 'Profile photo saved securely.' : 'Ảnh đại diện đã được lưu lên hệ thống.',
       );
     } catch (error) {
       setAvatarError(
@@ -96,11 +94,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
       const updated = await profileApi.deleteAvatar();
       setAvatarUrl(updated.avatarUrl);
       updateUser(updated);
-      setAvatarMessage(
-        lang === 'en'
-          ? 'Profile photo removed.'
-          : 'Đã xóa ảnh đại diện.',
-      );
+      setAvatarMessage(lang === 'en' ? 'Profile photo removed.' : 'Đã xóa ảnh đại diện.');
     } catch (error) {
       setAvatarError(
         error instanceof Error
@@ -121,9 +115,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
 
     if (!oldPassword) {
       setPwdError(
-        lang === 'en'
-          ? 'Please enter your current password.'
-          : 'Vui lòng nhập mật khẩu hiện tại.',
+        lang === 'en' ? 'Please enter your current password.' : 'Vui lòng nhập mật khẩu hiện tại.',
       );
       return;
     }
@@ -136,11 +128,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
       return;
     }
     if (newPassword !== confirmNewPassword) {
-      setPwdError(
-        lang === 'en'
-          ? 'New passwords do not match.'
-          : 'Mật khẩu xác nhận không khớp.',
-      );
+      setPwdError(lang === 'en' ? 'New passwords do not match.' : 'Mật khẩu xác nhận không khớp.');
       return;
     }
     if (oldPassword === newPassword) {
@@ -206,9 +194,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
               {t('acc_vip_badge')}
             </LiquidGlassBadge>
           </div>
-          <h2 className="text-2xl font-black uppercase tracking-tight">
-            {t('acc_title')}
-          </h2>
+          <h2 className="text-2xl font-black uppercase tracking-tight">{t('acc_title')}</h2>
           <p className="mt-1 text-xs text-neutral-600">
             {lang === 'en'
               ? 'Your account data is synchronized with the DELTA TRAVEL server.'
@@ -220,11 +206,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
           <div className="relative">
             <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gradient-to-tr from-amber-500 to-amber-700 shadow-xl">
               {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={user.name}
-                  className="h-full w-full object-cover"
-                />
+                <img src={avatarUrl} alt={user.name} className="h-full w-full object-cover" />
               ) : (
                 <span className="text-3xl font-black uppercase tracking-wider text-white">
                   {getInitials(user.name)}
@@ -285,9 +267,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
               {avatarMessage}
             </p>
           )}
-          {avatarError && (
-            <p className="mt-2 text-xs font-semibold text-red-700">{avatarError}</p>
-          )}
+          {avatarError && <p className="mt-2 text-xs font-semibold text-red-700">{avatarError}</p>}
         </section>
 
         <section className="space-y-3 rounded-2xl border border-black/10 bg-white/65 p-4">
@@ -393,9 +373,7 @@ export function AccountModal({ isOpen, onClose }: AccountModalProps) {
                   : 'Mật khẩu mới phải có tối thiểu 12 ký tự.'}
               </p>
               {pwdError && <p className="text-xs font-semibold text-red-700">{pwdError}</p>}
-              {pwdSuccess && (
-                <p className="text-xs font-semibold text-emerald-700">{pwdSuccess}</p>
-              )}
+              {pwdSuccess && <p className="text-xs font-semibold text-emerald-700">{pwdSuccess}</p>}
               <button
                 type="submit"
                 disabled={pwdBusy}

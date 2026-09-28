@@ -7,14 +7,7 @@ import type { AuditSchema } from '@tour/shared';
 import { formatDateTime } from '@/lib/format';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
-import {
-  FileText,
-  RefreshCcw,
-  ShieldCheck,
-  User,
-  Clock,
-  Code,
-} from 'lucide-react';
+import { FileText, RefreshCcw, ShieldCheck, User, Clock, Code } from 'lucide-react';
 
 type AuditLog = z.infer<typeof AuditSchema>;
 
@@ -64,7 +57,9 @@ export default function AdminAuditLogsPage() {
       ) : error ? (
         <div className="rounded-2xl border border-stone-200 bg-white p-10 text-center shadow-sm">
           <p className="text-sm text-stone-700 mb-4">{error}</p>
-          <Button variant="outline" onClick={fetchLogs}>Thử lại</Button>
+          <Button variant="outline" onClick={fetchLogs}>
+            Thử lại
+          </Button>
         </div>
       ) : logs.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-14 text-center">
@@ -99,9 +94,7 @@ export default function AdminAuditLogsPage() {
                       {log.action}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-stone-900 font-medium">
-                    {log.entityId}
-                  </td>
+                  <td className="py-4 px-6 text-stone-900 font-medium">{log.entityId}</td>
                   <td className="py-4 px-6 text-stone-500">
                     {log.actorId ? log.actorId.slice(0, 10) + '...' : 'SYSTEM'}
                   </td>
@@ -117,4 +110,3 @@ export default function AdminAuditLogsPage() {
     </PageShell>
   );
 }
-

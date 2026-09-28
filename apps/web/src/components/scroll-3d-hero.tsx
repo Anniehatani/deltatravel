@@ -42,11 +42,13 @@ export function Scroll3DHero() {
 
     // If target frame not loaded, find closest available cached frame so animation never halts
     if (!img || !img.complete || img.naturalWidth === 0) {
-      preloadFrame(frame).then((loaded) => {
-        if (Math.abs(lastDrawnFrame.current - frame) <= 2) {
-          drawFrame(frame);
-        }
-      }).catch(() => {});
+      preloadFrame(frame)
+        .then((loaded) => {
+          if (Math.abs(lastDrawnFrame.current - frame) <= 2) {
+            drawFrame(frame);
+          }
+        })
+        .catch(() => {});
 
       // Fallback to nearest loaded frame
       for (let delta = 1; delta <= 15; delta++) {
@@ -174,7 +176,11 @@ export function Scroll3DHero() {
   }, []);
 
   return (
-    <div id="hero-3d-section" ref={containerRef} className="relative w-full h-[360vh] bg-black text-white">
+    <div
+      id="hero-3d-section"
+      ref={containerRef}
+      className="relative w-full h-[360vh] bg-black text-white"
+    >
       {/* Sticky Fullscreen Scrubber covering 100% viewport */}
       <div className="sticky top-0 h-screen min-h-[100dvh] w-full overflow-hidden flex items-center justify-center bg-black">
         {/* Hardware-Accelerated 60fps HTML5 Canvas Engine */}
@@ -213,9 +219,7 @@ export function Scroll3DHero() {
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] max-w-3xl mx-auto leading-tight uppercase">
               {t('hero_title_1')}
               <br />
-              <span className="underline decoration-2 underline-offset-8">
-                {t('hero_title_2')}
-              </span>
+              <span className="underline decoration-2 underline-offset-8">{t('hero_title_2')}</span>
             </h1>
             <p className="mt-5 text-sm sm:text-base font-medium text-white/90 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)] max-w-xl mx-auto leading-relaxed">
               {t('hero_desc')}
@@ -305,7 +309,9 @@ export function Scroll3DHero() {
                 className="group inline-flex items-center gap-3 rounded-full bg-black/75 hover:bg-black text-white px-8 py-3.5 text-xs font-black uppercase tracking-widest transition-all duration-300 hover:scale-105 shadow-[inset_0_1px_1px_rgba(255,255,255,0.35),0_15px_35px_-5px_rgba(0,0,0,0.6)] border border-white/30 hover:border-amber-400/80 backdrop-blur-2xl"
               >
                 <span>{t('hero_btn_explore_all')}</span>
-                <span className="text-amber-300 transition-transform duration-300 group-hover:translate-x-1 font-bold">→</span>
+                <span className="text-amber-300 transition-transform duration-300 group-hover:translate-x-1 font-bold">
+                  →
+                </span>
               </Link>
             </div>
           </div>

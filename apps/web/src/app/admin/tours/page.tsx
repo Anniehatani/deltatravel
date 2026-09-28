@@ -238,7 +238,8 @@ export default function AdminToursPage() {
       availableSeats: Number(availableSeats),
       departureAt: depIso,
       description: description.trim(),
-      highlights: highlightsList.length > 0 ? highlightsList : ['Khám phá danh thắng', 'Dịch vụ cao cấp'],
+      highlights:
+        highlightsList.length > 0 ? highlightsList : ['Khám phá danh thắng', 'Dịch vụ cao cấp'],
       status,
     };
 
@@ -322,9 +323,7 @@ export default function AdminToursPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
               Tổng Tour Trong Kho
             </span>
-            <div className="mt-1 text-3xl font-serif font-black text-stone-900">
-              {stats.total}
-            </div>
+            <div className="mt-1 text-3xl font-serif font-black text-stone-900">{stats.total}</div>
             <span className="text-[11px] text-stone-500">hành trình thương mại</span>
           </div>
           <div className="h-12 w-12 rounded-2xl bg-stone-100 flex items-center justify-center text-stone-800">
@@ -423,7 +422,9 @@ export default function AdminToursPage() {
           <AlertTriangle className="h-8 w-8 text-amber-600 mx-auto mb-2" />
           <p className="text-sm font-bold text-stone-800 mb-1">Không thể tải dữ liệu tour</p>
           <p className="text-xs text-stone-500 mb-4">{error}</p>
-          <Button variant="outline" onClick={fetchTours}>Thử lại</Button>
+          <Button variant="outline" onClick={fetchTours}>
+            Thử lại
+          </Button>
         </div>
       ) : filteredTours.length === 0 ? (
         <div className="rounded-3xl border border-stone-200 bg-white p-12 text-center shadow-sm">
@@ -473,7 +474,10 @@ export default function AdminToursPage() {
             <tbody className="divide-y divide-stone-100">
               {filteredTours.map((tour) => {
                 const isActive = tour.status === 'ACTIVE';
-                const seatPercent = Math.min(100, Math.round((tour.availableSeats / tour.totalSeats) * 100));
+                const seatPercent = Math.min(
+                  100,
+                  Math.round((tour.availableSeats / tour.totalSeats) * 100),
+                );
 
                 return (
                   <tr key={tour.id} className="hover:bg-stone-50/70 transition">
@@ -511,11 +515,16 @@ export default function AdminToursPage() {
                           tour.region === 'nam'
                             ? 'bg-orange-100 text-orange-900'
                             : tour.region === 'trung'
-                            ? 'bg-sky-100 text-sky-900'
-                            : 'bg-emerald-100 text-emerald-900'
+                              ? 'bg-sky-100 text-sky-900'
+                              : 'bg-emerald-100 text-emerald-900'
                         }`}
                       >
-                        {tour.regionName || (tour.region === 'nam' ? 'Miền Nam' : tour.region === 'trung' ? 'Miền Trung' : 'Miền Bắc')}
+                        {tour.regionName ||
+                          (tour.region === 'nam'
+                            ? 'Miền Nam'
+                            : tour.region === 'trung'
+                              ? 'Miền Trung'
+                              : 'Miền Bắc')}
                       </span>
                     </td>
 
@@ -537,7 +546,9 @@ export default function AdminToursPage() {
                     {/* Slots / Capacity */}
                     <td className="py-4 px-4 sm:px-6 min-w-[130px]">
                       <div className="flex items-center justify-between text-xs font-bold mb-1">
-                        <span className={tour.availableSeats <= 5 ? 'text-red-700' : 'text-emerald-700'}>
+                        <span
+                          className={tour.availableSeats <= 5 ? 'text-red-700' : 'text-emerald-700'}
+                        >
                           Còn {tour.availableSeats} chỗ
                         </span>
                         <span className="text-[10px] text-stone-400">/{tour.totalSeats} tổng</span>
@@ -548,8 +559,8 @@ export default function AdminToursPage() {
                             seatPercent < 20
                               ? 'bg-red-500'
                               : seatPercent < 50
-                              ? 'bg-amber-500'
-                              : 'bg-emerald-500'
+                                ? 'bg-amber-500'
+                                : 'bg-emerald-500'
                           }`}
                           style={{ width: `${seatPercent}%` }}
                         />
@@ -651,9 +662,7 @@ export default function AdminToursPage() {
             <form onSubmit={handleSubmitTour} className="space-y-4 text-xs">
               {/* Tour Title */}
               <div>
-                <label className="font-bold text-stone-800 block mb-1">
-                  Tên tour *
-                </label>
+                <label className="font-bold text-stone-800 block mb-1">Tên tour *</label>
                 <input
                   type="text"
                   required
@@ -711,9 +720,7 @@ export default function AdminToursPage() {
               {/* Region & Duration */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold text-stone-800 block mb-1">
-                    Khu vực (Miền) *
-                  </label>
+                  <label className="font-bold text-stone-800 block mb-1">Khu vực (Miền) *</label>
                   <select
                     value={region}
                     onChange={(e) => setRegion(e.target.value as any)}
@@ -748,9 +755,7 @@ export default function AdminToursPage() {
                     <ImageIcon className="h-4 w-4 text-amber-600" />
                     <span>Ảnh đại diện tour *</span>
                   </label>
-                  <span className="text-[10px] text-stone-500">
-                    URL hoặc chọn mẫu có sẵn
-                  </span>
+                  <span className="text-[10px] text-stone-500">URL hoặc chọn mẫu có sẵn</span>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -829,9 +834,7 @@ export default function AdminToursPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-stone-800 block mb-1">
-                    Giá trẻ em (VND) *
-                  </label>
+                  <label className="font-bold text-stone-800 block mb-1">Giá trẻ em (VND) *</label>
                   <input
                     type="number"
                     min={0}
@@ -850,9 +853,7 @@ export default function AdminToursPage() {
               {/* Slots & Departure Schedule */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="font-bold text-stone-800 block mb-1">
-                    Tổng số chỗ *
-                  </label>
+                  <label className="font-bold text-stone-800 block mb-1">Tổng số chỗ *</label>
                   <input
                     type="number"
                     min={1}
@@ -865,9 +866,7 @@ export default function AdminToursPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-stone-800 block mb-1">
-                    Số chỗ còn trống *
-                  </label>
+                  <label className="font-bold text-stone-800 block mb-1">Số chỗ còn trống *</label>
                   <input
                     type="number"
                     min={0}
@@ -880,9 +879,7 @@ export default function AdminToursPage() {
                 </div>
 
                 <div>
-                  <label className="font-bold text-stone-800 block mb-1">
-                    Ngày khởi hành *
-                  </label>
+                  <label className="font-bold text-stone-800 block mb-1">Ngày khởi hành *</label>
                   <input
                     type="date"
                     required
@@ -895,9 +892,7 @@ export default function AdminToursPage() {
 
               {/* Description */}
               <div>
-                <label className="font-bold text-stone-800 block mb-1">
-                  Mô tả tour *
-                </label>
+                <label className="font-bold text-stone-800 block mb-1">Mô tả tour *</label>
                 <textarea
                   rows={3}
                   required
@@ -952,11 +947,7 @@ export default function AdminToursPage() {
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowModal(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
                   Hủy bỏ
                 </Button>
                 <Button
@@ -967,8 +958,8 @@ export default function AdminToursPage() {
                   {submitting
                     ? 'Đang lưu...'
                     : editingTour
-                    ? 'Lưu thay đổi tour'
-                    : 'Tạo & Đăng tour'}
+                      ? 'Lưu thay đổi tour'
+                      : 'Tạo & Đăng tour'}
                 </Button>
               </div>
             </form>
@@ -984,11 +975,11 @@ export default function AdminToursPage() {
               <Trash2 className="h-6 w-6" />
             </div>
 
-            <h3 className="text-center font-bold text-lg text-stone-900">
-              Xóa Tour Du Lịch?
-            </h3>
+            <h3 className="text-center font-bold text-lg text-stone-900">Xóa Tour Du Lịch?</h3>
             <p className="mt-2 text-center text-xs text-stone-600 leading-relaxed">
-              Bạn có chắc chắn muốn xóa tour <strong className="text-stone-900">"{deletingTour.title}"</strong> không? Tour sẽ ngay lập tức bị gỡ bỏ khỏi website và không thể hoàn tác.
+              Bạn có chắc chắn muốn xóa tour{' '}
+              <strong className="text-stone-900">"{deletingTour.title}"</strong> không? Tour sẽ ngay
+              lập tức bị gỡ bỏ khỏi website và không thể hoàn tác.
             </p>
 
             <div className="mt-6 flex items-center justify-center gap-3">

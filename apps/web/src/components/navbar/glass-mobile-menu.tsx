@@ -120,8 +120,8 @@ export function GlassMobileMenu({
                         ? 'text-white bg-white/20 font-black shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.6)] border border-white/30'
                         : 'text-neutral-300 hover:text-white hover:bg-white/10'
                       : active
-                      ? 'text-black bg-black/[0.06] font-black shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.9)] border border-black/10'
-                      : 'text-neutral-700 hover:text-black hover:bg-black/[0.03]'
+                        ? 'text-black bg-black/[0.06] font-black shadow-[inset_0_1px_1.5px_rgba(255,255,255,0.9)] border border-black/10'
+                        : 'text-neutral-700 hover:text-black hover:bg-black/[0.03]'
                   }`}
                 >
                   <span>{item.label}</span>

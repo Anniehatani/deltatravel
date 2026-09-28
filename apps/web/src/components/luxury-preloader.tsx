@@ -2,10 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import {
-  preloadCriticalAssets,
-  startBackgroundFramePreload,
-} from '@/lib/asset-preloader';
+import { preloadCriticalAssets, startBackgroundFramePreload } from '@/lib/asset-preloader';
 import { useLanguage } from '@/providers/language-provider';
 import { Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
 
