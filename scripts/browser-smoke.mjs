@@ -77,6 +77,43 @@ async function assertAuthGate(page, name, viewport, route) {
   console.log(`PASS  ${name} auth gate ${route}`);
 }
 
+async function assertInternalLinks(page) {
+  const origin = new URL(WEB).origin;
+  const discovered = new Set();
+
+  for (const seed of ['/', '/tours']) {
+    await page.goto(WEB + seed, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await page.waitForTimeout(500);
+    const hrefs = await page.locator('a[href]').evaluateAll((links) =>
+      links.map((link) => link.getAttribute('href')).filter(Boolean),
+    );
+    for (const href of hrefs) {
+      if (
+        href.startsWith('#') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:') ||
+        href.startsWith('javascript:')
+      ) {
+        continue;
+      }
+      const url = new URL(href, WEB);
+      if (url.origin !== origin) continue;
+      url.hash = '';
+      discovered.add(url.toString());
+    }
+  }
+
+  const failures = [];
+  for (const url of [...discovered].sort()) {
+    const response = await page.request.get(url, { timeout: 60000, maxRedirects: 5 });
+    if (response.status() >= 400) failures.push(`${response.status()} ${url}`);
+  }
+  if (failures.length) {
+    throw new Error(`Broken internal links: ${failures.join(' | ')}`);
+  }
+  console.log(`PASS  internal link integrity links=${discovered.size}`);
+}
+
 async function runEngine(name, engine, viewport) {
   const browser = await engine.launch({ headless: true });
   try {
@@ -90,6 +127,10 @@ async function runEngine(name, engine, viewport) {
 
     await assertAuthGate(page, name, viewport, '/bookings');
     await assertAuthGate(page, name, viewport, '/admin');
+
+    if (name === 'chromium-desktop') {
+      await assertInternalLinks(page);
+    }
 
     if (pageErrors.length) {
       throw new Error(`${name} page errors: ${pageErrors.join(' | ')}`);
