@@ -19,11 +19,11 @@ import {
   RefreshCcw,
   CreditCard,
   XCircle,
-  Trash2,
 } from 'lucide-react';
 
 const STATUS_COLOR_MAP: Record<string, string> = {
   PENDING_PAYMENT: 'bg-amber-50 text-amber-900 border border-amber-300',
+  AWAITING_CASH: 'bg-blue-50 text-blue-900 border border-blue-300',
   PAID: 'bg-black text-white border border-black',
   CONFIRMED: 'bg-emerald-50 text-emerald-900 border border-emerald-300',
   COMPLETED: 'bg-black text-white border border-black',
@@ -56,10 +56,6 @@ export default function BookingsListPage() {
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
 
-  // Deletion state
-  const [deleteTarget, setDeleteTarget] = useState<Booking | null>(null);
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchBookings = () => {
     setLoading(true);
@@ -104,20 +100,6 @@ export default function BookingsListPage() {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-    setDeleting(true);
-    setDeleteError(null);
-    try {
-      await bookingApi.delete(deleteTarget.id);
-      setBookings((prev) => prev.filter((b) => b.id !== deleteTarget.id));
-      setDeleteTarget(null);
-    } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : (lang === 'en' ? 'Unable to delete booking.' : 'Không thể xóa đơn hàng.'));
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
@@ -174,7 +156,7 @@ export default function BookingsListPage() {
             const statusLabel = statusKeyMap[booking.status] ? t(statusKeyMap[booking.status]) : (BOOKING_LABELS[booking.status] || booking.status);
             const badgeClass =
               STATUS_COLOR_MAP[booking.status] || 'bg-stone-100 text-stone-800 border-stone-200';
-            const canCancel = booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED';
+            const canCancel = ['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'].includes(booking.status);
 
             return (
               <div
@@ -239,21 +221,6 @@ export default function BookingsListPage() {
                         title={t('bk_btn_cancel')}
                       >
                         {t('bk_btn_cancel')}
-                      </button>
-                    )}
-
-                    {booking.status === 'CANCELLED' && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteTarget(booking);
-                          setDeleteError(null);
-                        }}
-                        className="px-3 py-2 text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100/80 rounded-xl transition border border-red-200 flex items-center gap-1.5"
-                        title={t('bk_btn_delete')}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        <span>{t('bk_btn_delete')}</span>
                       </button>
                     )}
 
