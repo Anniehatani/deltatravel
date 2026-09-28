@@ -272,10 +272,7 @@ export function AgentBookingPanel() {
       return 'Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.';
     }
     const providerAvailable = Boolean(
-      provider &&
-        plan?.paymentOptions.some(
-          (item) => item.provider === provider && item.available,
-        ),
+      provider && plan?.paymentOptions.some((item) => item.provider === provider && item.available),
     );
     if (!providerAvailable) {
       providerRef.current?.focus();
@@ -316,9 +313,7 @@ export function AgentBookingPanel() {
     }
   };
 
-  const handleInitialEnter = (
-    e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleInitialEnter = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (
       e.key === 'Enter' &&
       !e.shiftKey &&
