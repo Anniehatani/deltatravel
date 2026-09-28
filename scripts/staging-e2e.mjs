@@ -2,8 +2,14 @@
 
 import { randomBytes, randomUUID } from 'node:crypto';
 
-const API = (process.env.VERIFY_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(/\/$/, '');
-const ORIGIN = (process.env.VERIFY_ORIGIN || 'https://delta-travel-web.onrender.com').replace(/\/$/, '');
+const API = (process.env.VERIFY_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(
+  /\/$/,
+  '',
+);
+const ORIGIN = (process.env.VERIFY_ORIGIN || 'https://delta-travel-web.onrender.com').replace(
+  /\/$/,
+  '',
+);
 const ALLOW_MUTATIONS = process.env.VERIFY_ALLOW_MUTATIONS === 'true';
 
 if (!ALLOW_MUTATIONS) {
@@ -104,7 +110,8 @@ const approved = await request(`/assistant/agent/plans/${plan.id}/approve`, {
   body: { approved: true, version: plan.checkpoint.version },
 });
 if (!approved.booking?.id) throw new Error('Agent approval did not create a booking');
-if (approved.payment?.provider !== 'CASH') throw new Error('Agent approval did not create CASH payment');
+if (approved.payment?.provider !== 'CASH')
+  throw new Error('Agent approval did not create CASH payment');
 pass('agent approval creates booking + CASH', approved.booking.id);
 
 const booking = await request('/bookings/' + approved.booking.id, { token });

@@ -4,16 +4,16 @@ Delta Travel là website quảng bá và đặt tour nội địa Việt Nam v�
 
 ## Năng lực chính
 
-* Duyệt tour, lịch khởi hành, giá và số chỗ từ backend thật.
-* Đăng ký, đăng nhập, refresh session, quên mật khẩu qua email.
-* Booking có transaction, inventory lock, idempotency, timeout và cancellation.
-* Thanh toán CASH và contract cho VNPay, MoMo, ZaloPay.
-* AI chat dùng Groq khi configured và fallback minh bạch khi provider lỗi.
-* AI Agent có plan, constraints, candidate schedules, payment capability và explicit approval checkpoint trước khi tạo booking/payment.
-* Avatar persistent qua Supabase Storage.
-* Admin quản lý tour, lịch, booking, payment, audit và integration readiness.
-* Song ngữ VI/EN ở frontend.
-* CI gồm format, typecheck, docs generation, unit test, build, integration test và audit.
+- Duyệt tour, lịch khởi hành, giá và số chỗ từ backend thật.
+- Đăng ký, đăng nhập, refresh session, quên mật khẩu qua email.
+- Booking có transaction, inventory lock, idempotency, timeout và cancellation.
+- Thanh toán CASH và contract cho VNPay, MoMo, ZaloPay.
+- AI chat dùng Groq khi configured và fallback minh bạch khi provider lỗi.
+- AI Agent có plan, constraints, candidate schedules, payment capability và explicit approval checkpoint trước khi tạo booking/payment.
+- Avatar persistent qua Supabase Storage.
+- Admin quản lý tour, lịch, booking, payment, audit và integration readiness.
+- Song ngữ VI/EN ở frontend.
+- CI gồm format, typecheck, docs generation, unit test, build, integration test và audit.
 
 ## Trạng thái production readiness
 

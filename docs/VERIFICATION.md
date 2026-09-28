@@ -4,26 +4,26 @@ Cập nhật: 28/09/2026.
 
 ## Bằng chứng đã chạy
 
-| Hạng mục | Kết quả | Ghi chú |
-| --- | --- | --- |
-| npm ci | PASS | cài sạch bằng lockfile |
-| Prisma generate + migrate | PASS | PostgreSQL native trong GitHub Actions |
-| format:check | PASS | Prettier |
-| TypeScript strict | PASS | shared, API, web |
-| docs:generate | PASS | contract và OpenAPI sinh được |
-| unit tests | PASS | backend business rules và boundaries |
-| production build | PASS | NestJS + Next.js |
-| integration tests | PASS | PostgreSQL 16 + Redis service |
-| npm audit --omit=dev --audit-level=high | PASS | không có advisory mức high trở lên tại lượt release |
-| Render web deploy | PASS | service live |
-| Render API deploy | PASS | service live |
-| public web smoke | PASS | /, /assistant, /tours |
-| API readiness | PASS | PostgreSQL + Redis reachable |
-| AI provider | PASS | GROQ configured, fallback available |
-| AI chat | PASS | live response mode GROQ, có sources |
-| mail integration | PASS readiness | RESEND configured |
-| avatar integration | PASS readiness | Supabase storage configured |
-| payment capability | PASS | CASH available, wallet gateways fail closed khi thiếu credential |
+| Hạng mục                                | Kết quả        | Ghi chú                                                          |
+| --------------------------------------- | -------------- | ---------------------------------------------------------------- |
+| npm ci                                  | PASS           | cài sạch bằng lockfile                                           |
+| Prisma generate + migrate               | PASS           | PostgreSQL native trong GitHub Actions                           |
+| format:check                            | PASS           | Prettier                                                         |
+| TypeScript strict                       | PASS           | shared, API, web                                                 |
+| docs:generate                           | PASS           | contract và OpenAPI sinh được                                    |
+| unit tests                              | PASS           | backend business rules và boundaries                             |
+| production build                        | PASS           | NestJS + Next.js                                                 |
+| integration tests                       | PASS           | PostgreSQL 16 + Redis service                                    |
+| npm audit --omit=dev --audit-level=high | PASS           | không có advisory mức high trở lên tại lượt release              |
+| Render web deploy                       | PASS           | service live                                                     |
+| Render API deploy                       | PASS           | service live                                                     |
+| public web smoke                        | PASS           | /, /assistant, /tours                                            |
+| API readiness                           | PASS           | PostgreSQL + Redis reachable                                     |
+| AI provider                             | PASS           | GROQ configured, fallback available                              |
+| AI chat                                 | PASS           | live response mode GROQ, có sources                              |
+| mail integration                        | PASS readiness | RESEND configured                                                |
+| avatar integration                      | PASS readiness | Supabase storage configured                                      |
+| payment capability                      | PASS           | CASH available, wallet gateways fail closed khi thiếu credential |
 
 Full CI đã được chạy trên release tree trước khi merge vào upstream. Release tree trên upstream `main` và tree đã deploy trên Render là cùng nội dung source.
 

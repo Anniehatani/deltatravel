@@ -4,18 +4,18 @@ Cập nhật: 28/09/2026.
 
 ## Đã đạt
 
-* Frontend Next.js và backend NestJS build production thành công.
-* PostgreSQL migrations và Redis integration chạy trong CI native.
-* Auth, RBAC, refresh rotation, CSRF boundary và IDOR protection có test.
-* Booking transaction, inventory locking, idempotency, timeout reclaim và cancellation có test.
-* AI Agent dùng human approval checkpoint trước action có side effect.
-* Groq provider đang live, deterministic fallback vẫn có.
-* Resend readiness và Supabase avatar storage readiness đang live.
-* CASH payment hoạt động theo trạng thái `AWAITING_CASH`, không giả thành PAID.
-* VNPay, MoMo và ZaloPay fail closed khi chưa cấu hình.
-* Full quality gate PASS.
-* Render deploy PASS.
-* Public live smoke PASS.
+- Frontend Next.js và backend NestJS build production thành công.
+- PostgreSQL migrations và Redis integration chạy trong CI native.
+- Auth, RBAC, refresh rotation, CSRF boundary và IDOR protection có test.
+- Booking transaction, inventory locking, idempotency, timeout reclaim và cancellation có test.
+- AI Agent dùng human approval checkpoint trước action có side effect.
+- Groq provider đang live, deterministic fallback vẫn có.
+- Resend readiness và Supabase avatar storage readiness đang live.
+- CASH payment hoạt động theo trạng thái `AWAITING_CASH`, không giả thành PAID.
+- VNPay, MoMo và ZaloPay fail closed khi chưa cấu hình.
+- Full quality gate PASS.
+- Render deploy PASS.
+- Public live smoke PASS.
 
 ## Tự động hóa kiểm thử
 

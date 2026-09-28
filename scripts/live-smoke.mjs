@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
-const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(/\/$/, '');
-const API = (process.env.LIVE_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(/\/$/, '');
+const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(
+  /\/$/,
+  '',
+);
+const API = (process.env.LIVE_API_URL || 'https://delta-travel-api.onrender.com/api/v1').replace(
+  /\/$/,
+  '',
+);
 
 async function textGet(url) {
   const response = await fetch(url, { redirect: 'follow' });
@@ -40,13 +46,17 @@ if (ready?.status !== 'ok') throw new Error('health/ready did not return status=
 pass('health/ready');
 
 const provider = await jsonRequest(API + '/assistant/provider-status');
-if (!provider?.preferredProvider) throw new Error('assistant/provider-status missing preferredProvider');
-pass('assistant/provider-status', JSON.stringify({
-  preferredProvider: provider.preferredProvider,
-  groqConfigured: provider.groqConfigured,
-  geminiConfigured: provider.geminiConfigured,
-  fallbackAvailable: provider.fallbackAvailable,
-}));
+if (!provider?.preferredProvider)
+  throw new Error('assistant/provider-status missing preferredProvider');
+pass(
+  'assistant/provider-status',
+  JSON.stringify({
+    preferredProvider: provider.preferredProvider,
+    groqConfigured: provider.groqConfigured,
+    geminiConfigured: provider.geminiConfigured,
+    fallbackAvailable: provider.fallbackAvailable,
+  }),
+);
 
 const integrations = await jsonRequest(API + '/health/integrations');
 if (!integrations?.payments) throw new Error('health/integrations missing payment readiness');
@@ -72,7 +82,8 @@ const chat = await jsonRequest(API + '/assistant/chat', {
     history: [],
   }),
 });
-if (!chat || !Array.isArray(chat.sources)) throw new Error('assistant/chat missing expected response shape');
+if (!chat || !Array.isArray(chat.sources))
+  throw new Error('assistant/chat missing expected response shape');
 pass('assistant/chat', JSON.stringify({ mode: chat.mode, sources: chat.sources.length }));
 
 console.log('\nLIVE_SMOKE_PASS');

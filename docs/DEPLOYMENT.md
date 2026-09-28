@@ -32,9 +32,9 @@ VNPay, MoMo và ZaloPay chỉ available khi đủ merchant credentials. Endpoint
 
 Webhook public:
 
-* VNPay: `/api/v1/payments/webhooks/vnpay`
-* MoMo: `/api/v1/payments/webhooks/momo`
-* ZaloPay: `/api/v1/payments/webhooks/zalopay`
+- VNPay: `/api/v1/payments/webhooks/vnpay`
+- MoMo: `/api/v1/payments/webhooks/momo`
+- ZaloPay: `/api/v1/payments/webhooks/zalopay`
 
 Return page: `/payments/return`.
 

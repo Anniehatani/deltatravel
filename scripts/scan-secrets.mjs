@@ -13,7 +13,9 @@ const patterns = [
 ];
 
 const skip = new Set(['scripts/scan-secrets.mjs']);
-const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+const files = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' })
+  .split('\0')
+  .filter(Boolean);
 const findings = [];
 
 for (const file of files) {
