@@ -11,6 +11,7 @@ import {
   BookingSchema,
   PaymentSchema,
   PaymentProviderStatusSchema,
+  IntegrationStatusSchema,
   PageSchema,
   QuoteResultSchema,
   AssistantResultSchema,
@@ -41,7 +42,6 @@ import {
   AgentApprovalSchema,
   AgentDeclineSchema,
 } from '@tour/shared';
-import type { CommercialTour } from './commercial-store';
 import { FALLBACK_TOURS } from './fallback-data';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://delta-travel-api.onrender.com/api/v1';
@@ -245,7 +245,57 @@ function belongsToRegion(tour: z.infer<typeof TourSchema>, region: string) {
   const metadata = FALLBACK_TOURS.find(
     (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
   );
-  return metadata?.region === region;
+  if (metadata) return metadata.region === region;
+
+  const text = `${tour.destination} ${tour.title}`.toLocaleLowerCase('vi');
+  const north = [
+    'hà nội',
+    'quảng ninh',
+    'hạ long',
+    'lào cai',
+    'sa pa',
+    'ninh bình',
+    'hải phòng',
+    'hà giang',
+    'cao bằng',
+    'sơn la',
+    'mộc châu',
+  ];
+  const central = [
+    'đà nẵng',
+    'hội an',
+    'quảng nam',
+    'huế',
+    'thừa thiên',
+    'khánh hòa',
+    'nha trang',
+    'quảng bình',
+    'quảng trị',
+    'bình định',
+    'phú yên',
+  ];
+  const south = [
+    'hồ chí minh',
+    'sài gòn',
+    'kiên giang',
+    'phú quốc',
+    'cần thơ',
+    'tây ninh',
+    'vũng tàu',
+    'bà rịa',
+    'an giang',
+    'cà mau',
+    'đồng tháp',
+    'bến tre',
+  ];
+  const inferred = north.some((item) => text.includes(item))
+    ? 'bac'
+    : central.some((item) => text.includes(item))
+      ? 'trung'
+      : south.some((item) => text.includes(item))
+        ? 'nam'
+        : null;
+  return inferred === region;
 }
 
 export const tourApi = {
@@ -335,19 +385,6 @@ export const paymentApi = {
 
   get: (id: string) => api(`/payments/${id}`, PaymentSchema),
 };
-
-const IntegrationStatusSchema = z.object({
-  mailProvider: z.string(),
-  aiProvider: z.string().nullable(),
-  aiConfigured: z.boolean(),
-  avatarStorageConfigured: z.boolean(),
-  payments: z.object({
-    cashConfigured: z.boolean(),
-    vnpayConfigured: z.boolean(),
-    momoConfigured: z.boolean(),
-    zalopayConfigured: z.boolean(),
-  }),
-});
 
 export const systemApi = {
   integrations: () =>
@@ -453,7 +490,7 @@ export const profileApi = {
   },
 };
 
-function tourPayload(input: Partial<CommercialTour>) {
+function tourPayload(input: Partial<z.infer<typeof TourSchema>>) {
   return {
     title: input.title,
     slug: input.slug,
@@ -470,13 +507,13 @@ export const adminApi = {
 
   tours: () => api('/admin/tours?page=1&pageSize=100', PageSchema(TourSchema)),
 
-  createTour: (input: Partial<CommercialTour>) =>
+  createTour: (input: Partial<z.infer<typeof TourSchema>>) =>
     api('/admin/tours', TourSchema, {
       method: 'POST',
       body: CreateTourSchema.parse(tourPayload(input)),
     }),
 
-  updateTour: (id: string, input: Partial<CommercialTour>) => {
+  updateTour: (id: string, input: Partial<z.infer<typeof TourSchema>>) => {
     const candidate = Object.fromEntries(
       Object.entries(tourPayload(input)).filter(([, value]) => value !== undefined),
     );

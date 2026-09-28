@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { adminApi } from '@/lib/api';
+import { useAuth } from '@/providers/auth-provider';
 import type { z } from 'zod';
 import type { AuditSchema } from '@tour/shared';
 import { formatDateTime } from '@/lib/format';
@@ -12,6 +13,7 @@ import { FileText, RefreshCcw, ShieldCheck, User, Clock, Code } from 'lucide-rea
 type AuditLog = z.infer<typeof AuditSchema>;
 
 export default function AdminAuditLogsPage() {
+  const { user } = useAuth();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,8 +35,28 @@ export default function AdminAuditLogsPage() {
   };
 
   useEffect(() => {
-    fetchLogs();
-  }, []);
+    if (user?.role === 'ADMIN') fetchLogs();
+    else if (user) setLoading(false);
+  }, [user]);
+
+  if (user && user.role !== 'ADMIN') {
+    return (
+      <PageShell
+        badge="Bảo Mật & Tuân Thủ"
+        title="Nhật Ký Kiểm Toán Hệ Thống"
+        description="Nhật ký kiểm toán chứa dữ liệu vận hành nhạy cảm và chỉ dành cho ADMIN."
+      >
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-10 text-center">
+          <ShieldCheck className="mx-auto mb-3 h-10 w-10 text-amber-700" />
+          <h2 className="font-bold text-stone-900">Cần quyền ADMIN</h2>
+          <p className="mt-2 text-xs text-stone-600">
+            Tài khoản OPERATIONS vẫn có thể quản lý tour, lịch, booking và thu tiền mặt nhưng không
+            đọc audit trail toàn hệ thống.
+          </p>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell

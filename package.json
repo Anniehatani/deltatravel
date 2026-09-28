@@ -24,7 +24,10 @@
     "docs:generate": "npm run build -w @tour/shared && node scripts/generate-contract.mjs",
     "verify:live": "node scripts/live-smoke.mjs",
     "verify:staging": "node scripts/staging-e2e.mjs",
-    "scan:secrets": "node scripts/scan-secrets.mjs"
+    "scan:secrets": "node scripts/scan-secrets.mjs",
+    "verify:contract": "node scripts/verify-contract.mjs",
+    "verify:browser": "node scripts/browser-smoke.mjs",
+    "verify:a11y": "node scripts/a11y-smoke.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",

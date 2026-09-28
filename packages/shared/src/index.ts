@@ -226,6 +226,18 @@ export const PaymentProviderStatusSchema = z.object({
   providers: z.array(PaymentProviderCapabilitySchema),
   returnOrigin: z.string().url(),
 });
+export const IntegrationStatusSchema = z.object({
+  mailProvider: z.string(),
+  aiProvider: z.string().nullable(),
+  aiConfigured: z.boolean(),
+  avatarStorageConfigured: z.boolean(),
+  payments: z.object({
+    cashConfigured: z.boolean(),
+    vnpayConfigured: z.boolean(),
+    momoConfigured: z.boolean(),
+    zalopayConfigured: z.boolean(),
+  }),
+});
 export const AgentPlanStatusSchema = z.enum([
   'NEEDS_INPUT',
   'NO_MATCH',
@@ -465,6 +477,7 @@ export type Schedule = z.infer<typeof ScheduleSchema>;
 export type Booking = z.infer<typeof BookingSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type PaymentProviderCapability = z.infer<typeof PaymentProviderCapabilitySchema>;
+export type IntegrationStatus = z.infer<typeof IntegrationStatusSchema>;
 export type AuthResult = z.infer<typeof AuthResultSchema>;
 export type AssistantResult = z.infer<typeof AssistantResultSchema>;
 export type AgentPlan = z.infer<typeof AgentPlanSchema>;

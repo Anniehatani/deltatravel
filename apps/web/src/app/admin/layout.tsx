@@ -22,12 +22,13 @@ import {
 } from 'lucide-react';
 
 const ADMIN_NAV_LINKS = [
-  { href: '/admin/tours', label: 'Quản lý Tour', icon: Compass, badge: 'CHÍNH' },
-  { href: '/admin/schedules', label: 'Lịch khởi hành & Slot', icon: Calendar },
-  { href: '/admin/bookings', label: 'Quản lý Đơn & Sao kê', icon: Ticket },
-  { href: '/admin/payments', label: 'Thanh toán & Hoàn tiền', icon: CreditCard },
-  { href: '/admin/system', label: 'Cấu hình AI & Hệ thống', icon: Cpu },
-  { href: '/admin/audit-logs', label: 'Nhật ký kiểm toán', icon: FileText },
+  { href: '/admin', label: 'Tổng quan vận hành', icon: LayoutDashboard, adminOnly: false },
+  { href: '/admin/tours', label: 'Quản lý Tour', icon: Compass, badge: 'CHÍNH', adminOnly: false },
+  { href: '/admin/schedules', label: 'Lịch khởi hành & Slot', icon: Calendar, adminOnly: false },
+  { href: '/admin/bookings', label: 'Quản lý Đơn & Sao kê', icon: Ticket, adminOnly: false },
+  { href: '/admin/payments', label: 'Thanh toán & Hoàn tiền', icon: CreditCard, adminOnly: false },
+  { href: '/admin/system', label: 'AI & trạng thái hệ thống', icon: Cpu, adminOnly: false },
+  { href: '/admin/audit-logs', label: 'Nhật ký kiểm toán', icon: FileText, adminOnly: true },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -37,9 +38,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <RequireAuth roles={['ADMIN', 'OPERATIONS']}>
-      <div className="flex min-h-screen bg-stone-100 text-stone-900">
+      <div className="flex min-h-screen flex-col bg-stone-100 text-stone-900 md:flex-row">
         {/* ─── LEFT SIDEBAR: Admin Operations ─── */}
-        <aside className="w-64 lg:w-72 shrink-0 bg-neutral-950 text-white border-r border-neutral-800 flex flex-col justify-between sticky top-0 h-screen overflow-y-auto select-none z-30">
+        <aside className="relative z-30 flex h-auto w-full shrink-0 select-none flex-col justify-between border-b border-neutral-800 bg-neutral-950 text-white md:sticky md:top-0 md:h-screen md:w-64 md:overflow-y-auto md:border-b-0 md:border-r lg:w-72">
           <div>
             {/* Brand Logo & Commercial Operations Banner */}
             <div className="p-5 border-b border-neutral-800/80">
@@ -81,47 +82,52 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Navigation Tabs (Vertical on the LEFT) */}
-            <nav className="p-3 space-y-1" aria-label="Menu quản trị bên trái">
-              <div className="px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
+            <nav
+              className="grid grid-cols-2 gap-1 p-3 md:block md:space-y-1"
+              aria-label="Menu quản trị"
+            >
+              <div className="col-span-2 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
                 Menu Quản Trị Hệ Thống
               </div>
-              {ADMIN_NAV_LINKS.map((link) => {
-                const Icon = link.icon;
-                const isActive =
-                  pathname === link.href ||
-                  (link.href !== '/admin' && pathname.startsWith(link.href));
+              {ADMIN_NAV_LINKS.filter((link) => !link.adminOnly || user?.role === 'ADMIN').map(
+                (link) => {
+                  const Icon = link.icon;
+                  const isActive =
+                    pathname === link.href ||
+                    (link.href !== '/admin' && pathname.startsWith(link.href));
 
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
-                      isActive
-                        ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
-                        : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon
-                        className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
-                      />
-                      <span>{link.label}</span>
-                    </div>
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all duration-200 ${
+                        isActive
+                          ? 'bg-amber-500 text-neutral-950 font-bold shadow-lg shadow-amber-500/20'
+                          : 'text-neutral-300 hover:bg-neutral-800/80 hover:text-white'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon
+                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-neutral-950' : 'text-neutral-400'}`}
+                        />
+                        <span>{link.label}</span>
+                      </div>
 
-                    {link.badge && (
-                      <span
-                        className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
-                          isActive
-                            ? 'bg-neutral-950 text-amber-400'
-                            : 'bg-amber-950 text-amber-300 border border-amber-500/40'
-                        }`}
-                      >
-                        {link.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                      {link.badge && (
+                        <span
+                          className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full font-bold ${
+                            isActive
+                              ? 'bg-neutral-950 text-amber-400'
+                              : 'bg-amber-950 text-amber-300 border border-amber-500/40'
+                          }`}
+                        >
+                          {link.badge}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                },
+              )}
             </nav>
           </div>
 
@@ -147,7 +153,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* ─── RIGHT MAIN PANE: Page Content Display ─── */}
-        <main className="flex-1 min-h-screen overflow-y-auto bg-stone-50/70 p-6 lg:p-10">
+        <main className="min-h-screen flex-1 overflow-y-auto bg-stone-50/70 p-4 sm:p-6 lg:p-10">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

@@ -9,7 +9,7 @@ permissions:
 jobs:
   a11y:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -17,6 +17,6 @@ jobs:
           node-version: 22
       - run: npm install --no-save --ignore-scripts playwright@1.55.0 @axe-core/playwright@4.10.2
       - run: npx playwright install --with-deps chromium
-      - run: node scripts/a11y-smoke.mjs
+      - run: npm run verify:a11y
         env:
           LIVE_WEB_URL: https://delta-travel-web.onrender.com

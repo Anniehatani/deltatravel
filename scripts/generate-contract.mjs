@@ -127,6 +127,29 @@ const examples = {
   TransitionSchema: { status: 'CONFIRMED' },
   CreatePaymentSchema: { bookingId: bid, provider: 'VNPAY' },
   PaymentSchema: payment,
+  PaymentProviderStatusSchema: {
+    providers: [
+      {
+        provider: 'CASH',
+        available: true,
+        label: 'Tiền mặt',
+        kind: 'OFFLINE',
+        requiresExternalAuthorization: false,
+        environment: 'INTERNAL',
+        reason: null,
+      },
+      {
+        provider: 'VNPAY',
+        available: false,
+        label: 'VNPay',
+        kind: 'GATEWAY',
+        requiresExternalAuthorization: true,
+        environment: 'UNCONFIGURED',
+        reason: 'Merchant credentials chưa được cấu hình.',
+      },
+    ],
+    returnOrigin: 'https://example.com',
+  },
   CashReceiptSchema: {
     reference: 'CASH-20261201-001',
     note: 'Đã nhận đủ tiền mặt tại quầy',
@@ -151,6 +174,86 @@ const examples = {
     fallbackAvailable: true,
   },
   AssistantProbeResultSchema: { mode: 'GROQ', providerLive: true },
+  AgentPlanRequestSchema: {
+    message: 'Đặt tour Đà Nẵng cho 2 người lớn, thanh toán tiền mặt',
+    lang: 'vi',
+    adults: 2,
+    children: 0,
+    destination: 'Đà Nẵng',
+    contactPhone: '0901234567',
+    provider: 'CASH',
+  },
+  AgentPlanUpdateSchema: { adults: 3, children: 1 },
+  AgentApprovalSchema: { approved: true, version: 1 },
+  AgentDeclineSchema: { reason: 'Tôi muốn đổi kế hoạch' },
+  AgentPlanSchema: {
+    id: '88888888-8888-4888-8888-888888888888',
+    version: 1,
+    status: 'READY_FOR_APPROVAL',
+    mode: 'GROQ',
+    createdAt: now,
+    expiresAt: '2026-12-01T01:10:00.000Z',
+    summary: 'Đặt tour Đà Nẵng và Hội An cho 2 người lớn bằng CASH.',
+    rationale: 'Lịch phù hợp với điểm đến, số khách và ngân sách đã cung cấp.',
+    constraints: {
+      destination: 'Đà Nẵng',
+      adults: 2,
+      children: 0,
+      budgetVnd: 10000000,
+      durationDays: 3,
+      departureFrom: null,
+      departureTo: null,
+      contactName: user.name,
+      contactEmail: user.email,
+      contactPhone: '0901234567',
+      provider: 'CASH',
+    },
+    missingFields: [],
+    candidates: [
+      {
+        tourId: id,
+        tourTitle: tour.title,
+        destination: tour.destination,
+        durationDays: tour.durationDays,
+        scheduleId: sid,
+        departureAt: departure,
+        availableSeats: 22,
+        adultPrice: 3990000,
+        childPrice: 2490000,
+        totalAmount: 7980000,
+        currency: 'VND',
+      },
+    ],
+    selectedScheduleId: sid,
+    paymentOptions: [
+      {
+        provider: 'CASH',
+        available: true,
+        label: 'Tiền mặt',
+        requiresExternalAuthorization: false,
+      },
+    ],
+    steps: [
+      { id: 'UNDERSTAND', label: 'Hiểu yêu cầu', state: 'DONE' },
+      { id: 'SEARCH', label: 'Tìm tour và lịch', state: 'DONE' },
+      { id: 'VERIFY', label: 'Xác minh giá và chỗ', state: 'DONE' },
+      { id: 'APPROVAL', label: 'Chờ khách phê duyệt', state: 'WAITING_APPROVAL' },
+      { id: 'CREATE_BOOKING', label: 'Tạo booking', state: 'BLOCKED' },
+      { id: 'CREATE_PAYMENT', label: 'Tạo payment', state: 'BLOCKED' },
+      { id: 'VERIFY_RESULT', label: 'Xác minh kết quả', state: 'BLOCKED' },
+    ],
+    checkpoint: {
+      title: 'Xác nhận đặt tour',
+      summary: 'Tạo booking và chọn CASH.',
+      effects: ['Giữ chỗ trong hệ thống', 'Tạo payment CASH'],
+      requiresExplicitApproval: true,
+      version: 1,
+    },
+    booking: null,
+    payment: null,
+    nextAction: null,
+    lastError: null,
+  },
   AssistantRequestSchema: { message: 'Tìm tour Đà Nẵng', lang: 'vi', history: [] },
   AssistantBookingProposalSchema: { ...createBooking, provider: 'VNPAY' },
   AssistantBookingProposalResultSchema: {
@@ -185,6 +288,18 @@ const examples = {
     ],
     sources: [{ type: 'TOUR', id, label: tour.title }],
   },
+  IntegrationStatusSchema: {
+    mailProvider: 'RESEND',
+    aiProvider: 'GROQ',
+    aiConfigured: true,
+    avatarStorageConfigured: true,
+    payments: {
+      cashConfigured: true,
+      vnpayConfigured: false,
+      momoConfigured: false,
+      zalopayConfigured: false,
+    },
+  },
   HealthSchema: { status: 'ok' },
 };
 function jsonSchema(schema) {
@@ -208,7 +323,8 @@ function responseExample(name, path) {
       cancelledAt: now,
       cancelReason: 'Thay đổi kế hoạch cá nhân',
     };
-  if (path.endsWith('/status')) sample = { ...booking, status: 'CONFIRMED', paidAt: now };
+  if (path === '/admin/bookings/{id}/status')
+    sample = { ...booking, status: 'CONFIRMED', paidAt: now };
   if (path.endsWith('/refund-record'))
     sample = { ...payment, status: 'REFUNDED', checkoutUrl: null };
   if (path.endsWith('/cash-receipt'))

@@ -33,6 +33,12 @@ export class PaymentsController {
   ) {
     return this.payments.create(req.user!.id, body.bookingId, body.provider, req.ip ?? '127.0.0.1');
   }
+  @Public()
+  @Get('providers/status')
+  providerStatus() {
+    return this.gateways.status();
+  }
+
   @Get(':id') get(@Req() req: AppRequest, @Param('id', new ParseUUIDPipe()) id: string) {
     return this.payments.get(id, req.user!.id);
   }

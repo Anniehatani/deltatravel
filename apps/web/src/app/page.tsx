@@ -9,7 +9,7 @@ import type { Tour } from '@tour/shared';
 import { Scroll3DHero } from '@/components/scroll-3d-hero';
 import { formatVND } from '@/lib/format';
 import { useLanguage } from '@/providers/language-provider';
-import { FALLBACK_TOURS, filterFallbackTours, getLocalizedTour } from '@/lib/fallback-data';
+import { FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { LuxuryPreloader } from '@/components/luxury-preloader';
@@ -33,21 +33,14 @@ function TourCardsGrid({
   tours,
   t,
   lang,
+  livePrices,
 }: {
   tours: Tour[];
   t: (k: string) => string;
   lang: 'vi' | 'en';
+  livePrices: Record<string, number | null>;
 }) {
-  const getTourPrice = (tour: Tour): number | null => {
-    if (
-      'adultPrice' in tour &&
-      typeof (tour as any).adultPrice === 'number' &&
-      (tour as any).adultPrice > 0
-    ) {
-      return (tour as any).adultPrice;
-    }
-    return null;
-  };
+  const getTourPrice = (tour: Tour): number | null => livePrices[tour.id] ?? null;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -172,6 +165,7 @@ function HomeContent() {
 
   const [activeTab, setActiveTab] = useState<string>(urlRegion);
   const [allTours, setAllTours] = useState<Tour[]>([]);
+  const [livePrices, setLivePrices] = useState<Record<string, number | null>>({});
   const [loading, setLoading] = useState(true);
   const [tourLoadError, setTourLoadError] = useState('');
 
@@ -245,6 +239,36 @@ function HomeContent() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    if (!allTours.length) {
+      setLivePrices({});
+      return () => {
+        active = false;
+      };
+    }
+
+    void Promise.all(
+      allTours.map(async (tour) => {
+        try {
+          const page = await tourApi.schedules(tour.id);
+          const prices = page.items
+            .filter((schedule) => schedule.status === 'OPEN' && schedule.availableSeats > 0)
+            .map((schedule) => schedule.adultPrice);
+          return [tour.id, prices.length ? Math.min(...prices) : null] as const;
+        } catch {
+          return [tour.id, null] as const;
+        }
+      }),
+    ).then((entries) => {
+      if (active) setLivePrices(Object.fromEntries(entries));
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [allTours]);
+
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     router.push(tabId ? `/?region=${tabId}` : '/', { scroll: false });
@@ -262,11 +286,10 @@ function HomeContent() {
 
   const displayedTours = activeTab
     ? allTours.filter((tour) => {
-        if ('region' in tour && (tour as any).region) {
-          return (tour as any).region === activeTab;
-        }
-        const fb = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
-        return fb ? fb.region === activeTab : true;
+        const metadata = FALLBACK_TOURS.find(
+          (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
+        );
+        return metadata ? metadata.region === activeTab : false;
       })
     : allTours;
 
@@ -514,7 +537,7 @@ function HomeContent() {
               Chưa có tour production phù hợp với bộ lọc hiện tại.
             </div>
           ) : (
-            <TourCardsGrid tours={displayedTours} t={t} lang={lang} />
+            <TourCardsGrid tours={displayedTours} t={t} lang={lang} livePrices={livePrices} />
           )}
 
           <div className="mt-12 text-center">
