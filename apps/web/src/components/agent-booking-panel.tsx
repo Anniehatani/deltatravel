@@ -246,10 +246,24 @@ export function AgentBookingPanel() {
     }
   };
 
-  const validateCheckpointFields = () => {
-    const adultCount = Number(adults);
-    const childCount = Number(children || 0);
-    const budgetValue = budget ? Number(budget) : null;
+  const readCheckpointForm = (form: HTMLFormElement) => {
+    const data = new FormData(form);
+    return {
+      adults: String(data.get('adults') ?? '').trim(),
+      children: String(data.get('children') ?? '0').trim(),
+      phone: String(data.get('phone') ?? '').trim(),
+      budget: String(data.get('budget') ?? '').trim(),
+      destination: String(data.get('destination') ?? '').trim(),
+      departureFrom: String(data.get('departureFrom') ?? '').trim(),
+      departureTo: String(data.get('departureTo') ?? '').trim(),
+      provider: String(data.get('provider') ?? '').trim() as Provider | '',
+    };
+  };
+
+  const validateCheckpointFields = (values: ReturnType<typeof readCheckpointForm>) => {
+    const adultCount = Number(values.adults);
+    const childCount = Number(values.children || 0);
+    const budgetValue = values.budget ? Number(values.budget) : null;
 
     if (!Number.isInteger(adultCount) || adultCount < 1 || adultCount > 100) {
       adultsRef.current?.focus();
@@ -259,7 +273,7 @@ export function AgentBookingPanel() {
       childrenRef.current?.focus();
       return 'Số trẻ em phải từ 0 đến 100.';
     }
-    if (!phonePattern.test(phone.trim())) {
+    if (!phonePattern.test(values.phone)) {
       phoneRef.current?.focus();
       return 'Số điện thoại chưa hợp lệ. Hãy nhập số Việt Nam bắt đầu bằng 0 hoặc +84.';
     }
@@ -267,12 +281,15 @@ export function AgentBookingPanel() {
       budgetRef.current?.focus();
       return 'Ngân sách phải là một số không âm.';
     }
-    if (departureFrom && departureTo && departureFrom > departureTo) {
+    if (values.departureFrom && values.departureTo && values.departureFrom > values.departureTo) {
       departureToRef.current?.focus();
       return 'Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.';
     }
     const providerAvailable = Boolean(
-      provider && plan?.paymentOptions.some((item) => item.provider === provider && item.available),
+      values.provider &&
+        plan?.paymentOptions.some(
+          (item) => item.provider === values.provider && item.available,
+        ),
     );
     if (!providerAvailable) {
       providerRef.current?.focus();
@@ -281,35 +298,80 @@ export function AgentBookingPanel() {
     return '';
   };
 
-  const continueToNextCheckpoint = async (e?: FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
+  const continueToNextCheckpoint = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!plan || busy) return;
 
+    const form = e.currentTarget;
+    const values = readCheckpointForm(form);
+
     setError('');
-    const validationError = validateCheckpointFields();
+    const validationError = validateCheckpointFields(values);
     if (validationError) {
       setError(validationError);
       return;
     }
 
-    if (plan.checkpoint && !formIsDirty) {
+    setAdults(values.adults);
+    setChildren(values.children);
+    setPhone(values.phone);
+    setBudget(values.budget);
+    setDestination(values.destination);
+    setDepartureFrom(values.departureFrom);
+    setDepartureTo(values.departureTo);
+    setProvider(values.provider);
+
+    const sameAsPlan =
+      String(plan.constraints.adults ?? '') === values.adults &&
+      String(plan.constraints.children ?? 0) === values.children &&
+      String(plan.constraints.contactPhone ?? '') === values.phone &&
+      String(plan.constraints.budgetVnd ?? '') === values.budget &&
+      String(plan.constraints.destination ?? '') === values.destination &&
+      String(plan.constraints.departureFrom ?? '') === values.departureFrom &&
+      String(plan.constraints.departureTo ?? '') === values.departureTo &&
+      String(plan.constraints.provider ?? '') === values.provider &&
+      String(plan.selectedScheduleId ?? '') === scheduleId;
+
+    if (plan.checkpoint && sameAsPlan) {
       scrollToCheckpoint();
       return;
     }
 
-    const next = await updatePlan();
-    if (!next) return;
+    setBusy(true);
+    try {
+      const next = await assistantApi.updatePlan(plan.id, {
+        adults: Number(values.adults),
+        children: Number(values.children || 0),
+        ...(values.budget ? { budgetVnd: Number(values.budget) } : {}),
+        ...(values.destination ? { destination: values.destination } : {}),
+        ...(values.departureFrom ? { departureFrom: values.departureFrom } : {}),
+        ...(values.departureTo ? { departureTo: values.departureTo } : {}),
+        contactPhone: values.phone,
+        provider: values.provider,
+        ...(scheduleId ? { scheduleId } : {}),
+      });
 
-    if (next.checkpoint) {
-      scrollToCheckpoint();
-      return;
-    }
+      setPlan(next);
 
-    scrollToEditor();
-    if (next.missingFields.includes('CONTACT_PHONE')) {
-      window.setTimeout(() => phoneRef.current?.focus(), 140);
-    } else if (next.missingFields.includes('PAYMENT_METHOD')) {
-      window.setTimeout(() => providerRef.current?.focus(), 140);
+      if (next.checkpoint && next.status === 'READY_FOR_APPROVAL') {
+        scrollToCheckpoint();
+        return;
+      }
+
+      scrollToEditor();
+      if (next.status === 'NO_MATCH') {
+        setError(
+          'Không có tour nào khớp đồng thời điểm đến, ngày đi, ngân sách và số chỗ bạn đã chọn. AI sẽ không tự đổi sang điểm đến khác.',
+        );
+      } else if (next.missingFields.includes('CONTACT_PHONE')) {
+        window.setTimeout(() => phoneRef.current?.focus(), 140);
+      } else if (next.missingFields.includes('PAYMENT_METHOD')) {
+        window.setTimeout(() => providerRef.current?.focus(), 140);
+      }
+    } catch (e2) {
+      setError(e2 instanceof Error ? e2.message : 'Không thể cập nhật kế hoạch.');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -515,6 +577,17 @@ export function AgentBookingPanel() {
               </div>
             )}
 
+            {plan.status === 'NO_MATCH' && (
+              <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                <p className="text-xs font-black uppercase tracking-wider text-red-900">
+                  Không có phương án khớp chính xác
+                </p>
+                <p className="mt-2 text-xs leading-5 text-red-800">
+                  {plan.summary} AI sẽ không tự đổi sang một điểm đến khác với lựa chọn của bạn.
+                </p>
+              </div>
+            )}
+
             {plan.candidates.length > 0 && (
               <div>
                 <div className="mb-3 flex items-center justify-between">
@@ -594,6 +667,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Người lớn">
                     <input
                       ref={adultsRef}
+                      name="adults"
                       type="number"
                       min={1}
                       max={100}
@@ -604,6 +678,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Trẻ em">
                     <input
                       ref={childrenRef}
+                      name="children"
                       type="number"
                       min={0}
                       max={100}
@@ -614,6 +689,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Số điện thoại">
                     <input
                       ref={phoneRef}
+                      name="phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="09xxxxxxxx"
@@ -622,6 +698,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Ngân sách tối đa">
                     <input
                       ref={budgetRef}
+                      name="budget"
                       type="number"
                       min={0}
                       value={budget}
@@ -629,11 +706,16 @@ export function AgentBookingPanel() {
                     />
                   </CompactField>
                   <CompactField label="Điểm đến">
-                    <input value={destination} onChange={(e) => setDestination(e.target.value)} />
+                    <input
+                      name="destination"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                    />
                   </CompactField>
                   <CompactField label="Từ ngày">
                     <input
                       ref={departureFromRef}
+                      name="departureFrom"
                       type="date"
                       value={departureFrom}
                       onChange={(e) => setDepartureFrom(e.target.value)}
@@ -642,6 +724,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Đến ngày">
                     <input
                       ref={departureToRef}
+                      name="departureTo"
                       type="date"
                       value={departureTo}
                       onChange={(e) => setDepartureTo(e.target.value)}
@@ -650,6 +733,7 @@ export function AgentBookingPanel() {
                   <CompactField label="Thanh toán">
                     <select
                       ref={providerRef}
+                      name="provider"
                       value={provider}
                       onChange={(e) => setProvider(e.target.value as Provider | '')}
                     >
@@ -673,7 +757,7 @@ export function AgentBookingPanel() {
                     type="button"
                     variant="outline"
                     disabled={busy}
-                    onClick={() => void updatePlan()}
+                    onClick={() => editFormRef.current?.requestSubmit()}
                     className="gap-2 rounded-xl"
                   >
                     {busy ? (
