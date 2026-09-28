@@ -312,7 +312,6 @@ export function getLocalizedTour<T extends Tour | ExtendedTour>(tour: T, lang: '
   } as T;
 }
 
-
 export type TourRegion = 'bac' | 'trung' | 'nam';
 
 const REGION_TERMS: Record<TourRegion, string[]> = {
@@ -397,7 +396,9 @@ const REGION_TERMS: Record<TourRegion, string[]> = {
   ],
 };
 
-export function inferTourRegion(tour: Pick<Tour, 'id' | 'slug' | 'destination' | 'title'>): TourRegion | null {
+export function inferTourRegion(
+  tour: Pick<Tour, 'id' | 'slug' | 'destination' | 'title'>,
+): TourRegion | null {
   const metadata = FALLBACK_TOURS.find(
     (candidate) => candidate.id === tour.id || candidate.slug === tour.slug,
   );
