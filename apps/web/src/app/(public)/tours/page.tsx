@@ -9,7 +9,7 @@ import type { Tour } from '@tour/shared';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/providers/language-provider';
-import { filterFallbackTours, FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
+import { FALLBACK_TOURS, getLocalizedTour } from '@/lib/fallback-data';
 import { getTourImage, getTourLuxuryTag } from '@/lib/tour-assets';
 import { GiantScrollTypography } from '@/components/giant-scroll-typography';
 import { formatVND } from '@/lib/format';
@@ -32,7 +32,7 @@ function ToursListContent() {
   const initialRegion = searchParams.get('region') || '';
 
   const [activeRegion, setActiveRegion] = useState(initialRegion);
-  const [tours, setTours] = useState<Tour[]>(() => filterFallbackTours('', initialRegion, lang).items);
+  const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,11 +50,17 @@ function ToursListContent() {
     tourApi
       .list('', region)
       .then((res) => {
-        setTours(res.items.length > 0 ? res.items : filterFallbackTours('', region, lang).items);
+        setTours(res.items);
       })
-      .catch(() => {
-        // Use rich fallback tours with proper filtering
-        setTours(filterFallbackTours('', region, lang).items);
+      .catch((err) => {
+        setTours([]);
+        setError(
+          err instanceof Error
+            ? err.message
+            : lang === 'en'
+              ? 'Unable to load the live tour catalog.'
+              : 'Không thể tải danh mục tour trực tiếp từ hệ thống.',
+        );
       })
       .finally(() => {
         setLoading(false);
