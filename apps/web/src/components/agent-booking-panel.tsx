@@ -345,7 +345,7 @@ export function AgentBookingPanel() {
         ...(values.departureFrom ? { departureFrom: values.departureFrom } : {}),
         ...(values.departureTo ? { departureTo: values.departureTo } : {}),
         contactPhone: values.phone,
-        provider: values.provider,
+        provider: values.provider as Provider,
         ...(scheduleId ? { scheduleId } : {}),
       });
 
