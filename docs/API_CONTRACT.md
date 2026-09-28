@@ -8,7 +8,7 @@ SRS-TOUR-2026-v1.0. Sinh từ shared Zod schemas và scripts/contract-manifest.m
 - JSON UTF-8. Tên trường camelCase; ID UUID; tiền là số nguyên VND không âm. Database dùng BIGINT, response chuyển số nguyên trong giới hạn an toàn.
 - Ngày giờ ISO 8601 có offset, lưu UTC, UI hiển thị Asia/Ho_Chi_Minh. So sánh 72 giờ theo milliseconds, không trừ ngày lịch.
 - Response thành công: {data,meta:{requestId,timestamp}}. Lỗi: {error:{code,message,details?},meta}. Webhook dùng định dạng riêng ở cuối tài liệu.
-- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=Strict, Secure ở production.
+- JWT: Authorization: Bearer <token>. Không lưu token vào localStorage. Refresh nằm trong cookie HttpOnly, SameSite=None và Secure ở production để frontend Netlify dùng API Render khác site.
 - Auth POST: Origin phải bằng WEB_ORIGIN, X-CSRF-Protection: 1, credentials: include. curl/Postman cũng phải gửi hai header này.
 - Pagination: page mặc định 1, pageSize mặc định 20, tối đa 100; response items,page,pageSize,total. q/destination tùy chọn.
 - Guest là chưa đăng nhập, không phải một giá trị role trong DB. User = mọi tài khoản đang hoạt động, dữ liệu cá nhân vẫn lọc theo userId.
