@@ -37,6 +37,19 @@ const schema = z.object({
   SUPABASE_SECRET_KEY: optionalString(z.string().min(20)),
   SUPABASE_SERVICE_ROLE_KEY: optionalString(z.string().min(20)),
   SUPABASE_AVATAR_BUCKET: z.string().min(1).default('avatars'),
+
+  PAYMENT_RETURN_ORIGIN: optionalString(z.string().url()),
+  VNPAY_TMN_CODE: optionalString(z.string().min(2)),
+  VNPAY_HASH_SECRET: optionalString(z.string().min(8)),
+  VNPAY_URL: optionalString(z.string().url()),
+  MOMO_PARTNER_CODE: optionalString(z.string().min(2)),
+  MOMO_ACCESS_KEY: optionalString(z.string().min(2)),
+  MOMO_SECRET_KEY: optionalString(z.string().min(8)),
+  MOMO_URL: optionalString(z.string().url()),
+  ZALOPAY_APP_ID: optionalString(z.string().min(1)),
+  ZALOPAY_KEY1: optionalString(z.string().min(8)),
+  ZALOPAY_KEY2: optionalString(z.string().min(8)),
+  ZALOPAY_URL: optionalString(z.string().url()),
 });
 
 export function validateEnv(value: Record<string, unknown>) {
@@ -54,7 +67,11 @@ export function validateEnv(value: Record<string, unknown>) {
   if (
     e.NODE_ENV === 'production' &&
     (!webOrigins.every((origin: string) => origin.startsWith('https://')) ||
-      !e.API_PUBLIC_URL.startsWith('https://'))
+      !e.API_PUBLIC_URL.startsWith('https://') ||
+      (e.PAYMENT_RETURN_ORIGIN !== undefined && !e.PAYMENT_RETURN_ORIGIN.startsWith('https://')) ||
+      [e.VNPAY_URL, e.MOMO_URL, e.ZALOPAY_URL]
+        .filter((url): url is string => Boolean(url))
+        .some((url) => !url.startsWith('https://')))
   ) {
     throw new Error('Production requires HTTPS');
   }

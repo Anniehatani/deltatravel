@@ -84,6 +84,28 @@ export class TravelAgentService {
     return value ? new Date(value + 'T23:59:59.999+07:00').getTime() : null;
   }
 
+  private normalizeSearch(value: string) {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toLocaleLowerCase('vi-VN')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  }
+
+  private tourMatchesDestination(
+    tour: { title: string; destination: string },
+    destination?: string,
+  ) {
+    if (!destination) return true;
+    const needle = this.normalizeSearch(destination);
+    if (!needle) return true;
+    const haystack = this.normalizeSearch(tour.title + ' ' + tour.destination);
+    return haystack.includes(needle);
+  }
+
   private async candidates(input: {
     destination?: string;
     adults?: number;
@@ -101,15 +123,30 @@ export class TravelAgentService {
     const to = this.dateCeil(input.departureTo);
     const rows: Candidate[] = [];
 
+    const candidateAllowed = (
+      tour: { title: string; destination: string; durationDays: number },
+      schedule: {
+        availableSeats: number;
+        departureAt: Date;
+        adultPrice: number;
+        childPrice: number;
+      },
+    ) => {
+      const totalAmount = adultsForQuote * schedule.adultPrice + children * schedule.childPrice;
+      if (!this.tourMatchesDestination(tour, input.destination)) return false;
+      if (schedule.availableSeats < partySize) return false;
+      if (from !== null && schedule.departureAt.getTime() < from) return false;
+      if (to !== null && schedule.departureAt.getTime() > to) return false;
+      if (input.budgetVnd !== undefined && totalAmount > input.budgetVnd) return false;
+      return true;
+    };
+
     if (input.scheduleId) {
       const schedule = await this.schedules.get(input.scheduleId);
       const tour = await this.tours.get(schedule.tourId);
       const totalAmount = adultsForQuote * schedule.adultPrice + children * schedule.childPrice;
-      if (
-        schedule.availableSeats >= partySize &&
-        (from === null || schedule.departureAt.getTime() >= from) &&
-        (to === null || schedule.departureAt.getTime() <= to)
-      ) {
+
+      if (candidateAllowed(tour, schedule)) {
         rows.push({
           tourId: tour.id,
           tourTitle: tour.title,
@@ -127,23 +164,14 @@ export class TravelAgentService {
       return rows;
     }
 
-    let page = await this.tours.list({
-      page: 1,
-      pageSize: 20,
-      ...(input.destination ? { destination: input.destination } : {}),
-    });
-
-    if (!page.items.length && input.destination) {
-      page = await this.tours.list({ page: 1, pageSize: 20 });
-    }
+    const page = await this.tours.list({ page: 1, pageSize: 100 });
 
     for (const tour of page.items) {
-      const schedules = await this.schedules.list(tour.id, 1, 20);
+      if (!this.tourMatchesDestination(tour, input.destination)) continue;
+
+      const schedules = await this.schedules.list(tour.id, 1, 100);
       for (const schedule of schedules.items) {
-        const time = schedule.departureAt.getTime();
-        if (from !== null && time < from) continue;
-        if (to !== null && time > to) continue;
-        if (schedule.availableSeats < partySize) continue;
+        if (!candidateAllowed(tour, schedule)) continue;
 
         rows.push({
           tourId: tour.id,
@@ -162,19 +190,6 @@ export class TravelAgentService {
     }
 
     rows.sort((a, b) => {
-      if (input.destination) {
-        const needle = input.destination.toLocaleLowerCase('vi-VN');
-        const am = a.destination.toLocaleLowerCase('vi-VN').includes(needle) ? 0 : 1;
-        const bm = b.destination.toLocaleLowerCase('vi-VN').includes(needle) ? 0 : 1;
-        if (am !== bm) return am - bm;
-      }
-
-      if (input.budgetVnd !== undefined) {
-        const aOver = Math.max(0, a.totalAmount - input.budgetVnd);
-        const bOver = Math.max(0, b.totalAmount - input.budgetVnd);
-        if (aOver !== bOver) return aOver - bOver;
-      }
-
       if (input.durationDays !== undefined) {
         const ad = Math.abs(a.durationDays - input.durationDays);
         const bd = Math.abs(b.durationDays - input.durationDays);
@@ -398,8 +413,8 @@ export class TravelAgentService {
       expiresAt: expiresAt.toISOString(),
       summary,
       rationale: selected
-        ? 'Xếp hạng dựa trên điểm đến, cửa sổ ngày, ngân sách, thời lượng, giá và số chỗ thực tế.'
-        : 'Không có lịch đang mở đáp ứng các điều kiện hiện tại.',
+        ? 'Chỉ sử dụng tour phù hợp trực tiếp với điểm đến, cửa sổ ngày, ngân sách và số chỗ thực tế.'
+        : 'Không có tour hoặc lịch khởi hành nào đáp ứng đồng thời điểm đến, ngày đi, ngân sách và số chỗ đã chọn.',
       constraints: {
         destination: destination ?? null,
         adults: adults ?? null,
@@ -512,8 +527,8 @@ export class TravelAgentService {
           ' VND.'
         : 'Chưa tìm thấy lịch phù hợp. Hãy nới điều kiện hoặc chọn thời gian khác.',
       rationale: selected
-        ? 'Kế hoạch đã được tính lại từ dữ liệu tour, lịch, giá và tồn chỗ hiện tại.'
-        : 'Không có lịch đang mở đáp ứng các điều kiện mới.',
+        ? 'Kế hoạch đã được tính lại và chỉ giữ các tour khớp trực tiếp với điểm đến cùng các ràng buộc hiện tại.'
+        : 'Không có tour hoặc lịch khởi hành nào đáp ứng đồng thời các điều kiện mới.',
       steps: this.steps(status, Boolean(selected), false, false),
       checkpoint:
         status === 'READY_FOR_APPROVAL'
