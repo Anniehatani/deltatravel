@@ -21,11 +21,7 @@ jobs:
         run: |
           for attempt in $(seq 1 50); do
             BODY="$(curl -fsS --max-time 15 "$RELEASE_URL" || true)"
-            ACTUAL="$(printf '%s' "$BODY" | python3 -c 'import json,sys; 
-try:
- print(json.load(sys.stdin).get("commit") or "")
-except Exception:
- print("")')"
+            ACTUAL="$(printf '%s' "$BODY" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("commit") or "")' 2>/dev/null || true)"
             echo "attempt=$attempt expected=$EXPECTED_SHA actual=$ACTUAL"
             if [ "$ACTUAL" = "$EXPECTED_SHA" ]; then
               echo "Render is serving the exact release commit."
