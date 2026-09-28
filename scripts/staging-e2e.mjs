@@ -218,7 +218,8 @@ const directPayment = await request('/payments', {
   token,
   body: { bookingId: replay.id, provider: 'CASH' },
 });
-if (directPayment.provider !== 'CASH') throw new Error('Manual booking CASH payment was not created');
+if (directPayment.provider !== 'CASH')
+  throw new Error('Manual booking CASH payment was not created');
 const directBooking = await request('/bookings/' + replay.id, { token });
 if (directBooking.status !== 'AWAITING_CASH') {
   throw new Error(`Manual booking expected AWAITING_CASH, got ${directBooking.status}`);
