@@ -76,21 +76,22 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     },
   ];
 
-  const suggestedCancelReasons = lang === 'en'
-    ? [
-        'Change in business or personal schedule',
-        'Unexpected family emergency',
-        'Wrong departure date or guest count',
-        'Prefer to switch to another tour package',
-        'Health reasons or personal circumstances',
-      ]
-    : [
-        'Thay đổi lịch trình công tác / cá nhân',
-        'Có việc gia đình bận đột xuất',
-        'Đặt nhầm số lượng khách hoặc ngày khởi hành',
-        'Muốn chuyển sang hành trình tour khác',
-        'Lý do sức khỏe hoặc phát sinh riêng',
-      ];
+  const suggestedCancelReasons =
+    lang === 'en'
+      ? [
+          'Change in business or personal schedule',
+          'Unexpected family emergency',
+          'Wrong departure date or guest count',
+          'Prefer to switch to another tour package',
+          'Health reasons or personal circumstances',
+        ]
+      : [
+          'Thay đổi lịch trình công tác / cá nhân',
+          'Có việc gia đình bận đột xuất',
+          'Đặt nhầm số lượng khách hoặc ngày khởi hành',
+          'Muốn chuyển sang hành trình tour khác',
+          'Lý do sức khỏe hoặc phát sinh riêng',
+        ];
 
   // Countdown timer logic
   const [timeLeftMs, setTimeLeftMs] = useState<number | null>(null);
@@ -106,7 +107,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
 
   const fetchBooking = () => {
     setLoading(true);
@@ -227,7 +227,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
       setCancelling(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -377,10 +376,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
             <div className="rounded-2xl border-2 border-black bg-black text-white p-6 shadow-sm flex items-center gap-4">
               <CheckCircle2 className="h-8 w-8 text-amber-300 shrink-0" />
               <div>
-                <h3 className="font-black text-white text-sm uppercase">{t('bk_status_paid_title')}</h3>
-                <p className="text-xs text-neutral-300 mt-0.5">
-                  {t('bk_status_paid_sub')}
-                </p>
+                <h3 className="font-black text-white text-sm uppercase">
+                  {t('bk_status_paid_title')}
+                </h3>
+                <p className="text-xs text-neutral-300 mt-0.5">{t('bk_status_paid_sub')}</p>
               </div>
             </div>
           )}
@@ -390,13 +389,14 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               <div className="rounded-2xl border-2 border-dashed border-red-300 bg-red-50/50 p-6 flex items-start gap-4">
                 <XCircle className="h-7 w-7 text-red-600 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="font-black text-red-900 text-sm uppercase">{t('bk_status_cancelled_title')}</h3>
+                  <h3 className="font-black text-red-900 text-sm uppercase">
+                    {t('bk_status_cancelled_title')}
+                  </h3>
                   <p className="text-xs text-red-700 mt-0.5">
-                    {t('bk_reason_prefix')} <strong>{booking.cancelReason || t('bk_default_cancel_reason')}</strong>
+                    {t('bk_reason_prefix')}{' '}
+                    <strong>{booking.cancelReason || t('bk_default_cancel_reason')}</strong>
                   </p>
-                  <p className="text-xs text-neutral-500 mt-2">
-                    {t('bk_status_cancelled_sub')}
-                  </p>
+                  <p className="text-xs text-neutral-500 mt-2">{t('bk_status_cancelled_sub')}</p>
                 </div>
               </div>
 
@@ -438,7 +438,8 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               <div className="p-4 rounded-xl bg-[#faf9f5] border border-stone-200/70">
                 <span className="text-xs text-stone-500 block">{t('bk_guest_count_label')}</span>
                 <span className="font-semibold text-stone-900 text-base mt-1 block">
-                  {booking.adults} {t('bk_adult_unit')} {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
+                  {booking.adults} {t('bk_adult_unit')}{' '}
+                  {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
                 </span>
               </div>
             </div>
@@ -452,7 +453,8 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 {booking.details.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span className="text-stone-600">
-                      {item.kind === 'ADULT' ? t('bk_ticket_adult') : t('bk_ticket_child')} × {item.quantity}
+                      {item.kind === 'ADULT' ? t('bk_ticket_adult') : t('bk_ticket_child')} ×{' '}
+                      {item.quantity}
                     </span>
                     <span className="font-semibold text-stone-900">
                       {formatVND(item.lineTotal)}
@@ -494,9 +496,7 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                   <XCircle className="h-4 w-4 text-red-600" />
                   <span>{t('bk_cancel_box_title')}</span>
                 </h4>
-                <p className="text-xs text-neutral-600 mt-1">
-                  {t('bk_cancel_box_desc')}
-                </p>
+                <p className="text-xs text-neutral-600 mt-1">{t('bk_cancel_box_desc')}</p>
               </div>
               <Button
                 variant="outline"
@@ -521,7 +521,15 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
               </span>
               <span className="text-xs text-stone-500 mt-1 block">
                 {t('bk_status_label')}{' '}
-                <strong className={isConfirmed ? 'text-emerald-700' : isCancelled ? 'text-red-600' : 'text-stone-900'}>
+                <strong
+                  className={
+                    isConfirmed
+                      ? 'text-emerald-700'
+                      : isCancelled
+                        ? 'text-red-600'
+                        : 'text-stone-900'
+                  }
+                >
                   {statusLabel}
                 </strong>
               </span>
@@ -577,7 +585,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 </div>
 
                 {paymentError && (
-                  <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 flex items-start gap-2" role="alert">
+                  <div
+                    className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-900 flex items-start gap-2"
+                    role="alert"
+                  >
                     <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-600" />
                     <span>{paymentError}</span>
                   </div>
@@ -600,7 +611,11 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 text-amber-300" />
-                      <span>{paying ? t('bk_connecting_gateway') : `${t('bk_pay_via')} ${selectedMethod}`}</span>
+                      <span>
+                        {paying
+                          ? t('bk_connecting_gateway')
+                          : `${t('bk_pay_via')} ${selectedMethod}`}
+                      </span>
                     </>
                   )}
                 </Button>
@@ -636,7 +651,9 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
                 <h3 className="font-serif text-xl font-bold text-stone-900">
                   {t('bk_cancel_modal_title')}
                 </h3>
-                <span className="text-xs text-neutral-500">{t('bk_code_prefix')} {booking.id.slice(0, 13)}...</span>
+                <span className="text-xs text-neutral-500">
+                  {t('bk_code_prefix')} {booking.id.slice(0, 13)}...
+                </span>
               </div>
             </div>
 
@@ -646,7 +663,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
             <form onSubmit={handleCancelBooking} className="space-y-4">
               <div>
-                <label htmlFor="cancelReason" className="text-xs font-bold text-stone-800 block mb-1">
+                <label
+                  htmlFor="cancelReason"
+                  className="text-xs font-bold text-stone-800 block mb-1"
+                >
                   {t('bk_cancel_reason_label')}
                 </label>
 

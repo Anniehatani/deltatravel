@@ -68,9 +68,12 @@ function NavContent() {
   const isLinkActive = useCallback(
     (href: string) => {
       if (href === '/') return pathname === '/' && !region;
-      if (href === '/tours?region=bac') return (pathname === '/tours' || pathname === '/') && region === 'bac';
-      if (href === '/tours?region=trung') return (pathname === '/tours' || pathname === '/') && region === 'trung';
-      if (href === '/tours?region=nam') return (pathname === '/tours' || pathname === '/') && region === 'nam';
+      if (href === '/tours?region=bac')
+        return (pathname === '/tours' || pathname === '/') && region === 'bac';
+      if (href === '/tours?region=trung')
+        return (pathname === '/tours' || pathname === '/') && region === 'trung';
+      if (href === '/tours?region=nam')
+        return (pathname === '/tours' || pathname === '/') && region === 'nam';
       if (href === '/tours') return pathname === '/tours' && !region;
       if (href === '/bookings') return pathname.startsWith('/bookings');
       if (href === '/assistant') return pathname.startsWith('/assistant');
@@ -100,10 +103,7 @@ function NavContent() {
           className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3 lg:px-8"
         >
           {/* Brand Logo & Tagline */}
-          <GlassBrandLogo
-            isTransparent={isTransparent}
-            tagline={t('brand_tagline')}
-          />
+          <GlassBrandLogo isTransparent={isTransparent} tagline={t('brand_tagline')} />
 
           {/* Desktop Navigation Dock with Moving Glass Capsule */}
           <GlassNavDock
@@ -116,11 +116,7 @@ function NavContent() {
           {/* Right Section: Language Switcher + User Profile Pill + Mobile Menu Toggle */}
           <div className="flex items-center gap-2 shrink-0">
             {/* Liquid Glass Segmented Language Switcher */}
-            <GlassLanguageSwitcher
-              lang={lang}
-              setLang={setLang}
-              isTransparent={isTransparent}
-            />
+            <GlassLanguageSwitcher lang={lang} setLang={setLang} isTransparent={isTransparent} />
 
             {/* User Profile Glass Pill & Quick Actions */}
             <GlassUserMenu
@@ -132,9 +128,7 @@ function NavContent() {
               registerLabel={t('nav_register')}
               logoutLabel={t('nav_logout')}
               manageAccountTitle={
-                lang === 'en'
-                  ? 'Manage account & avatar'
-                  : 'Quản lý tài khoản & Đổi ảnh đại diện'
+                lang === 'en' ? 'Manage account & avatar' : 'Quản lý tài khoản & Đổi ảnh đại diện'
               }
               isTransparent={isTransparent}
             />
@@ -149,9 +143,7 @@ function NavContent() {
               user={user}
               onOpenAccount={() => setAccountModalOpen(true)}
               manageAccountLabel={
-                lang === 'en'
-                  ? 'Manage Account & Avatar'
-                  : 'Quản lý tài khoản & Đổi ảnh đại diện'
+                lang === 'en' ? 'Manage Account & Avatar' : 'Quản lý tài khoản & Đổi ảnh đại diện'
               }
               isTransparent={isTransparent}
             />
@@ -160,10 +152,7 @@ function NavContent() {
       </header>
 
       {/* Account Management & Avatar Customization Modal */}
-      <AccountModal
-        isOpen={accountModalOpen}
-        onClose={() => setAccountModalOpen(false)}
-      />
+      <AccountModal isOpen={accountModalOpen} onClose={() => setAccountModalOpen(false)} />
     </>
   );
 }

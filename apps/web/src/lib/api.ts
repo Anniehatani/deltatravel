@@ -38,9 +38,7 @@ import {
 import type { CommercialTour } from './commercial-store';
 import { FALLBACK_TOURS } from './fallback-data';
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_URL ||
-  'https://delta-travel-api.onrender.com/api/v1';
+const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://delta-travel-api.onrender.com/api/v1';
 const REQUEST_TIMEOUT_MS = 65000;
 
 let accessToken: string | null = null;
@@ -97,9 +95,7 @@ export async function api<T extends z.ZodTypeAny>(
       headers: {
         ...(options.body !== undefined ? { 'Content-Type': 'application/json' } : {}),
         'X-CSRF-Protection': '1',
-        ...(!options.anonymous && accessToken
-          ? { Authorization: `Bearer ${accessToken}` }
-          : {}),
+        ...(!options.anonymous && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...options.headers,
       },
       ...(options.body !== undefined ? { body: JSON.stringify(options.body) } : {}),
@@ -117,11 +113,7 @@ export async function api<T extends z.ZodTypeAny>(
     clearTimeout(timeoutId);
   }
 
-  if (
-    response.status === 401 &&
-    options.retryAuth !== false &&
-    !path.startsWith('/auth/')
-  ) {
+  if (response.status === 401 && options.retryAuth !== false && !path.startsWith('/auth/')) {
     try {
       await refreshSession();
     } catch {
@@ -220,11 +212,7 @@ export const authApi = {
       anonymous: true,
     }),
 
-  resetPassword: (input: {
-    email: string;
-    code: string;
-    newPassword: string;
-  }) =>
+  resetPassword: (input: { email: string; code: string; newPassword: string }) =>
     api('/auth/reset-password', AckSchema, {
       method: 'POST',
       body: {
@@ -236,11 +224,7 @@ export const authApi = {
       anonymous: true,
     }),
 
-  changePassword: (input: {
-    email?: string;
-    oldPassword: string;
-    newPassword: string;
-  }) =>
+  changePassword: (input: { email?: string; oldPassword: string; newPassword: string }) =>
     api('/auth/change-password', AckSchema, {
       method: 'POST',
       body: {
@@ -265,14 +249,11 @@ export const tourApi = {
       pageSize: '100',
     });
     if (q.trim()) params.set('q', q.trim());
-    const res = await api(
-      `/tours?${params.toString()}`,
-      PageSchema(TourSchema),
-      { retryAuth: false, anonymous: true },
-    );
-    const items = region
-      ? res.items.filter((tour) => belongsToRegion(tour, region))
-      : res.items;
+    const res = await api(`/tours?${params.toString()}`, PageSchema(TourSchema), {
+      retryAuth: false,
+      anonymous: true,
+    });
+    const items = region ? res.items.filter((tour) => belongsToRegion(tour, region)) : res.items;
     return { ...res, items, total: items.length };
   },
 
@@ -283,11 +264,10 @@ export const tourApi = {
     }),
 
   schedules: (id: string) =>
-    api(
-      `/tours/${id}/schedules?page=1&pageSize=100`,
-      PageSchema(ScheduleSchema),
-      { retryAuth: false, anonymous: true },
-    ),
+    api(`/tours/${id}/schedules?page=1&pageSize=100`, PageSchema(ScheduleSchema), {
+      retryAuth: false,
+      anonymous: true,
+    }),
 };
 
 export const scheduleApi = {
@@ -308,18 +288,14 @@ export const bookingApi = {
       anonymous: true,
     }),
 
-  create: (
-    input: z.input<typeof CreateBookingSchema>,
-    idempotencyKey: string,
-  ) =>
+  create: (input: z.input<typeof CreateBookingSchema>, idempotencyKey: string) =>
     api('/bookings', BookingSchema, {
       method: 'POST',
       body: CreateBookingSchema.parse(input),
       headers: { 'Idempotency-Key': idempotencyKey },
     }),
 
-  list: () =>
-    api('/bookings?page=1&pageSize=100', PageSchema(BookingSchema)),
+  list: () => api('/bookings?page=1&pageSize=100', PageSchema(BookingSchema)),
 
   get: (id: string) => api(`/bookings/${id}`, BookingSchema),
 
@@ -367,9 +343,7 @@ export const assistantApi = {
 export const profileApi = {
   me: () => api('/profile/me', UserSchema),
 
-  createAvatarUpload: (
-    input: z.input<typeof AvatarUploadRequestSchema>,
-  ) =>
+  createAvatarUpload: (input: z.input<typeof AvatarUploadRequestSchema>) =>
     api('/profile/avatar/upload-url', AvatarUploadTicketSchema, {
       method: 'POST',
       body: AvatarUploadRequestSchema.parse(input),
@@ -388,18 +362,10 @@ export const profileApi = {
 
   uploadAvatar: async (file: File) => {
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      throw new ApiError(
-        400,
-        'INVALID_AVATAR_TYPE',
-        'Ảnh đại diện phải là JPEG, PNG hoặc WebP.',
-      );
+      throw new ApiError(400, 'INVALID_AVATAR_TYPE', 'Ảnh đại diện phải là JPEG, PNG hoặc WebP.');
     }
     if (file.size > 2 * 1024 * 1024) {
-      throw new ApiError(
-        400,
-        'AVATAR_TOO_LARGE',
-        'Ảnh đại diện không được vượt quá 2 MB.',
-      );
+      throw new ApiError(400, 'AVATAR_TOO_LARGE', 'Ảnh đại diện không được vượt quá 2 MB.');
     }
 
     const ticket = await profileApi.createAvatarUpload({
@@ -443,8 +409,7 @@ function tourPayload(input: Partial<CommercialTour>) {
 export const adminApi = {
   summary: () => api('/admin/summary', SummarySchema),
 
-  tours: () =>
-    api('/admin/tours?page=1&pageSize=100', PageSchema(TourSchema)),
+  tours: () => api('/admin/tours?page=1&pageSize=100', PageSchema(TourSchema)),
 
   createTour: (input: Partial<CommercialTour>) =>
     api('/admin/tours', TourSchema, {
@@ -478,8 +443,7 @@ export const adminApi = {
       method: 'DELETE',
     }),
 
-  schedules: () =>
-    api('/admin/schedules?page=1&pageSize=100', PageSchema(ScheduleSchema)),
+  schedules: () => api('/admin/schedules?page=1&pageSize=100', PageSchema(ScheduleSchema)),
 
   createSchedule: (input: z.input<typeof CreateScheduleSchema>) =>
     api('/admin/schedules', ScheduleSchema, {
@@ -487,25 +451,17 @@ export const adminApi = {
       body: CreateScheduleSchema.parse(input),
     }),
 
-  updateSchedule: (
-    id: string,
-    input: z.input<typeof UpdateScheduleSchema>,
-  ) =>
+  updateSchedule: (id: string, input: z.input<typeof UpdateScheduleSchema>) =>
     api(`/admin/schedules/${id}`, ScheduleSchema, {
       method: 'PATCH',
       body: UpdateScheduleSchema.parse(input),
     }),
 
-  bookings: () =>
-    api('/admin/bookings?page=1&pageSize=100', PageSchema(BookingSchema)),
+  bookings: () => api('/admin/bookings?page=1&pageSize=100', PageSchema(BookingSchema)),
 
-  booking: (id: string) =>
-    api(`/admin/bookings/${id}`, BookingSchema),
+  booking: (id: string) => api(`/admin/bookings/${id}`, BookingSchema),
 
-  updateBookingStatus: (
-    id: string,
-    status: 'CONFIRMED' | 'COMPLETED',
-  ) =>
+  updateBookingStatus: (id: string, status: 'CONFIRMED' | 'COMPLETED') =>
     api(`/admin/bookings/${id}/status`, BookingSchema, {
       method: 'PATCH',
       body: TransitionSchema.parse({ status }),
@@ -517,27 +473,19 @@ export const adminApi = {
       body: CancelSchema.parse({ reason }),
     }),
 
-  payments: () =>
-    api('/admin/payments?page=1&pageSize=100', PageSchema(PaymentSchema)),
+  payments: () => api('/admin/payments?page=1&pageSize=100', PageSchema(PaymentSchema)),
 
-  recordCashReceipt: (
-    id: string,
-    input: z.input<typeof CashReceiptSchema>,
-  ) =>
+  recordCashReceipt: (id: string, input: z.input<typeof CashReceiptSchema>) =>
     api(`/admin/payments/${id}/cash-receipt`, PaymentSchema, {
       method: 'POST',
       body: CashReceiptSchema.parse(input),
     }),
 
-  recordRefund: (
-    id: string,
-    input: z.input<typeof RefundRecordSchema>,
-  ) =>
+  recordRefund: (id: string, input: z.input<typeof RefundRecordSchema>) =>
     api(`/admin/payments/${id}/refund-record`, PaymentSchema, {
       method: 'POST',
       body: RefundRecordSchema.parse(input),
     }),
 
-  auditLogs: () =>
-    api('/admin/audit-logs?page=1&pageSize=100', PageSchema(AuditSchema)),
+  auditLogs: () => api('/admin/audit-logs?page=1&pageSize=100', PageSchema(AuditSchema)),
 };

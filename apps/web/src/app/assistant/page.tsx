@@ -36,13 +36,7 @@ export default function AssistantPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  const suggestedQuestions = [
-    t('asst_q1'),
-    t('asst_q2'),
-    t('asst_q3'),
-    t('asst_q4'),
-  ];
-
+  const suggestedQuestions = [t('asst_q1'), t('asst_q2'), t('asst_q3'), t('asst_q4')];
 
   const sendQuery = async (queryText: string) => {
     if (!queryText.trim() || busy) return;
@@ -90,11 +84,7 @@ export default function AssistantPage() {
   };
 
   return (
-    <PageShell
-      badge={t('asst_badge')}
-      title={t('asst_title')}
-      description={t('asst_desc')}
-    >
+    <PageShell badge={t('asst_badge')} title={t('asst_title')} description={t('asst_desc')}>
       <div className="mx-auto max-w-4xl space-y-8">
         {/* Quick Suggestion Chips */}
         {messages.length === 0 && (
@@ -124,9 +114,7 @@ export default function AssistantPage() {
           {messages.map((item, idx) => (
             <div
               key={idx}
-              className={`flex gap-3.5 ${
-                item.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
+              className={`flex gap-3.5 ${item.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               {item.role === 'assistant' && (
                 <div className="h-9 w-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-800 shrink-0 mt-1">
@@ -151,7 +139,9 @@ export default function AssistantPage() {
                           ? t('asst_smart_badge')
                           : t('asst_rule_badge')}
                     </span>
-                    <span className="text-emerald-700 font-semibold lowercase">{t('asst_verified')}</span>
+                    <span className="text-emerald-700 font-semibold lowercase">
+                      {t('asst_verified')}
+                    </span>
                   </div>
                 )}
 
@@ -179,7 +169,9 @@ export default function AssistantPage() {
                 {/* Verified Sources */}
                 {item.result && item.result.sources.length > 0 && (
                   <div className="pt-2 border-t border-stone-100 text-[11px] text-stone-500">
-                    <span className="font-semibold text-stone-600 block mb-1">{t('asst_sources_title')}</span>
+                    <span className="font-semibold text-stone-600 block mb-1">
+                      {t('asst_sources_title')}
+                    </span>
                     <ul className="list-disc list-inside space-y-0.5 text-stone-500">
                       {item.result.sources.map((s) => (
                         <li key={`${s.type}-${s.id}`}>{s.label}</li>
@@ -220,7 +212,10 @@ export default function AssistantPage() {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700" role="alert">
+          <div
+            className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700"
+            role="alert"
+          >
             {error}
           </div>
         )}
@@ -250,13 +245,10 @@ export default function AssistantPage() {
 
           <p className="mt-3 text-[11px] text-stone-400 flex items-center gap-1.5 px-1">
             <Info className="h-3.5 w-3.5 shrink-0" />
-            <span>
-              {t('asst_disclaimer')}
-            </span>
+            <span>{t('asst_disclaimer')}</span>
           </p>
         </div>
       </div>
     </PageShell>
   );
 }
-

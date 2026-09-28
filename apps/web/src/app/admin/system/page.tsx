@@ -39,9 +39,7 @@ export default function SystemAdminPage() {
       setSnapshot({ provider, summary });
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Không thể đọc trạng thái hệ thống từ backend.',
+        err instanceof Error ? err.message : 'Không thể đọc trạng thái hệ thống từ backend.',
       );
     } finally {
       setLoading(false);
@@ -53,8 +51,7 @@ export default function SystemAdminPage() {
   }, []);
 
   const aiReady =
-    snapshot.provider?.preferredProvider === 'GROQ' &&
-    snapshot.provider?.groqConfigured === true;
+    snapshot.provider?.preferredProvider === 'GROQ' && snapshot.provider?.groqConfigured === true;
 
   return (
     <PageShell
@@ -103,11 +100,7 @@ export default function SystemAdminPage() {
         <StatusCard
           title="Dữ liệu tour"
           value={
-            snapshot.summary
-              ? `${snapshot.summary.tours} TOUR`
-              : loading
-                ? 'ĐANG KIỂM TRA'
-                : 'N/A'
+            snapshot.summary ? `${snapshot.summary.tours} TOUR` : loading ? 'ĐANG KIỂM TRA' : 'N/A'
           }
           detail={
             snapshot.summary
@@ -130,9 +123,7 @@ export default function SystemAdminPage() {
         <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-luxury">
           <div className="mb-4 flex items-center gap-2">
             <Activity className="h-5 w-5 text-amber-700" />
-            <h2 className="font-serif text-lg font-bold text-stone-900">
-              AI Runtime
-            </h2>
+            <h2 className="font-serif text-lg font-bold text-stone-900">AI Runtime</h2>
           </div>
           <dl className="space-y-3 text-sm">
             <Row
@@ -157,39 +148,27 @@ export default function SystemAdminPage() {
         <section className="rounded-3xl border border-stone-200 bg-white p-6 shadow-luxury">
           <div className="mb-4 flex items-center gap-2">
             <Database className="h-5 w-5 text-amber-700" />
-            <h2 className="font-serif text-lg font-bold text-stone-900">
-              Nghiệp vụ production
-            </h2>
+            <h2 className="font-serif text-lg font-bold text-stone-900">Nghiệp vụ production</h2>
           </div>
           <dl className="space-y-3 text-sm">
-            <Row
-              label="Tours"
-              value={snapshot.summary ? String(snapshot.summary.tours) : 'N/A'}
-            />
+            <Row label="Tours" value={snapshot.summary ? String(snapshot.summary.tours) : 'N/A'} />
             <Row
               label="Bookings"
               value={snapshot.summary ? String(snapshot.summary.bookings) : 'N/A'}
             />
             <Row
               label="Hoàn tiền chờ xử lý"
-              value={
-                snapshot.summary
-                  ? String(snapshot.summary.pendingRefunds)
-                  : 'N/A'
-              }
+              value={snapshot.summary ? String(snapshot.summary.pendingRefunds) : 'N/A'}
             />
-            <Row
-              label="Cấu hình bí mật"
-              value="Quản lý tại Render, không chỉnh từ trình duyệt"
-            />
+            <Row label="Cấu hình bí mật" value="Quản lý tại Render, không chỉnh từ trình duyệt" />
           </dl>
         </section>
       </div>
 
       <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-950">
-        Trang này cố ý không cho xem hoặc sửa API key. Việc cấu hình Groq, Resend,
-        Supabase và cổng thanh toán thuộc lớp hạ tầng server để tránh lộ credential
-        qua JavaScript, localStorage hoặc DevTools.
+        Trang này cố ý không cho xem hoặc sửa API key. Việc cấu hình Groq, Resend, Supabase và cổng
+        thanh toán thuộc lớp hạ tầng server để tránh lộ credential qua JavaScript, localStorage hoặc
+        DevTools.
       </div>
     </PageShell>
   );
@@ -212,22 +191,16 @@ function StatusCard({
     <div className="rounded-3xl border border-stone-200 bg-white p-5 shadow-luxury">
       <div
         className={`mb-4 flex h-11 w-11 items-center justify-center rounded-2xl ${
-          ok
-            ? 'bg-emerald-50 text-emerald-700'
-            : 'bg-amber-50 text-amber-700'
+          ok ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
         }`}
       >
         {icon}
       </div>
-      <p className="text-[10px] font-black uppercase tracking-wider text-stone-500">
-        {title}
-      </p>
+      <p className="text-[10px] font-black uppercase tracking-wider text-stone-500">{title}</p>
       <p className="mt-1 text-sm font-black text-stone-950">{value}</p>
       <p className="mt-1 text-[11px] leading-relaxed text-stone-500">{detail}</p>
       <div className="mt-3 flex items-center gap-1.5 text-[10px] font-bold">
-        <CheckCircle2
-          className={`h-3.5 w-3.5 ${ok ? 'text-emerald-600' : 'text-amber-600'}`}
-        />
+        <CheckCircle2 className={`h-3.5 w-3.5 ${ok ? 'text-emerald-600' : 'text-amber-600'}`} />
         <span className={ok ? 'text-emerald-700' : 'text-amber-700'}>
           {ok ? 'Đã xác nhận' : 'Cần kiểm tra'}
         </span>

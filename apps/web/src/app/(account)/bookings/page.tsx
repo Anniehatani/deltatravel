@@ -36,26 +36,26 @@ export default function BookingsListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const suggestedCancelReasons = lang === 'en'
-    ? [
-        'Change in business or personal schedule',
-        'Unexpected family emergency',
-        'Wrong departure date or guest count',
-        'Prefer to switch to another tour package',
-      ]
-    : [
-        'Thay đổi kế hoạch công tác / gia đình',
-        'Có việc bận đột xuất',
-        'Đặt nhầm ngày hoặc số lượng khách',
-        'Muốn đổi sang hành trình khác',
-      ];
+  const suggestedCancelReasons =
+    lang === 'en'
+      ? [
+          'Change in business or personal schedule',
+          'Unexpected family emergency',
+          'Wrong departure date or guest count',
+          'Prefer to switch to another tour package',
+        ]
+      : [
+          'Thay đổi kế hoạch công tác / gia đình',
+          'Có việc bận đột xuất',
+          'Đặt nhầm ngày hoặc số lượng khách',
+          'Muốn đổi sang hành trình khác',
+        ];
 
   // Cancellation state
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-
 
   const fetchBookings = () => {
     setLoading(true);
@@ -66,7 +66,13 @@ export default function BookingsListPage() {
         setBookings(res.items);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : (lang === 'en' ? 'Unable to load bookings.' : 'Không thể tải danh sách đơn.'));
+        setError(
+          err instanceof Error
+            ? err.message
+            : lang === 'en'
+              ? 'Unable to load bookings.'
+              : 'Không thể tải danh sách đơn.',
+        );
       })
       .finally(() => {
         setLoading(false);
@@ -84,22 +90,31 @@ export default function BookingsListPage() {
     setCancelling(true);
     setCancelError(null);
 
-    const reason = cancelReason.trim() || (lang === 'en' ? 'User requested cancellation' : 'Người dùng yêu cầu hủy đơn');
+    const reason =
+      cancelReason.trim() ||
+      (lang === 'en' ? 'User requested cancellation' : 'Người dùng yêu cầu hủy đơn');
 
     try {
       const updated = await bookingApi.cancel(cancelTarget.id, reason);
       setBookings((prev) =>
-        prev.map((b) => (b.id === updated.id ? { ...b, status: 'CANCELLED', cancelReason: reason } : b)),
+        prev.map((b) =>
+          b.id === updated.id ? { ...b, status: 'CANCELLED', cancelReason: reason } : b,
+        ),
       );
       setCancelTarget(null);
       setCancelReason('');
     } catch (err) {
-      setCancelError(err instanceof Error ? err.message : (lang === 'en' ? 'Unable to cancel booking. Please try again.' : 'Không thể hủy đơn. Vui lòng thử lại sau.'));
+      setCancelError(
+        err instanceof Error
+          ? err.message
+          : lang === 'en'
+            ? 'Unable to cancel booking. Please try again.'
+            : 'Không thể hủy đơn. Vui lòng thử lại sau.',
+      );
     } finally {
       setCancelling(false);
     }
   };
-
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
@@ -140,12 +155,8 @@ export default function BookingsListPage() {
       ) : bookings.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-14 text-center">
           <Ticket className="mx-auto h-12 w-12 text-stone-400 mb-3" />
-          <h3 className="font-serif text-xl font-bold text-stone-900">
-            {t('bk_empty_title')}
-          </h3>
-          <p className="mt-2 text-sm text-stone-500 max-w-md mx-auto">
-            {t('bk_empty_desc')}
-          </p>
+          <h3 className="font-serif text-xl font-bold text-stone-900">{t('bk_empty_title')}</h3>
+          <p className="mt-2 text-sm text-stone-500 max-w-md mx-auto">{t('bk_empty_desc')}</p>
           <Button asChild className="mt-6 bg-stone-900 hover:bg-black text-white rounded-lg">
             <Link href="/tours">{t('bk_explore_now')}</Link>
           </Button>
@@ -153,7 +164,9 @@ export default function BookingsListPage() {
       ) : (
         <div className="space-y-5">
           {bookings.map((booking) => {
-            const statusLabel = statusKeyMap[booking.status] ? t(statusKeyMap[booking.status]) : (BOOKING_LABELS[booking.status] || booking.status);
+            const statusLabel = statusKeyMap[booking.status]
+              ? t(statusKeyMap[booking.status])
+              : BOOKING_LABELS[booking.status] || booking.status;
             const badgeClass =
               STATUS_COLOR_MAP[booking.status] || 'bg-stone-100 text-stone-800 border-stone-200';
             const canCancel = ['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'].includes(booking.status);
@@ -183,12 +196,14 @@ export default function BookingsListPage() {
                   <div className="flex flex-wrap items-center gap-4 text-xs text-stone-600">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3.5 w-3.5 text-stone-400" />
-                      {t('bk_dep_prefix')} <strong className="text-stone-800">{formatDate(booking.departureAt)}</strong>
+                      {t('bk_dep_prefix')}{' '}
+                      <strong className="text-stone-800">{formatDate(booking.departureAt)}</strong>
                     </span>
                     <span>·</span>
                     <span className="flex items-center gap-1">
                       <Users className="h-3.5 w-3.5 text-stone-400" />
-                      {booking.adults} {t('bk_adult_unit')} {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
+                      {booking.adults} {t('bk_adult_unit')}{' '}
+                      {booking.children > 0 && `, ${booking.children} ${t('bk_child_unit')}`}
                     </span>
                     <span>·</span>
                     <span>
@@ -232,7 +247,11 @@ export default function BookingsListPage() {
                           : 'bg-stone-900 text-white hover:bg-stone-800'
                       }`}
                     >
-                      <span>{booking.status === 'PENDING_PAYMENT' ? t('bk_btn_pay') : t('bk_btn_detail')}</span>
+                      <span>
+                        {booking.status === 'PENDING_PAYMENT'
+                          ? t('bk_btn_pay')
+                          : t('bk_btn_detail')}
+                      </span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
@@ -265,7 +284,10 @@ export default function BookingsListPage() {
 
             <form onSubmit={handleConfirmCancel} className="space-y-4">
               <div>
-                <label htmlFor="modalCancelReason" className="text-xs font-bold text-stone-800 block mb-1">
+                <label
+                  htmlFor="modalCancelReason"
+                  className="text-xs font-bold text-stone-800 block mb-1"
+                >
                   {t('bk_cancel_reason_label')}
                 </label>
 

@@ -36,7 +36,6 @@ function ToursListContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
   const REGION_TABS = [
     { id: '', label: t('tours_tab_all'), subtitle: t('tours_tab_all_sub') },
     { id: 'bac', label: t('reg_bac_name'), subtitle: t('tours_tab_bac_sub') },
@@ -88,7 +87,11 @@ function ToursListContent() {
 
   // Helper to get pricing from commercial tour data
   const getTourPrice = (tour: Tour): number => {
-    if ('adultPrice' in tour && typeof (tour as any).adultPrice === 'number' && (tour as any).adultPrice > 0) {
+    if (
+      'adultPrice' in tour &&
+      typeof (tour as any).adultPrice === 'number' &&
+      (tour as any).adultPrice > 0
+    ) {
       return (tour as any).adultPrice;
     }
     const match = FALLBACK_TOURS.find((f) => f.id === tour.id || f.slug === tour.slug);
@@ -160,7 +163,10 @@ function ToursListContent() {
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="animate-pulse rounded-3xl border border-neutral-200/80 bg-white p-4 space-y-4 shadow-sm">
+            <div
+              key={i}
+              className="animate-pulse rounded-3xl border border-neutral-200/80 bg-white p-4 space-y-4 shadow-sm"
+            >
               <div className="h-56 bg-neutral-200 rounded-2xl" />
               <div className="space-y-2 p-2">
                 <div className="h-4 w-1/3 bg-neutral-200 rounded-full" />
@@ -249,7 +255,10 @@ function ToursListContent() {
                       variant="duration"
                       icon={<Calendar className="h-3 w-3 text-white" />}
                     >
-                      {tour.durationDays}{lang === 'en' ? 'D' : 'N'}{Math.max(1, tour.durationDays - 1)}{lang === 'en' ? 'N' : 'Đ'}
+                      {tour.durationDays}
+                      {lang === 'en' ? 'D' : 'N'}
+                      {Math.max(1, tour.durationDays - 1)}
+                      {lang === 'en' ? 'N' : 'Đ'}
                     </LiquidGlassBadge>
                   </div>
 
@@ -294,7 +303,9 @@ function ToursListContent() {
                       </span>
                       <span className="text-sm font-black text-black tracking-tight">
                         {formatVND(price)}
-                        <span className="text-[10px] font-medium text-neutral-600 ml-1">{t('card_per_guest')}</span>
+                        <span className="text-[10px] font-medium text-neutral-600 ml-1">
+                          {t('card_per_guest')}
+                        </span>
                       </span>
                     </div>
 
@@ -332,7 +343,13 @@ export default function Page() {
       title={t('tours_header_title')}
       description={t('tours_header_desc')}
     >
-      <Suspense fallback={<div className="p-16 text-center text-xs font-black text-black uppercase tracking-widest">{lang === 'en' ? 'Loading curated collection...' : 'Đang tải bộ sưu tập tinh hoa...'}</div>}>
+      <Suspense
+        fallback={
+          <div className="p-16 text-center text-xs font-black text-black uppercase tracking-widest">
+            {lang === 'en' ? 'Loading curated collection...' : 'Đang tải bộ sưu tập tinh hoa...'}
+          </div>
+        }
+      >
         <ToursListContent />
       </Suspense>
     </PageShell>

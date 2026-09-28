@@ -42,10 +42,26 @@ CRITICAL MANDATES:
 4. Output strictly valid JSON with reply, isOffTopic, actions, and sources.`;
 
 export const AVAILABLE_MODELS = [
-  { id: 'openai/gpt-oss-120b', name: 'GPT OSS 120B (Groq Fast LPU - Flagship Deep Reasoning)', provider: 'groq' },
-  { id: 'qwen/qwen3.8-27b', name: 'Qwen 3.8 27B (Groq Siêu Tốc Độ - Chuẩn Đa Ngôn Ngữ Việt/Anh)', provider: 'groq' },
-  { id: 'openai/gpt-oss-20b', name: 'GPT OSS 20B (Groq Ultra Fast - Phản hồi chớp mắt <120ms)', provider: 'groq' },
-  { id: 'openai/gpt-oss-safeguard-20b', name: 'GPT OSS Safeguard 20B (AI Bảo Mật Tối Cao Chống Hack)', provider: 'groq' },
+  {
+    id: 'openai/gpt-oss-120b',
+    name: 'GPT OSS 120B (Groq Fast LPU - Flagship Deep Reasoning)',
+    provider: 'groq',
+  },
+  {
+    id: 'qwen/qwen3.8-27b',
+    name: 'Qwen 3.8 27B (Groq Siêu Tốc Độ - Chuẩn Đa Ngôn Ngữ Việt/Anh)',
+    provider: 'groq',
+  },
+  {
+    id: 'openai/gpt-oss-20b',
+    name: 'GPT OSS 20B (Groq Ultra Fast - Phản hồi chớp mắt <120ms)',
+    provider: 'groq',
+  },
+  {
+    id: 'openai/gpt-oss-safeguard-20b',
+    name: 'GPT OSS Safeguard 20B (AI Bảo Mật Tối Cao Chống Hack)',
+    provider: 'groq',
+  },
   { id: 'gemini-1.5-flash', name: 'Google Gemini 1.5 Flash (Google Cloud AI)', provider: 'gemini' },
 ];
 
@@ -95,7 +111,10 @@ export function getSystemConfig(): SystemConfig {
   }
 }
 
-export function saveSystemConfig(patch: Partial<SystemConfig>, actor: string = 'ADMIN'): SystemConfig {
+export function saveSystemConfig(
+  patch: Partial<SystemConfig>,
+  actor: string = 'ADMIN',
+): SystemConfig {
   const current = getSystemConfig();
   const updated: SystemConfig = {
     ...current,
@@ -116,7 +135,7 @@ export function saveSystemConfig(patch: Partial<SystemConfig>, actor: string = '
         temperature: updated.temperature,
         maxTokens: updated.maxTokens,
         systemPrompt: updated.systemPrompt,
-      })
+      }),
     );
 
     // Record audit entry
@@ -124,7 +143,7 @@ export function saveSystemConfig(patch: Partial<SystemConfig>, actor: string = '
       actor,
       'CẬP NHẬT CẤU HÌNH HỆ THỐNG / AI',
       `Thay đổi cấu hình AI (Provider: ${updated.aiProvider}, Model: ${updated.aiModel}, Maintenance: ${updated.maintenanceMode ? 'BẬT' : 'TẮT'})`,
-      'SUCCESS'
+      'SUCCESS',
     );
   }
 
@@ -157,7 +176,7 @@ export function addSystemAuditLog(
   actor: string,
   action: string,
   details: string,
-  status: 'SUCCESS' | 'WARNING' | 'ALERT' = 'SUCCESS'
+  status: 'SUCCESS' | 'WARNING' | 'ALERT' = 'SUCCESS',
 ) {
   if (typeof window === 'undefined') return;
   try {
@@ -191,7 +210,7 @@ export function maskApiKey(key: string): string {
  */
 export async function testAiConnection(
   _apiKey: string,
-  model: string = 'openai/gpt-oss-120b'
+  model: string = 'openai/gpt-oss-120b',
 ): Promise<{ success: boolean; latency: number; message: string; modelUsed: string }> {
   const startTime = Date.now();
   const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
@@ -226,7 +245,10 @@ export async function testAiConnection(
     return {
       success: false,
       latency,
-      message: err?.name === 'TimeoutError' ? 'Hết thời gian chờ backend.' : err?.message || 'Lỗi kết nối backend',
+      message:
+        err?.name === 'TimeoutError'
+          ? 'Hết thời gian chờ backend.'
+          : err?.message || 'Lỗi kết nối backend',
       modelUsed: model,
     };
   }
