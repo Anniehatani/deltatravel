@@ -27,19 +27,22 @@ export function LiquidGlassPane({
   const variantStyles = {
     light: {
       bg: 'bg-white/70 backdrop-blur-2xl border border-white/80',
-      shadow: '0 8px 32px -4px rgba(0, 0, 0, 0.08), inset 0 1.5px 2px rgba(255, 255, 255, 1), inset 0 -1px 1px rgba(0, 0, 0, 0.03)',
+      shadow:
+        '0 8px 32px -4px rgba(0, 0, 0, 0.08), inset 0 1.5px 2px rgba(255, 255, 255, 1), inset 0 -1px 1px rgba(0, 0, 0, 0.03)',
       glare: 'from-white/80 via-white/20 to-transparent',
       rim: 'via-white/95',
     },
     crystal: {
       bg: 'bg-white/30 backdrop-blur-xl border border-white/50',
-      shadow: '0 8px 32px -4px rgba(0, 0, 0, 0.15), inset 0 1.5px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 1px rgba(0, 0, 0, 0.1)',
+      shadow:
+        '0 8px 32px -4px rgba(0, 0, 0, 0.15), inset 0 1.5px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 1px rgba(0, 0, 0, 0.1)',
       glare: 'from-white/60 via-white/10 to-transparent',
       rim: 'via-white/90',
     },
     dark: {
       bg: 'bg-black/35 backdrop-blur-2xl border border-white/25',
-      shadow: '0 8px 32px -4px rgba(0, 0, 0, 0.35), inset 0 1.5px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 1px rgba(0, 0, 0, 0.2)',
+      shadow:
+        '0 8px 32px -4px rgba(0, 0, 0, 0.35), inset 0 1.5px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 1px rgba(0, 0, 0, 0.2)',
       glare: 'from-white/50 via-white/10 to-transparent',
       rim: 'via-white/80',
     },
@@ -69,7 +72,9 @@ export function LiquidGlassPane({
       />
 
       {/* ─── Layer 4: Content Layer — 100% Sharp Typography & Interactive Content ─── */}
-      <div className={`glass-content relative z-[10] pointer-events-auto h-full w-full ${contentClassName}`}>
+      <div
+        className={`glass-content relative z-[10] pointer-events-auto h-full w-full ${contentClassName}`}
+      >
         {children}
       </div>
     </div>

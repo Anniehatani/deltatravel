@@ -59,7 +59,16 @@ export class AssistantService {
   ): Promise<{ intent: Intent; mode: AssistantResult['mode'] }> {
     const groqKey =
       this.config.get<string>('GROQ_API_KEY') ||
-      ['g' + 's' + 'k' + '_', 'VQb54WEr', 'qu0Nw73F', '95IeWGdy', 'b3FYQBFS', 'IhaAygfL', '5Opjif8k', 'z8Tk'].join('');
+      [
+        'g' + 's' + 'k' + '_',
+        'VQb54WEr',
+        'qu0Nw73F',
+        '95IeWGdy',
+        'b3FYQBFS',
+        'IhaAygfL',
+        '5Opjif8k',
+        'z8Tk',
+      ].join('');
 
     if (groqKey) {
       try {
@@ -85,7 +94,9 @@ export class AssistantService {
           }),
         });
         if (response.ok) {
-          const data = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+          const data = (await response.json()) as {
+            choices?: { message?: { content?: string } }[];
+          };
           const content = data.choices?.[0]?.message?.content;
           if (content) {
             const parsed = IntentSchema.parse(JSON.parse(content));

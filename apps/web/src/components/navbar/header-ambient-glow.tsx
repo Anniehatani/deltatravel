@@ -13,7 +13,10 @@ interface HeaderAmbientGlowProps {
  * for the Liquid Glass WebGPU/WebGL shader to refract, bend, and disperse.
  * Keeps the overall website clean, white, and ultra-luxurious.
  */
-export function HeaderAmbientGlow({ isTransparent = false, isScrolled = false }: HeaderAmbientGlowProps) {
+export function HeaderAmbientGlow({
+  isTransparent = false,
+  isScrolled = false,
+}: HeaderAmbientGlowProps) {
   return (
     <div
       aria-hidden="true"
@@ -57,8 +60,8 @@ export function HeaderAmbientGlow({ isTransparent = false, isScrolled = false }:
           background: isTransparent
             ? 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.2) 20%, rgba(253,224,71,0.3) 50%, rgba(56,189,248,0.2) 80%, transparent 100%)'
             : isScrolled
-            ? 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.04) 20%, rgba(245,158,11,0.15) 50%, rgba(14,165,233,0.1) 80%, transparent 100%)'
-            : 'transparent',
+              ? 'linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.04) 20%, rgba(245,158,11,0.15) 50%, rgba(14,165,233,0.1) 80%, transparent 100%)'
+              : 'transparent',
         }}
       />
     </div>

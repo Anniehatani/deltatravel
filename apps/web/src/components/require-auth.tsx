@@ -93,9 +93,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
             <ShieldAlert className="h-6 w-6" />
           </div>
           <h3 className="text-xl font-bold text-stone-900">{t('auth_forbidden_title')}</h3>
-          <p className="mt-2 text-xs text-stone-600">
-            {t('auth_forbidden_desc')}
-          </p>
+          <p className="mt-2 text-xs text-stone-600">{t('auth_forbidden_desc')}</p>
           <div className="mt-6">
             <Link
               href="/"

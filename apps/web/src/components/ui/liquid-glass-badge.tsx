@@ -3,12 +3,7 @@
 import React from 'react';
 
 export type LiquidGlassBadgeVariant =
-  | 'luxury'
-  | 'duration'
-  | 'rating'
-  | 'destination'
-  | 'glass'
-  | 'gold';
+  'luxury' | 'duration' | 'rating' | 'destination' | 'glass' | 'gold';
 
 export interface LiquidGlassBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: LiquidGlassBadgeVariant;
@@ -61,7 +56,8 @@ export function LiquidGlassBadge({
     luxury: {
       surfaceBg: 'bg-black/35 backdrop-blur-md',
       surfaceBorder: 'border border-white/40',
-      boxShadow: '0 4px 16px -2px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
+      boxShadow:
+        '0 4px 16px -2px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
       textColor: 'text-white',
       accentColor: 'text-amber-300',
       beamGradient: 'from-transparent via-amber-200/90 to-transparent',
@@ -70,7 +66,8 @@ export function LiquidGlassBadge({
     duration: {
       surfaceBg: 'bg-black/35 backdrop-blur-md',
       surfaceBorder: 'border border-white/35',
-      boxShadow: '0 4px 14px -2px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
+      boxShadow:
+        '0 4px 14px -2px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
       textColor: 'text-white',
       accentColor: 'text-white',
       beamGradient: 'from-transparent via-white/85 to-transparent',
@@ -79,7 +76,8 @@ export function LiquidGlassBadge({
     rating: {
       surfaceBg: 'bg-black/40 backdrop-blur-md',
       surfaceBorder: 'border border-amber-300/40',
-      boxShadow: '0 4px 14px -2px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
+      boxShadow:
+        '0 4px 14px -2px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
       textColor: 'text-amber-300 font-extrabold',
       accentColor: 'text-amber-300 fill-amber-300',
       beamGradient: 'from-transparent via-amber-200/90 to-transparent',
@@ -88,7 +86,8 @@ export function LiquidGlassBadge({
     destination: {
       surfaceBg: 'bg-black/35 backdrop-blur-md',
       surfaceBorder: 'border border-white/35',
-      boxShadow: '0 4px 14px -2px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
+      boxShadow:
+        '0 4px 14px -2px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
       textColor: 'text-white',
       accentColor: 'text-amber-300',
       beamGradient: 'from-transparent via-white/80 to-transparent',
@@ -97,7 +96,8 @@ export function LiquidGlassBadge({
     gold: {
       surfaceBg: 'bg-amber-500/20 backdrop-blur-md',
       surfaceBorder: 'border border-amber-400/50',
-      boxShadow: '0 4px 16px -2px rgba(217, 119, 6, 0.2), inset 0 1px 1.5px rgba(255, 255, 255, 0.8), inset 0 -0.5px 1px rgba(180, 83, 9, 0.2)',
+      boxShadow:
+        '0 4px 16px -2px rgba(217, 119, 6, 0.2), inset 0 1px 1.5px rgba(255, 255, 255, 0.8), inset 0 -0.5px 1px rgba(180, 83, 9, 0.2)',
       textColor: 'text-amber-900 font-black',
       accentColor: 'text-amber-600',
       beamGradient: 'from-transparent via-amber-200 to-transparent',
@@ -106,7 +106,8 @@ export function LiquidGlassBadge({
     glass: {
       surfaceBg: 'bg-black/30 backdrop-blur-md',
       surfaceBorder: 'border border-white/35',
-      boxShadow: '0 4px 14px -2px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
+      boxShadow:
+        '0 4px 14px -2px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.6), inset 0 -0.5px 1px rgba(0, 0, 0, 0.2)',
       textColor: 'text-white',
       accentColor: 'text-white',
       beamGradient: 'from-transparent via-white/85 to-transparent',

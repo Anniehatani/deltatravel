@@ -43,7 +43,11 @@ const BASELINE_COMMERCIAL_TOURS: CommercialTour[] = FALLBACK_TOURS.map((t, idx) 
     totalSeats: 30,
     availableSeats: idx % 2 === 0 ? 12 : 22,
     departureAt: depTime,
-    highlights: t.highlights || ['Khám phá điểm đến nổi tiếng', 'Ẩm thực phong phú', 'Khách sạn tiêu chuẩn cao'],
+    highlights: t.highlights || [
+      'Khám phá điểm đến nổi tiếng',
+      'Ẩm thực phong phú',
+      'Khách sạn tiêu chuẩn cao',
+    ],
     status: 'ACTIVE',
   };
 });
@@ -114,12 +118,13 @@ export function createCommercialTour(input: Partial<CommercialTour>): Commercial
   const now = new Date().toISOString();
 
   const title = input.title?.trim() || 'Tour Du Lịch Mới';
-  const defaultSlug = title
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '') || `tour-${hex}`;
+  const defaultSlug =
+    title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || `tour-${hex}`;
 
   const slug = (input.slug?.trim() || defaultSlug).toLowerCase();
 
@@ -133,16 +138,22 @@ export function createCommercialTour(input: Partial<CommercialTour>): Commercial
     durationDays: Math.max(1, Number(input.durationDays) || 3),
     status: input.status || 'ACTIVE',
     region: input.region || 'bac',
-    regionName: input.region === 'nam' ? 'Miền Nam' : input.region === 'trung' ? 'Miền Trung' : 'Miền Bắc',
+    regionName:
+      input.region === 'nam' ? 'Miền Nam' : input.region === 'trung' ? 'Miền Trung' : 'Miền Bắc',
     imageUrl: input.imageUrl?.trim() || '/tour-ha-long.jpg',
     adultPrice: Math.max(100000, Number(input.adultPrice) || 2500000),
     childPrice: Math.max(50000, Number(input.childPrice) || 1750000),
     totalSeats: Math.max(1, Number(input.totalSeats) || 30),
     availableSeats: Math.max(0, Number(input.availableSeats ?? input.totalSeats ?? 30)),
     departureAt: input.departureAt || new Date(Date.now() + 7 * 86400000).toISOString(),
-    highlights: Array.isArray(input.highlights) && input.highlights.length > 0
-      ? input.highlights
-      : ['Khám phá danh lam thắng cảnh', 'Thưởng thức ẩm thực địa phương', 'Dịch vụ lưu trú cao cấp'],
+    highlights:
+      Array.isArray(input.highlights) && input.highlights.length > 0
+        ? input.highlights
+        : [
+            'Khám phá danh lam thắng cảnh',
+            'Thưởng thức ẩm thực địa phương',
+            'Dịch vụ lưu trú cao cấp',
+          ],
     createdAt: now,
     updatedAt: now,
   };
@@ -169,7 +180,11 @@ export function updateCommercialTour(id: string, updates: Partial<CommercialTour
 
   if (updates.region) {
     updatedTour.regionName =
-      updates.region === 'nam' ? 'Miền Nam' : updates.region === 'trung' ? 'Miền Trung' : 'Miền Bắc';
+      updates.region === 'nam'
+        ? 'Miền Nam'
+        : updates.region === 'trung'
+          ? 'Miền Trung'
+          : 'Miền Bắc';
   }
 
   tours[idx] = updatedTour;

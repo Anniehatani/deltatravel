@@ -5,6 +5,7 @@ Tài liệu đúc kết toàn bộ các tính năng, cải tiến kiến trúc, 
 ---
 
 ## MỤC LỤC
+
 1. [Tổng Quan Kiến Trúc & Công Nghệ](#1-tổng-quan-kiến-trúc--công-nghệ)
 2. [Chi Tiết Toàn Bộ Cải Tiến Đã Thực Hiện](#2-chi-tiết-toàn-bộ-cải-tiến-đã-thực-hiện)
    - [2.1. Màn hình chào Video Intro & Bộ Tải Trang Tinh Tế (Luxury Preloader)](#21-màn-hình-chào-video-intro--bộ-tải-trang-tinh-tế-luxury-preloader)
@@ -34,6 +35,7 @@ Tài liệu đúc kết toàn bộ các tính năng, cải tiến kiến trúc, 
 ## 2. Chi Tiết Toàn Bộ Cải Tiến Đã Thực Hiện
 
 ### 2.1. Màn hình chào Video Intro & Bộ Tải Trang Tinh Tế (Luxury Preloader)
+
 - **Tích hợp video intro**: Nhúng video `intro.mp4` chạy mượt mà ngay khi bắt đầu truy cập ứng dụng.
 - **Theo dõi tiến trình thực tế**:
   - Thanh đếm số phần trăm chạy mượt mà từ 0% đến 100% dựa trên thời gian phát thực của video (`currentTime / duration`).
@@ -42,15 +44,18 @@ Tài liệu đúc kết toàn bộ các tính năng, cải tiến kiến trúc, 
 - **Nút "Khám phá ngay / Explore Now"**: Cho phép người dùng chuyển thẳng vào trang chủ nếu không muốn xem hết video.
 
 ### 2.2. Khắc phục lỗi tải lại Video Intro khi chuyển tab
-- **Vấn đề trước đây**: Khi người dùng vào trang chủ, chuyển sang tab *All Tours*, *Đơn của tôi* hoặc *Trợ lý du lịch* rồi ấn quay lại *Trang chủ*, component bị remount làm video intro tải lại từ đầu gây khó chịu.
+
+- **Vấn đề trước đây**: Khi người dùng vào trang chủ, chuyển sang tab _All Tours_, _Đơn của tôi_ hoặc _Trợ lý du lịch_ rồi ấn quay lại _Trang chủ_, component bị remount làm video intro tải lại từ đầu gây khó chịu.
 - **Giải pháp xử lý**:
   - Áp dụng `sessionStorage.getItem('delta_intro_played')`.
   - Khởi tạo trạng thái `isVisible: false`. Chỉ hiển thị video intro ở lần đầu tiên người dùng mở tab trình duyệt.
   - Khi xem xong hoặc nhấn bỏ qua, hệ thống đánh dấu cờ `delta_intro_played = true`. Khi chuyển đổi qua lại giữa các tab và bấm về Trang Chủ, **trang chủ hiển thị ngay lập tức, không lặp lại video intro**.
 
 ### 2.3. Hệ thống Đa Ngôn Ngữ Song Ngữ Chuẩn Hóa 100% (VI / EN)
+
 Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nút cờ `VI` / `EN` trên thanh điều hướng, lưu cấu hình vào `localStorage`:
-- **Thanh điều hướng (Navbar)**: *Home / Trang chủ*, *Northern / Miền Bắc*, *Central / Miền Trung*, *Southern / Miền Nam*, *All Tours / Tất cả tour*, *My Bookings / Đơn của tôi*, *Travel Assistant / Trợ lý du lịch*.
+
+- **Thanh điều hướng (Navbar)**: _Home / Trang chủ_, _Northern / Miền Bắc_, _Central / Miền Trung_, _Southern / Miền Nam_, _All Tours / Tất cả tour_, _My Bookings / Đơn của tôi_, _Travel Assistant / Trợ lý du lịch_.
 - **Khu vực Đăng nhập & Đăng ký (`/login`, `/register`, `AuthForm`, `RequireAuth`)**:
   - Hộp thông báo bảo mật: `Sign In To Continue`, `ACCOUNT AUTHENTICATION • SECURITY`.
   - Form nhập thông tin: nhãn, placeholder, nút bấm và liên kết chuyển đổi giữa đăng ký/đăng nhập.
@@ -64,6 +69,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   - Huy hiệu thành viên VIP (`DELTA PRIVÉ • VIP MEMBER`), các nút thao tác căn chỉnh ảnh, form định danh cá nhân, nút lưu và đăng xuất.
 
 ### 2.4. Trợ Lý AI Du Lịch Siêu Tốc (Groq LLaMA 3.3 70B & Gemini)
+
 - **Tích hợp API Key Groq**: Kết nối API Key `gsk_VQb54...` với mô hình ngôn ngữ lớn `llama-3.3-70b-versatile`.
 - **Huấn luyện ngữ cảnh chuyên sâu (System Prompt)**:
   - AI đóng vai chuyên gia tư vấn du lịch độc quyền của Delta Travel.
@@ -73,12 +79,14 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
 - **Đồng bộ hóa ảnh đại diện**: Avatar người dùng trong khung chat AI được đồng bộ theo thời gian thực với avatar trong `AccountModal` và `Navbar`.
 
 ### 2.5. Luồng Đặt Chỗ, Thanh Toán Trực Tiếp & Quản Lý Đơn Hàng
+
 - **Phương thức Thanh toán Trực tiếp**:
   - Cho phép khách hàng chọn thanh toán bằng tiền mặt hoặc thẻ tại hệ thống văn phòng (Hà Nội, Đà Nẵng, TP.HCM) hoặc nộp trực tiếp cho Hướng dẫn viên lúc đón đoàn.
   - Đơn hàng chuyển sang trạng thái **Đã Xác Nhận (CONFIRMED)**, bảo lưu chỗ thành công.
 - **Loại bỏ chữ "KHUYÊN DÙNG"**: Đã xóa hoàn toàn nhãn `KHUYÊN DÙNG` ở phương thức thanh toán trực tiếp theo yêu cầu.
 
 ### 2.6. Tính Năng Hủy Đơn & Xóa Vĩnh Viễn Đơn Hàng
+
 - **Hủy đơn đặt chỗ (Cancel Booking)**:
   - Khách hàng có thể hủy đơn khi còn ở trạng thái chờ thanh toán hoặc đã xác nhận.
   - Cung cấp danh sách lý do gợi ý nhanh, tự động giải phóng kho chỗ trên hệ thống.
@@ -90,19 +98,22 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   - Cơ chế đồng bộ kép (API + Local storage) đảm bảo đơn hàng đã xóa sẽ biến mất vĩnh viễn khỏi tài khoản người dùng ngay lập tức.
 
 ### 2.7. Tùy Biến Avatar & Bộ Công Cụ Căn Chỉnh Ảnh Nâng Cao
+
 - Hỗ trợ tải ảnh đại diện từ thiết bị hoặc chọn từ bộ ảnh preset cao cấp.
 - **Bộ công cụ căn chỉnh ảnh tương tác**:
   - Thanh trượt thu phóng (Zoom In/Out) từ `1.0x` đến `3.0x`.
   - Thanh trượt căn chỉnh vị trí dọc (Vertical) và ngang (Horizontal).
   - Khả năng **kéo rê trực tiếp trên ảnh xem trước** để điều chỉnh góc chụp đẹp nhất.
-  - Nút *Đặt lại (Reset)* và nút *Áp dụng căn chỉnh (Apply Crop)* sử dụng Canvas API xuất ảnh chất lượng cao.
+  - Nút _Đặt lại (Reset)_ và nút _Áp dụng căn chỉnh (Apply Crop)_ sử dụng Canvas API xuất ảnh chất lượng cao.
 
 ### 2.8. Tối Ưu Hiệu Năng & Visual Glassmorphism
+
 - Gỡ bỏ thư viện `liquidGL` / WebGL shader gây giật lag và lỗi vệt màu trên trình duyệt.
 - Xây dựng hệ thống hiệu ứng kính Liquid Glass mượt mà dựa trên CSS Backdrop Blur, Specular Rim Highlights và phản chiếu ánh sáng tự nhiên.
 - Sửa lỗi layout thanh điều hướng dock (Navbar) không bị che lấp nội dung trang.
 
 ### 2.9. Tối Ưu Hóa Chuỗi Ảnh 3D & Video Mở Đầu (Zero-Lag 60FPS Scroll & Buffering)
+
 - **Nén 150 Khung Hình 3D sang chuẩn WebP**:
   - Chuyển đổi toàn bộ 150 tệp ảnh từ PNG dung lượng **170.37 MB** sang WebP chất lượng cao chỉ còn **12.60 MB** (giảm tới **92.6%** dung lượng mà giữ nguyên độ nét 1080p).
 - **Nâng cấp `Scroll3DHero` sang HTML5 GPU Canvas**:
@@ -113,6 +124,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   - Bổ sung sự kiện `onCanPlay` và cấu hình `preload="auto"` cho video intro, triệt tiêu hiện tượng giật khựng lúc bắt đầu video.
 
 ### 2.10. Phân Hệ Quản Trị Tối Cao "SUPER MAX" & Trung Tâm Lệnh AI (Supreme AI Command Center)
+
 - **Trung Tâm Lệnh Tối Cao (`/admin/system`)**:
   - **Quản lý Động Cơ AI Groq LPU**: Tùy biến API Key trực tiếp trên giao diện Admin với cơ chế che giấu chống nhìn lén (`gsk_••••••••z8Tk`) và mã PIN bảo vệ Root (`123456`).
   - **Chuyển đổi Model AI linh hoạt**: Lựa chọn giữa các model hàng đầu như `openai/gpt-oss-120b` (Deep Reasoning Flagship), `qwen/qwen3.8-27b` (Siêu tốc độ đa ngôn ngữ), `openai/gpt-oss-20b` (<120ms), `gemini-1.5-flash`.
@@ -129,7 +141,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   - Lưới 4 chỉ số KPIs mở rộng: Hành Trình, Đơn Đặt, Đơn Chờ Hoàn, và Ước Tính Doanh Thu (GMV).
   - Lối tắt nhanh vào Trung Tâm Lệnh Tối Cao.
 - **Hỗ Trợ Đăng Nhập Nhanh Cho Quản Trị Viên**:
-  - Nút *Điền nhanh tài khoản Quản Trị Viên (Admin Demo)* tại trang đăng nhập `/login` (`admin@tour.local` / `Admin@123456`).
+  - Nút _Điền nhanh tài khoản Quản Trị Viên (Admin Demo)_ tại trang đăng nhập `/login` (`admin@tour.local` / `Admin@123456`).
   - Tự động điều hướng thẳng vào `/admin` khi người dùng có vai trò `ADMIN` hoặc `OPERATIONS` đăng nhập.
 
 ---
@@ -137,6 +149,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
 ## 3. Hướng Dẫn Truy Cập Phân Hệ Quản Trị (Admin Portal)
 
 ### 3.1. Đường Dẫn (URL)
+
 - Bảng điều khiển vận hành tổng quan:
   ```
   http://localhost:3000/admin
@@ -147,10 +160,11 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   ```
 
 ### 3.2. Tài Khoản Quản Trị (Admin Credentials)
+
 - **Tài khoản mặc định được cấu hình trong hệ thống**:
   - **Email**: `admin@tour.local`
   - **Mật khẩu**: `Admin@123456`
-  *(Có nút 1-click tại trang đăng nhập `/login` để điền nhanh)*
+    _(Có nút 1-click tại trang đăng nhập `/login` để điền nhanh)_
 - **Mã PIN bảo mật xem/sao chép toàn văn API Key**:
   - `123456` (hoặc `admin`, `delta`)
 - **Cơ chế bảo mật phân quyền**:
@@ -158,6 +172,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
   - Khách hàng vãng lai hoặc tài khoản CUSTOMER không có quyền truy cập vào phân hệ này.
 
 ### 3.3. Các Chức Năng Trong Phân Hệ Admin
+
 - **Tổng quan Super Max (`/admin`)**: Thống kê số lượng tour, đơn đặt, doanh thu GMV, tỷ lệ hoàn tiền, trạng thái server và lối tắt vận hành.
 - **Trung Tâm Lệnh Tối Cao (`/admin/system`)**: Thay đổi Groq API Key, Model AI, Prompt, Test Ping, Rate Limit WAF, Chế độ bảo trì và Nhật ký kiểm toán.
 - **Quản lý Tour (`/admin/tours`)**: Thêm mới, chỉnh sửa thông tin, giá vé và trạng thái tour.
@@ -171,6 +186,7 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
 ## 4. Hướng Dẫn Đồng Bộ GitHub & Triển Khai Netlify
 
 ### 4.1. Quy Trình Đồng Bộ
+
 1. Toàn bộ mã nguồn đã được commit và push lên repository GitHub chính thức:
    ```
    https://github.com/Anniehatani/deltatravel
@@ -183,9 +199,10 @@ Toàn bộ hệ thống được hỗ trợ chuyển ngữ tức thì bằng nú
    - Xuất bản thư mục: `apps/web/.next`.
 
 ### 4.2. Biến Môi Trường Cần Thiết Trên Netlify (Settings -> Environment variables)
+
 - `NEXT_PUBLIC_API_URL`: URL backend API nếu triển khai máy chủ riêng.
 - `NEXT_TELEMETRY_DISABLED`: `1`.
 
 ---
 
-*Tài liệu được khởi tạo và cập nhật tự động bởi Antigravity Pair Programmer.*
+_Tài liệu được khởi tạo và cập nhật tự động bởi Antigravity Pair Programmer._

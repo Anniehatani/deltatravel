@@ -39,7 +39,6 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
 
-
   const [adults, setAdults] = useState<number>(2);
   const [childrenCount, setChildrenCount] = useState<number>(0);
 
@@ -57,7 +56,9 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
       .then(([tourData, schedulesData]) => {
         setTour(tourData);
         setSchedules(schedulesData.items);
-        const firstOpen = schedulesData.items.find((s) => s.status === 'OPEN' && s.availableSeats > 0);
+        const firstOpen = schedulesData.items.find(
+          (s) => s.status === 'OPEN' && s.availableSeats > 0,
+        );
         if (firstOpen) {
           setSelectedScheduleId(firstOpen.id);
         } else if (schedulesData.items.length > 0) {
@@ -121,9 +122,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
 
   const handleProceedCheckout = () => {
     if (!selectedScheduleId) return;
-    router.push(
-      `/checkout/${selectedScheduleId}?adults=${adults}&children=${childrenCount}`,
-    );
+    router.push(`/checkout/${selectedScheduleId}?adults=${adults}&children=${childrenCount}`);
   };
 
   if (loading) {
@@ -153,10 +152,17 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
             {error || 'Tour này có thể đã kết thúc hoặc không khả dụng.'}
           </p>
           <div className="flex justify-center gap-4">
-            <Button variant="outline" onClick={loadTourData} className="gap-2 border border-black text-black hover:bg-black hover:text-white uppercase font-bold">
+            <Button
+              variant="outline"
+              onClick={loadTourData}
+              className="gap-2 border border-black text-black hover:bg-black hover:text-white uppercase font-bold"
+            >
               <RefreshCcw className="h-4 w-4 text-current" /> Thử lại
             </Button>
-            <Button asChild className="bg-black text-white hover:bg-neutral-800 uppercase font-bold">
+            <Button
+              asChild
+              className="bg-black text-white hover:bg-neutral-800 uppercase font-bold"
+            >
               <Link href="/tours">Xem tất cả tour</Link>
             </Button>
           </div>
@@ -176,10 +182,17 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-24 sm:pt-28 lg:pt-32 pb-16 lg:px-8 bg-white text-black">
       {/* Breadcrumb */}
-      <nav aria-label="Điều hướng phân cấp" className="flex items-center gap-2 text-xs font-bold text-neutral-500 mb-6 uppercase tracking-wider">
-        <Link href="/" className="hover:text-black transition">DELTA TRAVEL</Link>
+      <nav
+        aria-label="Điều hướng phân cấp"
+        className="flex items-center gap-2 text-xs font-bold text-neutral-500 mb-6 uppercase tracking-wider"
+      >
+        <Link href="/" className="hover:text-black transition">
+          DELTA TRAVEL
+        </Link>
         <ChevronRight className="h-3 w-3 text-black" />
-        <Link href="/tours" className="hover:text-black transition">{t('nav_all_tours')}</Link>
+        <Link href="/tours" className="hover:text-black transition">
+          {t('nav_all_tours')}
+        </Link>
         <ChevronRight className="h-3 w-3 text-black" />
         <span className="text-black truncate max-w-xs">{displayTour.title}</span>
       </nav>
@@ -215,7 +228,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
               size="md"
               icon={<Calendar className="h-3.5 w-3.5 text-amber-300" />}
             >
-              {displayTour.durationDays} {t('days')} {Math.max(1, displayTour.durationDays - 1)} {t('nights')}
+              {displayTour.durationDays} {t('days')} {Math.max(1, displayTour.durationDays - 1)}{' '}
+              {t('nights')}
             </LiquidGlassBadge>
             <LiquidGlassBadge
               variant="luxury"
@@ -244,12 +258,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
           <section className="rounded-xl border-2 border-black bg-white p-8">
             <div className="flex items-center justify-between pb-5 border-b border-black/10 mb-6">
               <div>
-                <h2 className="text-xl font-black text-black uppercase">
-                  {t('sched_title')}
-                </h2>
-                <p className="text-xs text-neutral-600 mt-1 font-medium">
-                  {t('sched_subtitle')}
-                </p>
+                <h2 className="text-xl font-black text-black uppercase">{t('sched_title')}</h2>
+                <p className="text-xs text-neutral-600 mt-1 font-medium">{t('sched_subtitle')}</p>
               </div>
               <span className="text-xs font-black uppercase tracking-wider text-black border border-black px-2.5 py-1 rounded">
                 {schedules.length} {lang === 'en' ? 'Departures' : 'Lịch mở bán'}
@@ -260,10 +270,14 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
               <div className="p-8 text-center border border-dashed border-black rounded-xl">
                 <Calendar className="mx-auto h-8 w-8 text-black mb-2" />
                 <p className="text-sm font-bold text-black">
-                  {lang === 'en' ? 'No departures currently open for this tour.' : 'Hiện chưa có lịch khởi hành mở bán cho tour này.'}
+                  {lang === 'en'
+                    ? 'No departures currently open for this tour.'
+                    : 'Hiện chưa có lịch khởi hành mở bán cho tour này.'}
                 </p>
                 <p className="text-xs text-neutral-600 mt-1">
-                  {lang === 'en' ? 'Please choose another tour or return shortly.' : 'Vui lòng chọn tour khác hoặc quay lại sau ít ngày.'}
+                  {lang === 'en'
+                    ? 'Please choose another tour or return shortly.'
+                    : 'Vui lòng chọn tour khác hoặc quay lại sau ít ngày.'}
                 </p>
               </div>
             ) : (
@@ -282,13 +296,15 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                         isSelected
                           ? 'border-2 border-black bg-black text-white shadow-sm'
                           : isAvailable
-                          ? 'border border-black bg-white text-black hover:bg-neutral-50'
-                          : 'border border-neutral-300 bg-neutral-100 opacity-50 cursor-not-allowed text-neutral-400'
+                            ? 'border border-black bg-white text-black hover:bg-neutral-50'
+                            : 'border border-neutral-300 bg-neutral-100 opacity-50 cursor-not-allowed text-neutral-400'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div>
-                          <span className={`text-xs uppercase font-bold ${isSelected ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                          <span
+                            className={`text-xs uppercase font-bold ${isSelected ? 'text-neutral-300' : 'text-neutral-500'}`}
+                          >
                             {t('dep_date')}
                           </span>
                           <p className="text-sm font-black mt-0.5">
@@ -302,17 +318,19 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                         )}
                       </div>
 
-                      <div className={`pt-3 border-t flex items-center justify-between text-xs ${isSelected ? 'border-neutral-700' : 'border-neutral-200'}`}>
+                      <div
+                        className={`pt-3 border-t flex items-center justify-between text-xs ${isSelected ? 'border-neutral-700' : 'border-neutral-200'}`}
+                      >
                         <div>
                           <span className={isSelected ? 'text-neutral-300' : 'text-neutral-600'}>
                             {t('ticket_price')}{' '}
                           </span>
-                          <span className="font-black">
-                            {formatVND(schedule.adultPrice)}
-                          </span>
+                          <span className="font-black">{formatVND(schedule.adultPrice)}</span>
                         </div>
                         <span className="font-black uppercase">
-                          {isAvailable ? `${t('seats_left')} ${schedule.availableSeats} ${t('seats_unit')}` : t('sold_out')}
+                          {isAvailable
+                            ? `${t('seats_left')} ${schedule.availableSeats} ${t('seats_unit')}`
+                            : t('sold_out')}
                         </span>
                       </div>
                     </button>
@@ -329,7 +347,9 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                 <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase text-amber-600 mb-1 tracking-wider">
                   <Compass className="h-4 w-4 text-amber-500" />
                   <span>
-                    {t('detail_itinerary_badge')} • {displayTour.durationDays} {lang === 'en' ? 'DAYS' : 'NGÀY'} {Math.max(1, displayTour.durationDays - 1)} {lang === 'en' ? 'NIGHTS' : 'ĐÊM'}
+                    {t('detail_itinerary_badge')} • {displayTour.durationDays}{' '}
+                    {lang === 'en' ? 'DAYS' : 'NGÀY'} {Math.max(1, displayTour.durationDays - 1)}{' '}
+                    {lang === 'en' ? 'NIGHTS' : 'ĐÊM'}
                   </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-black text-black uppercase tracking-tight">
@@ -365,7 +385,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                   {/* Day activities list */}
                   <ul className="mt-4 space-y-2.5">
                     {item.activities.map((act, actIdx) => (
-                      <li key={actIdx} className="flex items-start gap-2.5 text-xs text-neutral-700 leading-relaxed font-normal">
+                      <li
+                        key={actIdx}
+                        className="flex items-start gap-2.5 text-xs text-neutral-700 leading-relaxed font-normal"
+                      >
                         <CheckCircle2 className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                         <span>{act}</span>
                       </li>
@@ -377,12 +400,14 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                     <div className="mt-4 pt-3 border-t border-neutral-200/80 flex flex-wrap gap-2 text-[11px]">
                       {item.meals && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-white border border-neutral-300 px-3 py-1 font-bold text-neutral-800 shadow-2xs">
-                          <span className="text-amber-600 font-black">{t('detail_cuisine')}</span> {item.meals}
+                          <span className="text-amber-600 font-black">{t('detail_cuisine')}</span>{' '}
+                          {item.meals}
                         </span>
                       )}
                       {item.stay && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-white border border-neutral-300 px-3 py-1 font-bold text-neutral-800 shadow-2xs">
-                          <span className="text-amber-600 font-black">{t('detail_lodging')}</span> {item.stay}
+                          <span className="text-amber-600 font-black">{t('detail_lodging')}</span>{' '}
+                          {item.stay}
                         </span>
                       )}
                     </div>
@@ -423,9 +448,7 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
           <div className="sticky top-20 rounded-xl border-2 border-black bg-white p-6">
             <div className="flex items-center gap-2 pb-4 border-b border-black/10">
               <ShieldCheck className="h-5 w-5 text-black" />
-              <h3 className="text-lg font-black text-black uppercase">
-                {t('quote_title')}
-              </h3>
+              <h3 className="text-lg font-black text-black uppercase">{t('quote_title')}</h3>
             </div>
 
             {selectedSchedule ? (
@@ -459,7 +482,9 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                       >
                         -
                       </button>
-                      <span className="w-5 text-center font-black text-sm text-black">{adults}</span>
+                      <span className="w-5 text-center font-black text-sm text-black">
+                        {adults}
+                      </span>
                       <button
                         type="button"
                         disabled={adults >= 100}
@@ -477,7 +502,8 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                         {t('quote_child')}
                       </span>
                       <span className="text-xs text-neutral-600">
-                        {formatVND(selectedSchedule.childPrice)} {lang === 'en' ? '/ child' : '/ bé'}
+                        {formatVND(selectedSchedule.childPrice)}{' '}
+                        {lang === 'en' ? '/ child' : '/ bé'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2.5">
@@ -489,7 +515,9 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                       >
                         -
                       </button>
-                      <span className="w-5 text-center font-black text-sm text-black">{childrenCount}</span>
+                      <span className="w-5 text-center font-black text-sm text-black">
+                        {childrenCount}
+                      </span>
                       <button
                         type="button"
                         disabled={childrenCount >= 100}
@@ -505,23 +533,31 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                 {/* Price Breakdown */}
                 <div className="rounded-lg border border-black bg-white p-4 space-y-2 text-black">
                   <div className="flex justify-between text-xs font-medium text-black">
-                    <span>{adults} × {lang === 'en' ? 'Adults:' : 'Người lớn:'}</span>
+                    <span>
+                      {adults} × {lang === 'en' ? 'Adults:' : 'Người lớn:'}
+                    </span>
                     <span className="font-bold">
                       {formatVND(adults * (quote?.adultPrice ?? selectedSchedule.adultPrice))}
                     </span>
                   </div>
                   {childrenCount > 0 && (
                     <div className="flex justify-between text-xs font-medium text-black">
-                      <span>{childrenCount} × {lang === 'en' ? 'Children:' : 'Trẻ em:'}</span>
+                      <span>
+                        {childrenCount} × {lang === 'en' ? 'Children:' : 'Trẻ em:'}
+                      </span>
                       <span className="font-bold">
-                        {formatVND(childrenCount * (quote?.childPrice ?? selectedSchedule.childPrice))}
+                        {formatVND(
+                          childrenCount * (quote?.childPrice ?? selectedSchedule.childPrice),
+                        )}
                       </span>
                     </div>
                   )}
 
                   <div className="pt-2 border-t border-black flex items-baseline justify-between">
                     <div>
-                      <span className="text-xs font-black uppercase text-black block">{t('total_estimate')}</span>
+                      <span className="text-xs font-black uppercase text-black block">
+                        {t('total_estimate')}
+                      </span>
                     </div>
                     <span className="text-xl font-black text-black">
                       {quoteLoading
@@ -536,7 +572,10 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                 </div>
 
                 {quoteError && (
-                  <p role="alert" className="text-xs font-bold text-black border border-black p-2 rounded">
+                  <p
+                    role="alert"
+                    className="text-xs font-bold text-black border border-black p-2 rounded"
+                  >
                     {quoteError}
                   </p>
                 )}
@@ -544,7 +583,11 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
                 {/* Action CTA */}
                 <Button
                   onClick={handleProceedCheckout}
-                  disabled={quoteLoading || !quote || selectedSchedule.availableSeats < adults + childrenCount}
+                  disabled={
+                    quoteLoading ||
+                    !quote ||
+                    selectedSchedule.availableSeats < adults + childrenCount
+                  }
                   className="w-full bg-black hover:bg-neutral-800 text-white py-3 rounded text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2"
                 >
                   <span>{t('btn_book_now')}</span>

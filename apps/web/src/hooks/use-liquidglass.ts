@@ -18,9 +18,7 @@ export interface UseLiquidGlassOptions {
  * WebGL canvas injection and heavy screenshot loops are disabled to prevent lag,
  * keeping the website 100% smooth, lightweight, and sharp.
  */
-export function useLiquidGlass({
-  enabled = true,
-}: UseLiquidGlassOptions = {}) {
+export function useLiquidGlass({ enabled = true }: UseLiquidGlassOptions = {}) {
   const instanceRef = useRef<any>(null);
 
   const cleanup = useCallback(() => {}, []);

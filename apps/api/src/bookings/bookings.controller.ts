@@ -60,10 +60,7 @@ export class BookingsController {
   }
   @Delete(':id')
   @HttpCode(200)
-  delete(
-    @Req() req: AppRequest,
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ) {
+  delete(@Req() req: AppRequest, @Param('id', new ParseUUIDPipe()) id: string) {
     return this.bookings.delete(id, req.user!.id);
   }
 }

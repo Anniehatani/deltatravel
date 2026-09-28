@@ -45,9 +45,7 @@ const SEED_BOOKINGS: Booking[] = [
     cancelReason: null,
     tourTitle: 'Sa Pa — Chinh Phục Đỉnh Fansipan & Khám Phá Bản Cát Cát',
     departureAt: new Date(Date.now() + 86400000 * 7).toISOString(),
-    details: [
-      { kind: 'ADULT', quantity: 4, unitPrice: 2850000, lineTotal: 11400000 },
-    ],
+    details: [{ kind: 'ADULT', quantity: 4, unitPrice: 2850000, lineTotal: 11400000 }],
     serverTime: new Date().toISOString(),
   },
   {
@@ -68,9 +66,7 @@ const SEED_BOOKINGS: Booking[] = [
     cancelReason: null,
     tourTitle: 'Đà Nẵng — Hội An — Bà Nà Hills — Cầu Vàng',
     departureAt: new Date(Date.now() + 86400000 * 10).toISOString(),
-    details: [
-      { kind: 'ADULT', quantity: 2, unitPrice: 2250000, lineTotal: 4500000 },
-    ],
+    details: [{ kind: 'ADULT', quantity: 2, unitPrice: 2250000, lineTotal: 4500000 }],
     serverTime: new Date().toISOString(),
   },
   {
@@ -115,9 +111,7 @@ const SEED_BOOKINGS: Booking[] = [
     cancelReason: 'Thay đổi kế hoạch công tác đột xuất.',
     tourTitle: 'Cố Đô Huế — Di Sản Triều Nguyễn & Ca Huế Sông Hương',
     departureAt: new Date(Date.now() + 86400000 * 5).toISOString(),
-    details: [
-      { kind: 'ADULT', quantity: 2, unitPrice: 1950000, lineTotal: 3900000 },
-    ],
+    details: [{ kind: 'ADULT', quantity: 2, unitPrice: 1950000, lineTotal: 3900000 }],
     serverTime: new Date().toISOString(),
   },
 ];

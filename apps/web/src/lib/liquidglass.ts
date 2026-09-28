@@ -212,6 +212,8 @@ export const GLASS_PRESETS = {
 /**
  * Safely initialises LiquidGlass from '@ybouane/liquidglass' on client.
  */
-export async function createLiquidGlassInstance(_options: LiquidGlassOptions): Promise<LiquidGlass | null> {
+export async function createLiquidGlassInstance(
+  _options: LiquidGlassOptions,
+): Promise<LiquidGlass | null> {
   return null;
 }

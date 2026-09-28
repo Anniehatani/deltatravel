@@ -1,7 +1,10 @@
 # Toàn bộ mã nguồn triển khai
+
 Dự án tour-booking, căn cứ phần SRS-TOUR-2026-v1.0 đã cung cấp. Tài liệu này chứa nguyên văn các file mã nguồn, schema, migrations, cấu hình, CI và tests. API Contract đầy đủ nằm trong API_CONTRACT.md và trong ZIP. package-lock.json nằm trong ZIP để cài bằng npm ci.
 Các file .env thật, dependency đã cài và build output không được đưa vào bộ bàn giao. Dùng npm run setup để sinh cấu hình riêng trên máy của bạn.
+
 ## Danh mục
+
 - `.env.example`
 - `.github/workflows/ci.yml`
 - `.github/workflows/publish.yml`
@@ -106,15 +109,15 @@ Các file .env thật, dependency đã cài và build output không được đ�
 
 ## .env.example
 
-````text
+```text
 POSTGRES_USER=tour
 POSTGRES_PASSWORD=tour_local_only
 POSTGRES_DB=tour_booking
-````
+```
 
 ## .github/workflows/ci.yml
 
-````yaml
+```yaml
 name: CI
 on:
   push:
@@ -168,11 +171,11 @@ jobs:
           path: |
             package-lock.json
             docs/VERIFICATION.md
-````
+```
 
 ## .github/workflows/publish.yml
 
-````yaml
+```yaml
 name: Publish API image
 on:
   workflow_dispatch:
@@ -205,11 +208,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-````
+```
 
 ## apps/api/.env.example
 
-````text
+```text
 NODE_ENV=development
 PORT=4000
 DATABASE_URL=postgresql://tour:tour_local_only@localhost:5432/tour_booking?schema=public
@@ -234,11 +237,11 @@ ZALOPAY_APP_ID=
 ZALOPAY_KEY1=
 ZALOPAY_KEY2=
 ZALOPAY_URL=https://sb-openapi.zalopay.vn/v2/create
-````
+```
 
 ## apps/api/Dockerfile
 
-````text
+```text
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
@@ -256,11 +259,11 @@ USER node
 WORKDIR /app/apps/api
 EXPOSE 4000
 CMD ["node", "dist/main.js"]
-````
+```
 
 ## apps/api/package.json
 
-````json
+```json
 {
   "name": "@tour/api",
   "version": "1.0.0",
@@ -310,11 +313,11 @@ CMD ["node", "dist/main.js"]
     "@types/supertest": "^6.0.3"
   }
 }
-````
+```
 
 ## apps/api/prisma/migrations/202609160001_initial/migration.sql
 
-````sql
+```sql
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('CUSTOMER', 'OPERATIONS', 'ADMIN');
 
@@ -522,11 +525,11 @@ ALTER TABLE "CHI_TIET_DAT_TOUR" ADD CONSTRAINT "CHI_TIET_DAT_TOUR_bookingId_fkey
 
 -- AddForeignKey
 ALTER TABLE "THANH_TOAN" ADD CONSTRAINT "THANH_TOAN_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "DON_DAT_TOUR"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-````
+```
 
 ## apps/api/prisma/migrations/202609160002_invariants/migration.sql
 
-````sql
+```sql
 ALTER TABLE "TOUR" ADD CONSTRAINT tour_domestic CHECK ("countryCode" = 'VN');
 ALTER TABLE "TOUR" ADD CONSTRAINT tour_duration CHECK ("durationDays" BETWEEN 1 AND 60);
 ALTER TABLE "LICH_KHOI_HANH" ADD CONSTRAINT valid_inventory CHECK ("totalSeats" BETWEEN 1 AND 10000 AND "reservedSeats" >= 0 AND "reservedSeats" <= "totalSeats");
@@ -537,17 +540,17 @@ ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT exact_hold CHECK ("expiresAt" = "creat
 ALTER TABLE "DON_DAT_TOUR" ADD CONSTRAINT release_matches_cancel CHECK ((status='CANCELLED') = ("seatsReleasedAt" IS NOT NULL));
 ALTER TABLE "CHI_TIET_DAT_TOUR" ADD CONSTRAINT valid_detail CHECK (quantity>0 AND "unitPrice">=0 AND "lineTotal"=quantity*"unitPrice");
 ALTER TABLE "THANH_TOAN" ADD CONSTRAINT valid_payment_amount CHECK (amount BETWEEN 0 AND 9999999999 AND currency='VND');
-````
+```
 
 ## apps/api/prisma/migrations/migration_lock.toml
 
-````toml
+```toml
 provider = "postgresql"
-````
+```
 
 ## apps/api/prisma/schema.prisma
 
-````prisma
+```prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -714,11 +717,11 @@ model AuditLog {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   @@index([entityId,createdAt])
 }
-````
+```
 
 ## apps/api/prisma/seed.ts
 
-````typescript
+```typescript
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../src/auth/password';
@@ -776,11 +779,11 @@ main()
     process.exitCode = 1;
   })
   .finally(() => db.$disconnect());
-````
+```
 
 ## apps/api/src/admin/admin.controller.ts
 
-````typescript
+```typescript
 import {
   Body,
   Controller,
@@ -907,11 +910,11 @@ export class AdminController {
     return this.admin.audit(q);
   }
 }
-````
+```
 
 ## apps/api/src/admin/admin.module.ts
 
-````typescript
+```typescript
 import { Module } from '@nestjs/common';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
@@ -924,11 +927,11 @@ import { BookingsModule } from '../bookings/bookings.module';
   exports: [AdminService],
 })
 export class AdminModule {}
-````
+```
 
 ## apps/api/src/admin/admin.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import {
@@ -1106,11 +1109,11 @@ export class AdminService {
     return { ...q, total, items };
   }
 }
-````
+```
 
 ## apps/api/src/app.module.ts
 
-````typescript
+```typescript
 import { Controller, Get, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -1191,11 +1194,11 @@ class HealthController {
   ],
 })
 export class AppModule {}
-````
+```
 
 ## apps/api/src/assistant/assistant.module.ts
 
-````typescript
+```typescript
 import { Body, Controller, HttpCode, Module, Post, Req } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { z } from 'zod';
@@ -1227,11 +1230,11 @@ export class AssistantController {
   controllers: [AssistantController],
 })
 export class AssistantModule {}
-````
+```
 
 ## apps/api/src/assistant/assistant.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
@@ -1449,11 +1452,11 @@ export class AssistantService {
     return result;
   }
 }
-````
+```
 
 ## apps/api/src/auth/auth.controller.ts
 
-````typescript
+```typescript
 import { Body, Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
@@ -1539,11 +1542,11 @@ export class AuthController {
     return this.auth.me(req.user!.id);
   }
 }
-````
+```
 
 ## apps/api/src/auth/auth.module.ts
 
-````typescript
+```typescript
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -1570,11 +1573,11 @@ import { AuthController } from './auth.controller';
   exports: [JwtModule, AuthService],
 })
 export class AuthModule {}
-````
+```
 
 ## apps/api/src/auth/auth.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes, randomUUID } from 'node:crypto';
@@ -1667,11 +1670,11 @@ export class AuthService {
     return publicUser(await this.db.user.findUniqueOrThrow({ where: { id } }));
   }
 }
-````
+```
 
 ## apps/api/src/auth/guards.ts
 
-````typescript
+```typescript
 import { CanActivate, ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -1722,11 +1725,11 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 }
-````
+```
 
 ## apps/api/src/auth/password.ts
 
-````typescript
+```typescript
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual, createHash } from 'node:crypto';
 import { promisify } from 'node:util';
 const scrypt = promisify(scryptCallback);
@@ -1743,11 +1746,11 @@ export async function checkPassword(password: string, hash: string) {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 export const tokenHash = (token: string) => createHash('sha256').update(token).digest('hex');
-````
+```
 
 ## apps/api/src/bookings/booking-timeout.worker.ts
 
-````typescript
+```typescript
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Interval } from '@nestjs/schedule';
@@ -1815,11 +1818,11 @@ export class TimeoutDispatcher {
     }
   }
 }
-````
+```
 
 ## apps/api/src/bookings/bookings.controller.ts
 
-````typescript
+```typescript
 import {
   Body,
   Controller,
@@ -1880,11 +1883,11 @@ export class BookingsController {
     return this.bookings.cancel(id, req.user!.id, body.reason);
   }
 }
-````
+```
 
 ## apps/api/src/bookings/bookings.module.ts
 
-````typescript
+```typescript
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { BookingsController } from './bookings.controller';
@@ -1897,11 +1900,11 @@ import { BookingTimeoutWorker, TimeoutDispatcher } from './booking-timeout.worke
   exports: [BookingsService],
 })
 export class BookingsModule {}
-````
+```
 
 ## apps/api/src/bookings/bookings.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
@@ -2133,11 +2136,11 @@ export class BookingsService {
     });
   }
 }
-````
+```
 
 ## apps/api/src/bookings/dto.ts
 
-````typescript
+```typescript
 import { Prisma, Payment, Schedule } from '@prisma/client';
 export const bookingInclude = { details: true, schedule: true } satisfies Prisma.BookingInclude;
 export type BookingRow = Prisma.BookingGetPayload<{ include: typeof bookingInclude }>;
@@ -2190,11 +2193,11 @@ export function paymentDto(p: Payment) {
     createdAt: p.createdAt,
   };
 }
-````
+```
 
 ## apps/api/src/bookings/inventory.ts
 
-````typescript
+```typescript
 import { Prisma } from '@prisma/client';
 import { fail } from '../common/errors';
 export type Tx = Prisma.TransactionClient;
@@ -2249,11 +2252,11 @@ export async function expireLocked(tx: Tx, scheduleId: string, now: Date) {
   });
   for (const b of expired) await cancelLocked(tx, b.id, 'HOLD_EXPIRED', now, null);
 }
-````
+```
 
 ## apps/api/src/cache/cache.module.ts
 
-````typescript
+```typescript
 import { Global, Injectable, Module, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
@@ -2290,11 +2293,11 @@ export class CacheService implements OnModuleDestroy {
 @Global()
 @Module({ providers: [CacheService], exports: [CacheService] })
 export class CacheModule {}
-````
+```
 
 ## apps/api/src/common/env.ts
 
-````typescript
+```typescript
 import { z } from 'zod';
 const schema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -2314,20 +2317,20 @@ export function validateEnv(value: Record<string, unknown>) {
     throw new Error('Production requires HTTPS');
   return { ...value, ...e };
 }
-````
+```
 
 ## apps/api/src/common/errors.ts
 
-````typescript
+```typescript
 import { HttpException } from '@nestjs/common';
 export function fail(status: number, code: string, message: string): never {
   throw new HttpException({ code, message }, status);
 }
-````
+```
 
 ## apps/api/src/common/http.ts
 
-````typescript
+```typescript
 import {
   ArgumentsHost,
   Catch,
@@ -2436,11 +2439,11 @@ export class ApiExceptionFilter implements ExceptionFilter {
     });
   }
 }
-````
+```
 
 ## apps/api/src/database/prisma.service.ts
 
-````typescript
+```typescript
 import { Global, Injectable, Module, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient, Prisma } from '@prisma/client';
 @Injectable()
@@ -2470,11 +2473,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 @Global()
 @Module({ providers: [PrismaService], exports: [PrismaService] })
 export class DatabaseModule {}
-````
+```
 
 ## apps/api/src/main.ts
 
-````typescript
+```typescript
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
@@ -2504,11 +2507,11 @@ bootstrap().catch((e) => {
   console.error(e instanceof Error ? e.message : 'Startup failed');
   process.exitCode = 1;
 });
-````
+```
 
 ## apps/api/src/payments/gateways.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHmac, timingSafeEqual } from 'node:crypto';
@@ -2788,11 +2791,11 @@ export class Gateways {
     };
   }
 }
-````
+```
 
 ## apps/api/src/payments/payments.controller.ts
 
-````typescript
+```typescript
 import {
   Body,
   Controller,
@@ -2880,11 +2883,11 @@ export class PaymentsController {
     }
   }
 }
-````
+```
 
 ## apps/api/src/payments/payments.module.ts
 
-````typescript
+```typescript
 import { Module } from '@nestjs/common';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
@@ -2895,11 +2898,11 @@ import { Gateways } from './gateways';
   exports: [PaymentsService],
 })
 export class PaymentsModule {}
-````
+```
 
 ## apps/api/src/payments/payments.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import type { Provider } from '@tour/shared';
@@ -3043,11 +3046,11 @@ export class PaymentsService {
     });
   }
 }
-````
+```
 
 ## apps/api/src/schedules/schedules.controller.ts
 
-````typescript
+```typescript
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { z } from 'zod';
 import { PaginationSchema } from '@tour/shared';
@@ -3068,11 +3071,11 @@ export class SchedulesController {
     return this.schedules.get(id);
   }
 }
-````
+```
 
 ## apps/api/src/schedules/schedules.module.ts
 
-````typescript
+```typescript
 import { Module } from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { SchedulesController } from './schedules.controller';
@@ -3082,11 +3085,11 @@ import { SchedulesController } from './schedules.controller';
   exports: [SchedulesService],
 })
 export class SchedulesModule {}
-````
+```
 
 ## apps/api/src/schedules/schedules.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { lockSchedule, expireLocked, dbNow } from '../bookings/inventory';
@@ -3125,11 +3128,11 @@ export class SchedulesService {
     return { items, total, page, pageSize };
   }
 }
-````
+```
 
 ## apps/api/src/tours/tours.controller.ts
 
-````typescript
+```typescript
 import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { z } from 'zod';
 import { TourQuerySchema } from '@tour/shared';
@@ -3147,21 +3150,21 @@ export class ToursController {
     return this.tours.get(id);
   }
 }
-````
+```
 
 ## apps/api/src/tours/tours.module.ts
 
-````typescript
+```typescript
 import { Module } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { ToursController } from './tours.controller';
 @Module({ providers: [ToursService], controllers: [ToursController], exports: [ToursService] })
 export class ToursModule {}
-````
+```
 
 ## apps/api/src/tours/tours.service.ts
 
-````typescript
+```typescript
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { Prisma } from '@prisma/client';
@@ -3207,11 +3210,11 @@ export class ToursService {
     return tour;
   }
 }
-````
+```
 
 ## apps/api/test/integration/booking.test.ts
 
-````typescript
+```typescript
 import 'reflect-metadata';
 import { beforeAll, afterAll, describe, it, expect } from 'vitest';
 import { randomUUID } from 'node:crypto';
@@ -3513,11 +3516,11 @@ describe('database business invariants', () => {
     await expect(auth.refresh(next.refreshToken)).rejects.toThrow();
   });
 });
-````
+```
 
 ## apps/api/test/integration/runtime.test.ts
 
-````typescript
+```typescript
 import 'reflect-metadata';
 import { describe, it, expect } from 'vitest';
 import { NestFactory } from '@nestjs/core';
@@ -3541,11 +3544,11 @@ describe.runIf(!!process.env.REDIS_URL)('Nest runtime with PostgreSQL and Redis'
     }
   });
 });
-````
+```
 
 ## apps/api/test/unit/assistant.test.ts
 
-````typescript
+```typescript
 import { describe, it, expect, vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 const { AssistantService } = require('../../dist/assistant/assistant.service');
@@ -3602,11 +3605,11 @@ describe('assistant permissions and grounding', () => {
     expect(result.actions[0].href).toBe('/tours');
   });
 });
-````
+```
 
 ## apps/api/test/unit/http.test.ts
 
-````typescript
+```typescript
 import 'reflect-metadata';
 import { beforeAll, afterAll, describe, it, expect, vi } from 'vitest';
 import { Test } from '@nestjs/testing';
@@ -3716,11 +3719,11 @@ describe('HTTP contract and authorization boundaries', () => {
     expect(r.body.error.code).toBe('CSRF_REJECTED');
   });
 });
-````
+```
 
 ## apps/api/test/unit/policy.test.ts
 
-````typescript
+```typescript
 import { describe, it, expect } from 'vitest';
 import {
   CreateBookingSchema,
@@ -3790,11 +3793,11 @@ describe('SRS business rules', () => {
   );
   it('has exactly the five SRS states', () => expect(Object.keys(BOOKING_LABELS)).toHaveLength(5));
 });
-````
+```
 
 ## apps/api/test/unit/security.test.ts
 
-````typescript
+```typescript
 import { describe, it, expect } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -3914,11 +3917,11 @@ describe('password storage', () => {
     expect(await checkPassword('wrong', a)).toBe(false);
   });
 });
-````
+```
 
 ## apps/api/test/unit/timeout.test.ts
 
-````typescript
+```typescript
 import { describe, it, expect, vi } from 'vitest';
 const {
   TimeoutDispatcher,
@@ -3959,11 +3962,11 @@ describe('timeout delivery and recovery', () => {
     expect(service.expire).toHaveBeenCalledWith('id');
   });
 });
-````
+```
 
 ## apps/api/tsconfig.json
 
-````json
+```json
 {
   "extends": "../../packages/config/tsconfig.base.json",
   "compilerOptions": {
@@ -3977,24 +3980,24 @@ describe('timeout delivery and recovery', () => {
   },
   "include": ["src"]
 }
-````
+```
 
 ## apps/api/vitest.config.ts
 
-````typescript
+```typescript
 import { defineConfig } from 'vitest/config';
 export default defineConfig({ test: { environment: 'node', testTimeout: 20000 } });
-````
+```
 
 ## apps/web/.env.example
 
-````text
+```text
 NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
-````
+```
 
 ## apps/web/components.json
 
-````json
+```json
 {
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "new-york",
@@ -4015,22 +4018,22 @@ NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
   },
   "iconLibrary": "lucide"
 }
-````
+```
 
 ## apps/web/next-env.d.ts
 
-````typescript
+```typescript
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
 /// <reference path="./.next/types/routes.d.ts" />
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
-````
+```
 
 ## apps/web/next.config.ts
 
-````typescript
+```typescript
 import type { NextConfig } from 'next';
 const config: NextConfig = {
   transpilePackages: ['@tour/shared'],
@@ -4038,11 +4041,11 @@ const config: NextConfig = {
   output: 'standalone',
 };
 export default config;
-````
+```
 
 ## apps/web/package.json
 
-````json
+```json
 {
   "name": "@tour/web",
   "version": "1.0.0",
@@ -4074,17 +4077,17 @@ export default config;
     "autoprefixer": "^10.4.21"
   }
 }
-````
+```
 
 ## apps/web/postcss.config.cjs
 
-````javascript
+```javascript
 module.exports = { plugins: { tailwindcss: {}, autoprefixer: {} } };
-````
+```
 
 ## apps/web/src/app/(account)/bookings/[id]/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4094,22 +4097,22 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/(account)/bookings/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
     <PageShell title="Đơn của tôi" description="Theo dõi trạng thái đặt tour và thanh toán." />
   );
 }
-````
+```
 
 ## apps/web/src/app/(account)/checkout/[scheduleId]/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4119,20 +4122,20 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/(account)/layout.tsx
 
-````tsx
+```tsx
 import { RequireAuth } from '@/components/require-auth';
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <RequireAuth>{children}</RequireAuth>;
 }
-````
+```
 
 ## apps/web/src/app/(auth)/login/page.tsx
 
-````tsx
+```tsx
 import { AuthForm } from '@/components/auth-form';
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
@@ -4142,11 +4145,11 @@ export default function Page() {
     </PageShell>
   );
 }
-````
+```
 
 ## apps/web/src/app/(auth)/register/page.tsx
 
-````tsx
+```tsx
 import { AuthForm } from '@/components/auth-form';
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
@@ -4156,22 +4159,22 @@ export default function Page() {
     </PageShell>
   );
 }
-````
+```
 
 ## apps/web/src/app/(public)/tours/[id]/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
     <PageShell title="Chi tiết tour" description="Xem hành trình, giá và các lịch khởi hành." />
   );
 }
-````
+```
 
 ## apps/web/src/app/(public)/tours/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4181,11 +4184,11 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/admin/audit-logs/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4195,29 +4198,29 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/admin/bookings/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return <PageShell title="Quản lý đơn" description="Xác nhận, hoàn thành hoặc xử lý hủy đơn." />;
 }
-````
+```
 
 ## apps/web/src/app/admin/layout.tsx
 
-````tsx
+```tsx
 import { RequireAuth } from '@/components/require-auth';
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <RequireAuth roles={['ADMIN', 'OPERATIONS']}>{children}</RequireAuth>;
 }
-````
+```
 
 ## apps/web/src/app/admin/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4227,11 +4230,11 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/admin/payments/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4241,22 +4244,22 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/admin/schedules/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
     <PageShell title="Lịch khởi hành" description="Quản lý ngày đi, giá và sức chứa từng chuyến." />
   );
 }
-````
+```
 
 ## apps/web/src/app/admin/tours/page.tsx
 
-````tsx
+```tsx
 import { PageShell } from '@/components/page-shell';
 export default function Page() {
   return (
@@ -4266,11 +4269,11 @@ export default function Page() {
     />
   );
 }
-````
+```
 
 ## apps/web/src/app/assistant/page.tsx
 
-````tsx
+```tsx
 'use client';
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
@@ -4345,11 +4348,11 @@ export default function Page() {
     </PageShell>
   );
 }
-````
+```
 
 ## apps/web/src/app/error.tsx
 
-````tsx
+```tsx
 'use client';
 export default function ErrorPage({
   reset,
@@ -4366,11 +4369,11 @@ export default function ErrorPage({
     </div>
   );
 }
-````
+```
 
 ## apps/web/src/app/layout.tsx
 
-````tsx
+```tsx
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/providers/auth-provider';
@@ -4394,11 +4397,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-````
+```
 
 ## apps/web/src/app/not-found.tsx
 
-````tsx
+```tsx
 import Link from 'next/link';
 export default function NotFound() {
   return (
@@ -4408,11 +4411,11 @@ export default function NotFound() {
     </div>
   );
 }
-````
+```
 
 ## apps/web/src/app/page.tsx
 
-````tsx
+```tsx
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 export default function Home() {
@@ -4440,11 +4443,11 @@ export default function Home() {
     </section>
   );
 }
-````
+```
 
 ## apps/web/src/app/payments/return/page.tsx
 
-````tsx
+```tsx
 'use client';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -4508,11 +4511,11 @@ export default function Page() {
     </PageShell>
   );
 }
-````
+```
 
 ## apps/web/src/components/auth-form.tsx
 
-````tsx
+```tsx
 'use client';
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
@@ -4585,11 +4588,11 @@ export function AuthForm({ register = false }: { register?: boolean }) {
     </form>
   );
 }
-````
+```
 
 ## apps/web/src/components/nav.tsx
 
-````tsx
+```tsx
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -4629,11 +4632,11 @@ export function Nav() {
     </header>
   );
 }
-````
+```
 
 ## apps/web/src/components/page-shell.tsx
 
-````tsx
+```tsx
 import type { ReactNode } from 'react';
 export function PageShell({
   title,
@@ -4652,11 +4655,11 @@ export function PageShell({
     </section>
   );
 }
-````
+```
 
 ## apps/web/src/components/require-auth.tsx
 
-````tsx
+```tsx
 'use client';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
@@ -4678,11 +4681,11 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
   if (roles && !roles.includes(user.role)) return <p>Bạn không có quyền xem trang này.</p>;
   return <>{children}</>;
 }
-````
+```
 
 ## apps/web/src/components/ui/button.tsx
 
-````tsx
+```tsx
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -4713,11 +4716,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 Button.displayName = 'Button';
-````
+```
 
 ## apps/web/src/hooks/use-availability.ts
 
-````typescript
+```typescript
 'use client';
 import { useEffect, useState } from 'react';
 import type { Schedule } from '@tour/shared';
@@ -4753,11 +4756,11 @@ export function useAvailability(scheduleId?: string) {
   }, [scheduleId]);
   return { data, error };
 }
-````
+```
 
 ## apps/web/src/lib/api.ts
 
-````typescript
+```typescript
 'use client';
 import { z } from 'zod';
 import {
@@ -4957,21 +4960,21 @@ export const assistantApi = {
       retryAuth: !!accessToken,
     }),
 };
-````
+```
 
 ## apps/web/src/lib/utils.ts
 
-````typescript
+```typescript
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-````
+```
 
 ## apps/web/src/providers/auth-provider.tsx
 
-````tsx
+```tsx
 'use client';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { AuthResult, User } from '@tour/shared';
@@ -5018,11 +5021,11 @@ export function useAuth() {
   if (!value) throw new Error('AuthProvider is missing');
   return value;
 }
-````
+```
 
 ## apps/web/tailwind.config.ts
 
-````typescript
+```typescript
 import type { Config } from 'tailwindcss';
 export default {
   content: ['./src/**/*.{ts,tsx}'],
@@ -5038,11 +5041,11 @@ export default {
   },
   plugins: [],
 } satisfies Config;
-````
+```
 
 ## apps/web/tsconfig.json
 
-````json
+```json
 {
   "extends": "../../packages/config/tsconfig.base.json",
   "compilerOptions": {
@@ -5061,11 +5064,11 @@ export default {
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
-````
+```
 
 ## docker-compose.yml
 
-````yaml
+```yaml
 services:
   postgres:
     image: postgres:16-alpine
@@ -5095,19 +5098,16 @@ services:
 volumes:
   postgres_data:
   redis_data:
-````
+```
 
 ## package.json
 
-````json
+```json
 {
   "name": "tour-booking",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "engines": {
     "node": ">=22.14 <25"
   },
@@ -5139,21 +5139,21 @@ volumes:
     "deepmerge-ts": "8.0.2"
   }
 }
-````
+```
 
 ## packages/config/package.json
 
-````json
+```json
 {
   "name": "@tour/config",
   "version": "1.0.0",
   "private": true
 }
-````
+```
 
 ## packages/config/tsconfig.base.json
 
-````json
+```json
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -5166,11 +5166,11 @@ volumes:
     "noFallthroughCasesInSwitch": true
   }
 }
-````
+```
 
 ## packages/shared/package.json
 
-````json
+```json
 {
   "name": "@tour/shared",
   "version": "1.0.0",
@@ -5184,11 +5184,11 @@ volumes:
     "zod": "^3.25.76"
   }
 }
-````
+```
 
 ## packages/shared/src/index.ts
 
-````typescript
+```typescript
 import { z } from 'zod';
 
 export const HOLD_MS = 15 * 60 * 1000;
@@ -5454,11 +5454,11 @@ export function canCustomerCancel(status: BookingStatus, departureAt: Date, now:
     departureAt.getTime() - now.getTime() >= CANCEL_WINDOW_MS
   );
 }
-````
+```
 
 ## packages/shared/tsconfig.json
 
-````json
+```json
 {
   "extends": "../config/tsconfig.base.json",
   "compilerOptions": {
@@ -5469,11 +5469,11 @@ export function canCustomerCancel(status: BookingStatus, departureAt: Date, now:
   },
   "include": ["src"]
 }
-````
+```
 
 ## scripts/contract-manifest.mjs
 
-````javascript
+```javascript
 // The manifest drives the human-readable contract and OpenAPI. Shared Zod owns fields.
 export const endpoints = [
   [
@@ -5767,11 +5767,11 @@ export const endpoints = [
     'Kiểm tra PostgreSQL và Redis; lỗi trả 503.',
   ],
 ];
-````
+```
 
 ## scripts/generate-contract.mjs
 
-````javascript
+```javascript
 import { writeFileSync } from 'node:fs';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
@@ -6136,11 +6136,11 @@ writeFileSync(
 console.log(
   `Generated ${endpoints.length + webhooks.length} operations; every JSON example validated with shared Zod.`,
 );
-````
+```
 
 ## scripts/setup.mjs
 
-````javascript
+```javascript
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
@@ -6164,4 +6164,4 @@ for (const [source, target] of [
 console.log(
   'Đọc SEED_ADMIN_PASSWORD trong apps/api/.env để đăng nhập admin. Không commit các tệp .env.',
 );
-````
+```

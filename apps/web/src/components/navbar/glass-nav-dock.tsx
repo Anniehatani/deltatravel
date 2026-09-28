@@ -44,9 +44,12 @@ export function GlassNavDock({
     return (href: string) => {
       if (pendingHref !== null) return pendingHref === href;
       if (href === '/') return pathname === '/' && !region;
-      if (href === '/tours?region=bac') return (pathname === '/tours' || pathname === '/') && region === 'bac';
-      if (href === '/tours?region=trung') return (pathname === '/tours' || pathname === '/') && region === 'trung';
-      if (href === '/tours?region=nam') return (pathname === '/tours' || pathname === '/') && region === 'nam';
+      if (href === '/tours?region=bac')
+        return (pathname === '/tours' || pathname === '/') && region === 'bac';
+      if (href === '/tours?region=trung')
+        return (pathname === '/tours' || pathname === '/') && region === 'trung';
+      if (href === '/tours?region=nam')
+        return (pathname === '/tours' || pathname === '/') && region === 'nam';
       if (href === '/tours') return pathname === '/tours' && !region;
       if (href === '/bookings') return pathname.startsWith('/bookings');
       if (href === '/assistant') return pathname.startsWith('/assistant');
@@ -177,18 +180,16 @@ export function GlassNavDock({
                 ? active
                   ? 'text-white font-black drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]'
                   : isHovered
-                  ? 'text-white font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]'
-                  : 'text-white/85 hover:text-white font-medium'
+                    ? 'text-white font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]'
+                    : 'text-white/85 hover:text-white font-medium'
                 : active
-                ? 'text-black font-black'
-                : isHovered
-                ? 'text-black font-bold'
-                : 'text-neutral-700 hover:text-black font-semibold'
+                  ? 'text-black font-black'
+                  : isHovered
+                    ? 'text-black font-bold'
+                    : 'text-neutral-700 hover:text-black font-semibold'
             }`}
           >
-            <span className="relative z-10 transition-colors duration-200">
-              {item.label}
-            </span>
+            <span className="relative z-10 transition-colors duration-200">{item.label}</span>
 
             {/* Subtle Glowing Active Indicator Bead */}
             {active && (

@@ -86,9 +86,7 @@ export function GlassUserMenu({
 
         {/* Username Display */}
         <div className="hidden sm:flex flex-col text-left">
-          <span className="text-[12px] font-bold leading-tight tracking-tight">
-            {user.name}
-          </span>
+          <span className="text-[12px] font-bold leading-tight tracking-tight">{user.name}</span>
         </div>
       </button>
 

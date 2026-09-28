@@ -65,7 +65,7 @@ export const TOUR_ITINERARIES: Record<string, ItineraryDay[]> = {
       activities: [
         'Khởi hành đến Sun World Ba Na Hills, trải nghiệm tuyến cáp treo đạt kỷ lục thế giới ngắm toàn cảnh rừng nguyên sinh bạt ngàn.',
         'Sải bước trên Cầu Vàng (Golden Bridge) – kiệt tác kiến trúc uốn lượn được nâng đỡ bởi đôi bàn tay rêu phong giữa biển mây.',
-        'Tham quan Hầm rượu Debay trăm tuổi, Vườn hoa Le Jardin D\'Amour lãng mạn phong cách Pháp.',
+        "Tham quan Hầm rượu Debay trăm tuổi, Vườn hoa Le Jardin D'Amour lãng mạn phong cách Pháp.",
         'Thỏa sức vui chơi không giới hạn tại công viên giải trí trong nhà Fantasy Park đẳng cấp quốc tế.',
         'Chiều: Trở về lại trung tâm Đà Nẵng, tự do dạo phố đêm sông Hàn.',
       ],
@@ -132,11 +132,11 @@ export const TOUR_ITINERARIES: Record<string, ItineraryDay[]> = {
   'sa-pa-chinh-phuc-fansipan-cat-cat': [
     {
       day: 1,
-      title: 'Hà Nội – Sa Pa – Khám Phá Bản Cát Cát Của Người H\'Mông',
+      title: "Hà Nội – Sa Pa – Khám Phá Bản Cát Cát Của Người H'Mông",
       activities: [
         'Xe limousine đón Quý khách khởi hành đi Sa Pa theo cao tốc Nội Bài – Lào Cai ngắm cảnh núi non Tây Bắc.',
         'Đến thị trấn Sa Pa mù sương, dùng bữa trưa đặc sản vùng cao và nhận phòng khách sạn nghỉ ngơi.',
-        'Bách bộ khám phá Bản Cát Cát: tìm hiểu nghề dệt thổ cẩm, rèn bạc truyền thống của người H\'Mông, chụp ảnh bên Thác Tiên Sa.',
+        "Bách bộ khám phá Bản Cát Cát: tìm hiểu nghề dệt thổ cẩm, rèn bạc truyền thống của người H'Mông, chụp ảnh bên Thác Tiên Sa.",
         'Tối: Thưởng thức đặc sản lẩu cá hồi, cá tầm tươi sống Sa Pa. Tự do dạo Chợ đêm Sa Pa và Nhà thờ Đá cổ.',
       ],
       meals: 'Trưa, Tối lẩu cá hồi',
@@ -357,7 +357,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       activities: [
         'Airport greeting by private chauffeur and tour escort, transfer to beachfront luxury hotel.',
         'Explore Son Tra Peninsula, visit Linh Ung Pagoda and admire the 67m Lady Buddha statue overlooking the East Sea.',
-        'Unwind on My Khe Beach – acclaimed as one of the world\'s most glamorous coastlines by Forbes.',
+        "Unwind on My Khe Beach – acclaimed as one of the world's most glamorous coastlines by Forbes.",
         'Evening: Taste Central specialty pork rice paper rolls; witness the iconic Dragon Bridge fire & water show.',
       ],
       meals: 'Lunch, Dinner',
@@ -369,7 +369,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       activities: [
         'Ascend to Sun World Ba Na Hills via world-record cable car over primordial jungle canopies.',
         'Stroll across the world-famous Golden Bridge cupped by giant moss-clad hands above floating clouds.',
-        'Tour the century-old Debay Wine Cellar and romantic French-styled Le Jardin D\'Amour floral gardens.',
+        "Tour the century-old Debay Wine Cellar and romantic French-styled Le Jardin D'Amour floral gardens.",
         'Enjoy unlimited thrills at Fantasy Park indoor recreation kingdom.',
         'Evening: Return to Da Nang city center; leisurely stroll along the Han River esplanade.',
       ],
@@ -406,9 +406,9 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       title: 'Hanoi – Tuan Chau Marina – Ha Long Luxury Cruise – Sung Sot Grotto',
       activities: [
         'Private limousine departure from Hanoi along modern expressway to Tuan Chau Port.',
-        'Board 5-star luxury cruise, enjoy welcome champagne and chef\'s seafood lunch while sailing past thousand karst peaks.',
+        "Board 5-star luxury cruise, enjoy welcome champagne and chef's seafood lunch while sailing past thousand karst peaks.",
         'Explore Sung Sot (Surprise) Cave – the most expansive and awe-inspiring stalactite cavern in Ha Long Bay.',
-        'Sunset: Attend Captain\'s Sundowner Cocktail Party on upper deck with live acoustic music.',
+        "Sunset: Attend Captain's Sundowner Cocktail Party on upper deck with live acoustic music.",
       ],
       meals: 'Lunch, Dinner',
       stay: '5-Star Luxury Ocean Cabin Cruise Ha Long',
@@ -429,11 +429,11 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
   'sa-pa-chinh-phuc-fansipan-cat-cat': [
     {
       day: 1,
-      title: 'Hanoi – Sa Pa Mountain Retreat – Cat Cat H\'Mong Village',
+      title: "Hanoi – Sa Pa Mountain Retreat – Cat Cat H'Mong Village",
       activities: [
         'Limousine ascent along Noi Bai - Lao Cai scenic highway to the misty highland paradise of Sa Pa.',
         'Check-in to mountain-view resort; savor northwestern mountain delicacies including black chicken and wild mushrooms.',
-        'Hike through terraced rice fields to Cat Cat Village; discover H\'mong weaving crafts and Tien Sa Waterfall.',
+        "Hike through terraced rice fields to Cat Cat Village; discover H'mong weaving crafts and Tien Sa Waterfall.",
         'Evening: Discover Sa Pa Stone Church and bustling highland ethnic night market.',
       ],
       meals: 'Lunch, Dinner',
@@ -471,7 +471,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
         'Depart Hanoi for Ninh Binh, the ancient imperial capital of Hoa Lu.',
         'Traditional sampan boat voyage through Trang An karst grottoes and film site of Kong: Skull Island.',
         'Savor crispy scorched rice and mountain goat specialties at a riverside garden restaurant.',
-        'Visit Bai Dinh Sanctuary, home to Southeast Asia\'s greatest bronze statues and 500 Arhat corridors.',
+        "Visit Bai Dinh Sanctuary, home to Southeast Asia's greatest bronze statues and 500 Arhat corridors.",
         'Ascend 500 stone steps to Hang Mua dragon summit for a breathtaking panorama of Tam Coc valley.',
         'Return to Hanoi in late afternoon.',
       ],
@@ -482,7 +482,8 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
   'hue-co-do-dai-noi-ca-hue-song-huong': [
     {
       day: 1,
-      title: 'Hue Arrival – Imperial Citadel Forbidden Purple City – Thien Mu Pagoda – Perfume River Serenades',
+      title:
+        'Hue Arrival – Imperial Citadel Forbidden Purple City – Thien Mu Pagoda – Perfume River Serenades',
       activities: [
         'Welcome greeting in Hue; check-in to heritage riverside hotel.',
         'Step back in time at the Hue Imperial Citadel, Ngo Mon Gate, Thai Hoa Palace, and Forbidden Purple City.',
@@ -535,7 +536,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       title: 'Long Son Pagoda – Dam Market Souvenirs – Departure',
       activities: [
         'Visit Long Son Pagoda to admire the giant white Buddha statue overlooking the coast.',
-        'Purchase dried squids, bird\'s nest tonic, and roasted cashew nuts at Dam Market.',
+        "Purchase dried squids, bird's nest tonic, and roasted cashew nuts at Dam Market.",
         'Transfer to Cam Ranh airport for return flight.',
       ],
       meals: 'Breakfast, Lunch',
@@ -559,7 +560,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       day: 2,
       title: 'Hon Thom Longest Sea Cable Car – 4-Islands Coral Safari',
       activities: [
-        'Ride the world\'s longest 3-wire sea-crossing cable car (7,899m) to Hon Thom Nature Park and Aquatopia.',
+        "Ride the world's longest 3-wire sea-crossing cable car (7,899m) to Hon Thom Nature Park and Aquatopia.",
         'Private canoe island-hopping through An Thoi archipelago: Hon May Rut, Hon Gam Ghi, and Hon Mong Tay.',
         'SUP paddle boarding, flycam aerial photo session, and snorkeling among vibrant coral reefs.',
         'Sunset cocktail at Sunset Sanato admiring artistic beachfront sculptures.',
@@ -612,7 +613,7 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
       activities: [
         'Early departure from Saigon towards the sunlit borders of Tay Ninh province.',
         'Ride the world-record Sun World cable car ascending to the 986m misty summit of Mount Ba Den.',
-        'Venerate Asia\'s tallest bronze Lady Buddha statue (Tay Bo Da Son) amidst spectacular mountain clouds.',
+        "Venerate Asia's tallest bronze Lady Buddha statue (Tay Bo Da Son) amidst spectacular mountain clouds.",
         'Savor an expansive vegetarian and regional buffet at Van Son restaurant.',
         'Afternoon: Visit Tay Ninh Holy See – the world headquarters of Cao Dai religion with magnificent dragon pillars.',
         'Return to Ho Chi Minh City in late afternoon.',
@@ -623,8 +624,15 @@ export const TOUR_ITINERARIES_EN: Record<string, ItineraryDay[]> = {
   ],
 };
 
-export function getTourImage(tour: Tour | { slug?: string; destination?: string; imageUrl?: string }): string {
-  if ('imageUrl' in tour && tour.imageUrl && typeof tour.imageUrl === 'string' && tour.imageUrl.trim().length > 0) {
+export function getTourImage(
+  tour: Tour | { slug?: string; destination?: string; imageUrl?: string },
+): string {
+  if (
+    'imageUrl' in tour &&
+    tour.imageUrl &&
+    typeof tour.imageUrl === 'string' &&
+    tour.imageUrl.trim().length > 0
+  ) {
     return tour.imageUrl.trim();
   }
   if (tour.slug && TOUR_IMAGES[tour.slug]) {
@@ -633,13 +641,18 @@ export function getTourImage(tour: Tour | { slug?: string; destination?: string;
   const slug = (tour.slug || '').toLowerCase();
   const dest = (tour.destination || '').toLowerCase();
 
-  if (slug.includes('long') || dest.includes('quảng ninh') || dest.includes('hạ long')) return '/tour-ha-long.jpg';
-  if (slug.includes('sapa') || slug.includes('fansipan') || dest.includes('lào cai')) return '/tour-sapa.jpg';
-  if (slug.includes('ninh-binh') || slug.includes('trang-an') || dest.includes('ninh bình')) return '/tour-ninh-binh.jpg';
-  if (slug.includes('da-nang') || slug.includes('hoi-an') || dest.includes('đà nẵng')) return '/tour-da-nang.jpg';
+  if (slug.includes('long') || dest.includes('quảng ninh') || dest.includes('hạ long'))
+    return '/tour-ha-long.jpg';
+  if (slug.includes('sapa') || slug.includes('fansipan') || dest.includes('lào cai'))
+    return '/tour-sapa.jpg';
+  if (slug.includes('ninh-binh') || slug.includes('trang-an') || dest.includes('ninh bình'))
+    return '/tour-ninh-binh.jpg';
+  if (slug.includes('da-nang') || slug.includes('hoi-an') || dest.includes('đà nẵng'))
+    return '/tour-da-nang.jpg';
   if (slug.includes('hue') || dest.includes('huế')) return '/tour-hue.jpg';
   if (slug.includes('nha-trang') || dest.includes('khánh hòa')) return '/tour-nha-trang.jpg';
-  if (slug.includes('phu-quoc') || dest.includes('kiên giang') || dest.includes('phú quốc')) return '/tour-phu-quoc.jpg';
+  if (slug.includes('phu-quoc') || dest.includes('kiên giang') || dest.includes('phú quốc'))
+    return '/tour-phu-quoc.jpg';
   if (slug.includes('can-tho') || dest.includes('cần thơ')) return '/tour-can-tho.jpg';
   if (slug.includes('tay-ninh') || dest.includes('tây ninh')) return '/tour-tay-ninh.jpg';
 
@@ -660,7 +673,7 @@ export function getTourLuxuryTag(tour: Tour | { slug?: string }, lang: 'vi' | 'e
 
 export function getTourItinerary(
   tour: Tour | { slug?: string; durationDays?: number; destination?: string },
-  lang: 'vi' | 'en' = 'vi'
+  lang: 'vi' | 'en' = 'vi',
 ): ItineraryDay[] {
   const dict = lang === 'en' ? TOUR_ITINERARIES_EN : TOUR_ITINERARIES;
   if (tour.slug && dict[tour.slug]) {
@@ -684,56 +697,74 @@ export function getTourItinerary(
     if (i === 1) {
       defaultList.push({
         day: 1,
-        title: lang === 'en' ? `Arrival – Exploring ${dest}` : `Đón khách – Khám phá danh lam thắng cảnh ${dest}`,
-        activities: lang === 'en' ? [
-          `Chauffeur and tour guide welcome you at meeting point, transfer to ${dest}.`,
-          `Check in to 4-5 star luxury hotel, enjoy regional gourmet lunch.`,
-          `Afternoon: Embark on scenic exploration of famous landmarks and landscapes.`,
-          `Evening: Taste local culinary specialties, evening leisure walk.`,
-        ] : [
-          `Xe và Hướng dẫn viên đón Quý khách tại điểm hẹn, khởi hành đến ${dest}.`,
-          `Nhận phòng khách sạn tiêu chuẩn 4-5 sao, thưởng thức bữa trưa đặc sản vùng miền.`,
-          `Chiều: Bắt đầu hành trình tham quan các địa danh nổi tiếng và chiêm ngưỡng cảnh sắc đặc trưng.`,
-          `Tối: Thưởng thức ẩm thực địa phương, tự do dạo phố đêm và khám phá văn hóa bản địa.`,
-        ],
+        title:
+          lang === 'en'
+            ? `Arrival – Exploring ${dest}`
+            : `Đón khách – Khám phá danh lam thắng cảnh ${dest}`,
+        activities:
+          lang === 'en'
+            ? [
+                `Chauffeur and tour guide welcome you at meeting point, transfer to ${dest}.`,
+                `Check in to 4-5 star luxury hotel, enjoy regional gourmet lunch.`,
+                `Afternoon: Embark on scenic exploration of famous landmarks and landscapes.`,
+                `Evening: Taste local culinary specialties, evening leisure walk.`,
+              ]
+            : [
+                `Xe và Hướng dẫn viên đón Quý khách tại điểm hẹn, khởi hành đến ${dest}.`,
+                `Nhận phòng khách sạn tiêu chuẩn 4-5 sao, thưởng thức bữa trưa đặc sản vùng miền.`,
+                `Chiều: Bắt đầu hành trình tham quan các địa danh nổi tiếng và chiêm ngưỡng cảnh sắc đặc trưng.`,
+                `Tối: Thưởng thức ẩm thực địa phương, tự do dạo phố đêm và khám phá văn hóa bản địa.`,
+              ],
         meals: lang === 'en' ? 'Lunch, Dinner' : 'Trưa, Tối',
         stay: lang === 'en' ? `4-5 Star Luxury Hotel ${dest}` : `Khách sạn 4-5 sao ${dest}`,
       });
     } else if (i === days) {
       defaultList.push({
         day: i,
-        title: lang === 'en' ? `Cultural Shopping – Farewell` : `Mua sắm đặc sản – Trải nghiệm văn hóa – Tiễn khách`,
-        activities: lang === 'en' ? [
-          `Buffet breakfast at hotel, unwind with picturesque sunrise views.`,
-          `Visit local craft village or traditional market for artisanal gifts and delicacies.`,
-          `Hotel check-out, transfer back to original departure hub.`,
-          `Concluding a memorable vacation with heartfelt appreciation.`,
-        ] : [
-          `Dùng bữa sáng tại khách sạn, thư giãn và ngắm bình minh tuyệt đẹp.`,
-          `Ghé thăm chợ truyền thống hoặc làng nghề thủ công mua quà lưu niệm và đặc sản tươi ngon.`,
-          `Làm thủ tục trả phòng, xe đưa Quý khách về lại điểm xuất phát ban đầu.`,
-          `Kết thúc chuyến hành trình trọn vẹn, cảm ơn và hẹn gặp lại Quý khách.`,
-        ],
+        title:
+          lang === 'en'
+            ? `Cultural Shopping – Farewell`
+            : `Mua sắm đặc sản – Trải nghiệm văn hóa – Tiễn khách`,
+        activities:
+          lang === 'en'
+            ? [
+                `Buffet breakfast at hotel, unwind with picturesque sunrise views.`,
+                `Visit local craft village or traditional market for artisanal gifts and delicacies.`,
+                `Hotel check-out, transfer back to original departure hub.`,
+                `Concluding a memorable vacation with heartfelt appreciation.`,
+              ]
+            : [
+                `Dùng bữa sáng tại khách sạn, thư giãn và ngắm bình minh tuyệt đẹp.`,
+                `Ghé thăm chợ truyền thống hoặc làng nghề thủ công mua quà lưu niệm và đặc sản tươi ngon.`,
+                `Làm thủ tục trả phòng, xe đưa Quý khách về lại điểm xuất phát ban đầu.`,
+                `Kết thúc chuyến hành trình trọn vẹn, cảm ơn và hẹn gặp lại Quý khách.`,
+              ],
         meals: lang === 'en' ? 'Breakfast, Lunch' : 'Sáng, Trưa',
         stay: lang === 'en' ? 'Tour concludes' : 'Kết thúc chuyến hành trình',
       });
     } else {
       defaultList.push({
         day: i,
-        title: lang === 'en' ? `Wonder Odyssey – Day ${i} Experience` : `Hành trình kỳ quan – Trải nghiệm độc bản ngày thứ ${i}`,
-        activities: lang === 'en' ? [
-          `International buffet breakfast at hotel dining room.`,
-          `Discover premier natural wonders and cultural historic sites in ${dest}.`,
-          `Eco-resort dining featuring exquisite seasonal dishes.`,
-          `Afternoon: Outdoor leisure activities (boating, photography, sightseeing).`,
-          `Evening: Festive group dinner, personal relaxation time.`,
-        ] : [
-          `Ăn sáng buffet phong phú tại nhà hàng khách sạn.`,
-          `Khởi hành tham quan các kỳ quan thiên nhiên và di tích lịch sử hàng đầu tại ${dest}.`,
-          `Thưởng thức bữa trưa tại nhà hàng sinh thái với các món ngon tuyển chọn.`,
-          `Chiều: Tham gia các hoạt động ngoài trời độc đáo (chèo thuyền, ngắm cảnh, chụp ảnh kỷ niệm).`,
-          `Tối: Bữa tối ấm cúng cùng đoàn, tự do thư giãn nghỉ ngơi.`,
-        ],
+        title:
+          lang === 'en'
+            ? `Wonder Odyssey – Day ${i} Experience`
+            : `Hành trình kỳ quan – Trải nghiệm độc bản ngày thứ ${i}`,
+        activities:
+          lang === 'en'
+            ? [
+                `International buffet breakfast at hotel dining room.`,
+                `Discover premier natural wonders and cultural historic sites in ${dest}.`,
+                `Eco-resort dining featuring exquisite seasonal dishes.`,
+                `Afternoon: Outdoor leisure activities (boating, photography, sightseeing).`,
+                `Evening: Festive group dinner, personal relaxation time.`,
+              ]
+            : [
+                `Ăn sáng buffet phong phú tại nhà hàng khách sạn.`,
+                `Khởi hành tham quan các kỳ quan thiên nhiên và di tích lịch sử hàng đầu tại ${dest}.`,
+                `Thưởng thức bữa trưa tại nhà hàng sinh thái với các món ngon tuyển chọn.`,
+                `Chiều: Tham gia các hoạt động ngoài trời độc đáo (chèo thuyền, ngắm cảnh, chụp ảnh kỷ niệm).`,
+                `Tối: Bữa tối ấm cúng cùng đoàn, tự do thư giãn nghỉ ngơi.`,
+              ],
         meals: lang === 'en' ? 'Breakfast, Lunch, Dinner' : 'Sáng, Trưa, Tối',
         stay: lang === 'en' ? `4-5 Star Luxury Hotel ${dest}` : `Khách sạn 4-5 sao ${dest}`,
       });

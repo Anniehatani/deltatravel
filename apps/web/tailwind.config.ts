@@ -30,11 +30,11 @@ export default {
         },
       },
       boxShadow: {
-        'luxury': '0 10px 35px -5px rgba(28, 25, 23, 0.05), 0 4px 12px -2px rgba(28, 25, 23, 0.03)',
-        'luxury-hover': '0 20px 45px -10px rgba(184, 137, 57, 0.12), 0 8px 20px -4px rgba(28, 25, 23, 0.04)',
+        luxury: '0 10px 35px -5px rgba(28, 25, 23, 0.05), 0 4px 12px -2px rgba(28, 25, 23, 0.03)',
+        'luxury-hover':
+          '0 20px 45px -10px rgba(184, 137, 57, 0.12), 0 8px 20px -4px rgba(28, 25, 23, 0.04)',
       },
     },
   },
   plugins: [],
 } satisfies Config;
-
