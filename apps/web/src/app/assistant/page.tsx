@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import type { AssistantResult } from '@tour/shared';
 import { assistantApi } from '@/lib/api';
@@ -29,7 +29,8 @@ type MessageItem = {
 export default function AssistantPage() {
   const { user } = useAuth();
   const { t, lang } = useLanguage();
-  const [userAvatar, setUserAvatar] = useState<string>('');
+
+  const userAvatar = user?.avatarUrl || '';
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [busy, setBusy] = useState(false);
@@ -42,20 +43,6 @@ export default function AssistantPage() {
     t('asst_q4'),
   ];
 
-  // Sync avatar in real time with AccountModal and Navbar
-  useEffect(() => {
-    const updateAvatar = () => {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('tour_avatar');
-        const emailKey = user?.email?.toLowerCase().trim();
-        const stored = (emailKey && localStorage.getItem(`tour_avatar_${emailKey}`)) || '';
-        setUserAvatar(stored);
-      }
-    };
-    updateAvatar();
-    window.addEventListener('tour_avatar_updated', updateAvatar);
-    return () => window.removeEventListener('tour_avatar_updated', updateAvatar);
-  }, [user]);
 
   const sendQuery = async (queryText: string) => {
     if (!queryText.trim() || busy) return;
