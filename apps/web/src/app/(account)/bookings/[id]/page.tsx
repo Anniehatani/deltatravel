@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { bookingApi, paymentApi } from '@/lib/api';
 import type { Booking, Provider } from '@tour/shared';
 import { BOOKING_LABELS } from '@tour/shared';
@@ -28,7 +27,6 @@ import {
   Sparkles,
   Wallet,
   Coins,
-  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '@/providers/language-provider';
 
@@ -45,7 +43,6 @@ interface PaymentOption {
 export default function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const bookingId = resolvedParams.id;
-  const router = useRouter();
   const { t, lang } = useLanguage();
 
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -110,10 +107,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
 
-  // Delete booking modal
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchBooking = () => {
     setLoading(true);
@@ -167,32 +160,22 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     setPaying(true);
     setPaymentError(null);
 
-    // Direct Payment Flow
+    // Direct payment creates a real CASH payment on the backend.
     if (selectedMethod === 'DIRECT') {
       try {
-        const updated: Booking = {
-          ...booking,
-          status: 'CONFIRMED',
-          paidAt: new Date().toISOString(),
-        };
-
-        if (typeof window !== 'undefined') {
-          try {
-            const items: Booking[] = JSON.parse(localStorage.getItem('tour_local_bookings') || '[]');
-            const idx = items.findIndex((b) => b.id === booking.id);
-            if (idx !== -1) {
-              items[idx] = updated;
-            } else {
-              items.push(updated);
-            }
-            localStorage.setItem('tour_local_bookings', JSON.stringify(items));
-          } catch {}
-        }
-
+        await paymentApi.create({
+          bookingId: booking.id,
+          provider: 'CASH',
+        });
+        const updated = await bookingApi.get(booking.id);
         setBooking(updated);
         setDirectPaymentSuccess(true);
       } catch (err) {
-        setPaymentError('Không thể xác nhận thanh toán trực tiếp. Vui lòng thử lại.');
+        setPaymentError(
+          err instanceof Error
+            ? err.message
+            : 'Không thể tạo yêu cầu thanh toán tiền mặt. Vui lòng thử lại.',
+        );
       } finally {
         setPaying(false);
       }
@@ -245,18 +228,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleDeleteBooking = async () => {
-    if (!booking) return;
-    setDeleting(true);
-    setDeleteError(null);
-    try {
-      await bookingApi.delete(booking.id);
-      router.push('/bookings');
-    } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Không thể xóa đơn.');
-      setDeleting(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -296,9 +267,10 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
   const isPending = booking.status === 'PENDING_PAYMENT';
   const isPaid = booking.status === 'PAID';
+  const isAwaitingCash = booking.status === 'AWAITING_CASH';
   const isConfirmed = booking.status === 'CONFIRMED';
   const isCancelled = booking.status === 'CANCELLED';
-  const canCancel = !isCancelled && booking.status !== 'COMPLETED';
+  const canCancel = ['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'].includes(booking.status);
 
   const statusKeyMap: Record<string, string> = {
     PENDING_PAYMENT: 'bk_status_pending_label',
@@ -331,17 +303,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
             >
               <XCircle className="h-3.5 w-3.5" />
               <span>{t('bk_btn_cancel')}</span>
-            </Button>
-          )}
-
-          {isCancelled && (
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteModal(true)}
-              className="text-red-700 border-red-300 bg-red-50 hover:bg-red-100 text-xs font-bold gap-1.5 shadow-sm"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>{t('bk_btn_delete')}</span>
             </Button>
           )}
 
