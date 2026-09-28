@@ -174,7 +174,7 @@ export const endpoints = [
     'CancelSchema',
     'BookingSchema',
     200,
-    'Chỉ PENDING_PAYMENT hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.',
+    'Chỉ PENDING_PAYMENT, AWAITING_CASH hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.',
   ],
   [
     'POST',

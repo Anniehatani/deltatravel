@@ -4,7 +4,7 @@ Phạm vi nguồn: chỉ phần SRS trong lời yêu cầu. Chưa có file SRS �
 
 | Vấn đề                                                                           | Hành vi đã cài                                                                                                        | Căn cứ / việc cần xác nhận                                                                                                       |
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Sơ đồ nói mọi trạng thái có thể hủy, nhưng điều kiện hủy giới hạn hai trạng thái | Khách chỉ PENDING_PAYMENT/PAID và >=72h; SYSTEM hủy hold hết hạn; ADMIN/OPERATIONS hủy mọi trạng thái với lý do/audit | Cách giải nghĩa để giữ cả hai đoạn SRS. Leader xác nhận quyền override, đặc biệt COMPLETED, với giảng viên                       |
+| Sơ đồ nói mọi trạng thái có thể hủy, nhưng điều kiện hủy giới hạn trạng thái khách | Khách chỉ PENDING_PAYMENT/AWAITING_CASH/PAID và >=72h; SYSTEM hủy hold hết hạn; ADMIN/OPERATIONS hủy mọi trạng thái với lý do/audit | Cách giải nghĩa để giữ cả hai đoạn SRS. Leader xác nhận quyền override, đặc biệt COMPLETED, với giảng viên                       |
 | 15 phút “đúng”                                                                   | Deadline DB đúng 900000ms, từ chối payment tại/sau deadline; job nền có thể chạy trễ, sweep 5s và reclaim khi đọc/ghi | Không hứa CPU sẽ thực thi chính xác tới millisecond lúc server/Redis ngừng                                                       |
 | Webhook đến sau deadline                                                         | Không khôi phục đơn, ghi REFUND_REQUIRED                                                                              | Dùng thời gian xử lý DB sau khóa. Nếu muốn xét thời điểm thanh toán tại cổng phải thiết kế giữ chỗ/đối soát khác và review riêng |
 | Hoàn chỗ                                                                         | Mỗi người lớn/trẻ em chiếm 1 chỗ; mọi lần hủy hợp lệ trả chỗ đúng một lần                                             | Đúng SRS, giữ trong một transaction                                                                                              |
@@ -12,6 +12,7 @@ Phạm vi nguồn: chỉ phần SRS trong lời yêu cầu. Chưa có file SRS �
 | Giá VND                                                                          | Chỉ nhận giá nguyên VND, BigInt khi nhân/cộng                                                                         | Không có thuế/phí/discount trong trích đoạn nên không tự thêm                                                                    |
 | Khởi hành gần                                                                    | Không tạo hold nếu chỉ còn <=15 phút tới giờ đi                                                                       | Quy tắc kỹ thuật để không giữ chỗ vượt giờ đi; cần đối chiếu nếu SRS có last-minute booking                                      |
 | Thay ngày lịch                                                                   | Không hỗ trợ thay departureAt trên PATCH                                                                              | Tránh thay ngày khiến điều kiện 72h của đơn cũ biến động; cần luồng đổi chuyến riêng                                             |
+| CASH                                                                             | Chọn CASH chuyển booking sang AWAITING_CASH; chỉ receipt do vận hành ghi nhận mới chuyển PAID. cashDueAt dùng CASH_HOLD_MINUTES nhưng không vượt quá 15 phút trước giờ đi | Không đồng nhất “chọn tiền mặt” với “đã thu tiền” |
 | Payment retries                                                                  | Một payment/provider cố định cho một booking, stable reference khi retry tạo checkout                                 | Chưa có PaymentAttempt đa cổng. Nếu gateway tạo được mà response bị mất, cần đối soát trước khi phát hành giao dịch khác         |
 | Hoàn tiền                                                                        | Đánh dấu cần hoàn; admin nhập bằng chứng sau khi hoàn thủ công ở merchant portal                                      | SRS chưa quy định phí và công thức hoàn; không tuyên bố tự động refund                                                           |
 | Chi tiết đặt tour                                                                | Dòng người lớn/trẻ em và snapshot giá, chưa danh sách họ tên từng người                                               | Chỉ thêm passenger entity nếu toàn văn SRS yêu cầu                                                                               |
@@ -25,14 +26,17 @@ Phạm vi nguồn: chỉ phần SRS trong lời yêu cầu. Chưa có file SRS �
 ```mermaid
 stateDiagram-v2
   [*] --> PENDING_PAYMENT
-  PENDING_PAYMENT --> PAID: verified payment or zero amount
+  PENDING_PAYMENT --> PAID: verified online payment or zero amount
+  PENDING_PAYMENT --> AWAITING_CASH: customer selects CASH
+  AWAITING_CASH --> PAID: operations records cash receipt
   PAID --> CONFIRMED: operations
   CONFIRMED --> COMPLETED: operations
   PENDING_PAYMENT --> CANCELLED: expiry or allowed cancellation
+  AWAITING_CASH --> CANCELLED: cash due expiry or allowed cancellation
   PAID --> CANCELLED: allowed cancellation
   CONFIRMED --> CANCELLED: operations override
   COMPLETED --> CANCELLED: operations override
   CANCELLED --> [*]
 ```
 
-Một webhook thất bại chỉ đổi Payment, không tự hủy Booking ngay; hold vẫn hết sau 15 phút. Booking đã PAID không hết hạn bởi job cũ. Hủy tour bằng soft-delete không ngầm hủy các đơn hiện có, vận hành phải xử lý từng đơn có audit.
+Một webhook thất bại chỉ đổi Payment, không tự hủy Booking ngay; hold online vẫn hết theo expiresAt. Booking AWAITING_CASH dùng cashDueAt riêng. Booking đã PAID không hết hạn bởi job cũ. Hủy tour bằng soft-delete không ngầm hủy các đơn hiện có, vận hành phải xử lý từng đơn có audit.
