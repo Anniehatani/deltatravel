@@ -171,24 +171,65 @@ const cancelled = await request('/bookings/' + booking.id + '/cancel', {
 if (cancelled.status !== 'CANCELLED') throw new Error('Booking cleanup did not cancel booking');
 pass('booking cleanup', cancelled.status);
 
-const replay = await request('/bookings', {
+const quote = await request('/bookings/quote', {
   method: 'POST',
   token,
-  extraHeaders: { 'Idempotency-Key': randomUUID() },
   body: {
     scheduleId: chosen.schedule.id,
     adults: 1,
     children: 0,
-    contactName: name,
-    contactEmail: email,
-    contactPhone: '0901234567',
   },
 });
+if (quote.totalAmount !== chosen.schedule.adultPrice) {
+  throw new Error(
+    `Quote total mismatch: expected ${chosen.schedule.adultPrice}, got ${quote.totalAmount}`,
+  );
+}
+pass('manual booking quote', String(quote.totalAmount));
+
+const directIdempotencyKey = randomUUID();
+const directPayload = {
+  scheduleId: chosen.schedule.id,
+  adults: 1,
+  children: 0,
+  contactName: name,
+  contactEmail: email,
+  contactPhone: '0901234567',
+};
+const replay = await request('/bookings', {
+  method: 'POST',
+  token,
+  extraHeaders: { 'Idempotency-Key': directIdempotencyKey },
+  body: directPayload,
+});
+const idempotentReplay = await request('/bookings', {
+  method: 'POST',
+  token,
+  extraHeaders: { 'Idempotency-Key': directIdempotencyKey },
+  body: directPayload,
+});
+if (idempotentReplay.id !== replay.id) {
+  throw new Error('Booking idempotency replay created a different booking');
+}
+pass('manual booking idempotency', replay.id);
+
+const directPayment = await request('/payments', {
+  method: 'POST',
+  token,
+  body: { bookingId: replay.id, provider: 'CASH' },
+});
+if (directPayment.provider !== 'CASH') throw new Error('Manual booking CASH payment was not created');
+const directBooking = await request('/bookings/' + replay.id, { token });
+if (directBooking.status !== 'AWAITING_CASH') {
+  throw new Error(`Manual booking expected AWAITING_CASH, got ${directBooking.status}`);
+}
+pass('manual booking + CASH payment', replay.id);
+
 await request('/bookings/' + replay.id + '/cancel', {
   method: 'POST',
   token,
   body: { reason: 'Automated staging direct-booking cleanup' },
 });
-pass('direct booking path + cleanup', replay.id);
+pass('direct booking cleanup', replay.id);
 
 console.log('\nSTAGING_MUTATION_E2E_PASS');
