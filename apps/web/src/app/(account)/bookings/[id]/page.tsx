@@ -267,7 +267,6 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
 
   const isPending = booking.status === 'PENDING_PAYMENT';
   const isPaid = booking.status === 'PAID';
-  const isAwaitingCash = booking.status === 'AWAITING_CASH';
   const isConfirmed = booking.status === 'CONFIRMED';
   const isCancelled = booking.status === 'CANCELLED';
   const canCancel = ['PENDING_PAYMENT', 'AWAITING_CASH', 'PAID'].includes(booking.status);
@@ -279,7 +278,9 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
     COMPLETED: 'bk_status_completed_label',
     CANCELLED: 'bk_status_cancelled_label',
   };
-  const statusLabel = statusKeyMap[booking.status] ? t(statusKeyMap[booking.status]) : booking.status;
+  const statusLabel = statusKeyMap[booking.status]
+    ? t(statusKeyMap[booking.status])
+    : BOOKING_LABELS[booking.status] || booking.status;
 
   const formatCountdown = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
