@@ -27,12 +27,12 @@ jobs:
             apps/web/src/components/account-modal.tsx \
             apps/web/src/components/nav.tsx \
             apps/web/src/app/assistant/page.tsx \
+            apps/web/src/app/admin/system/page.tsx \
             'apps/web/src/app/(account)/bookings/page.tsx' \
             'apps/web/src/app/(account)/bookings/[id]/page.tsx' \
             apps/web/src/app/admin/bookings/page.tsx \
             'apps/web/src/app/(public)/tours/page.tsx' \
-            packages/shared/src/index.ts \
-            netlify.toml
+            packages/shared/src/index.ts
       - name: Commit formatting
         run: |
           if git diff --quiet; then
