@@ -138,6 +138,14 @@ export default function AdminPaymentsPage() {
             Thử lại
           </Button>
         </div>
+      ) : payments.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-12 text-center">
+          <CreditCard className="mx-auto mb-3 h-10 w-10 text-stone-400" />
+          <h3 className="font-bold text-stone-900">Chưa có giao dịch thanh toán</h3>
+          <p className="mt-1 text-xs text-stone-500">
+            Payment record sẽ xuất hiện tại đây khi khách chọn một phương thức thanh toán.
+          </p>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-2xl border border-stone-200/80 bg-white shadow-luxury">
           <table className="w-full text-left text-xs text-stone-600">

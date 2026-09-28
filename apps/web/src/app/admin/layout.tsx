@@ -37,9 +37,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <RequireAuth roles={['ADMIN', 'OPERATIONS']}>
-      <div className="flex min-h-screen bg-stone-100 text-stone-900">
+      <div className="flex min-h-screen flex-col bg-stone-100 text-stone-900 md:flex-row">
         {/* ─── LEFT SIDEBAR: Admin Operations ─── */}
-        <aside className="w-64 lg:w-72 shrink-0 bg-neutral-950 text-white border-r border-neutral-800 flex flex-col justify-between sticky top-0 h-screen overflow-y-auto select-none z-30">
+        <aside className="relative z-30 flex h-auto w-full shrink-0 select-none flex-col justify-between border-b border-neutral-800 bg-neutral-950 text-white md:sticky md:top-0 md:h-screen md:w-64 md:overflow-y-auto md:border-b-0 md:border-r lg:w-72">
           <div>
             {/* Brand Logo & Commercial Operations Banner */}
             <div className="p-5 border-b border-neutral-800/80">
@@ -81,8 +81,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Navigation Tabs (Vertical on the LEFT) */}
-            <nav className="p-3 space-y-1" aria-label="Menu quản trị bên trái">
-              <div className="px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
+            <nav
+              className="grid grid-cols-2 gap-1 p-3 md:block md:space-y-1"
+              aria-label="Menu quản trị"
+            >
+              <div className="col-span-2 px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
                 Menu Quản Trị Hệ Thống
               </div>
               {ADMIN_NAV_LINKS.filter((link) => !link.adminOnly || user?.role === 'ADMIN').map((link) => {
@@ -147,7 +150,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </aside>
 
         {/* ─── RIGHT MAIN PANE: Page Content Display ─── */}
-        <main className="flex-1 min-h-screen overflow-y-auto bg-stone-50/70 p-6 lg:p-10">
+        <main className="min-h-screen flex-1 overflow-y-auto bg-stone-50/70 p-4 sm:p-6 lg:p-10">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>
