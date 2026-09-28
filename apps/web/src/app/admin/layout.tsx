@@ -22,12 +22,12 @@ import {
 } from 'lucide-react';
 
 const ADMIN_NAV_LINKS = [
-  { href: '/admin/tours', label: 'Quản lý Tour', icon: Compass, badge: 'CHÍNH' },
-  { href: '/admin/schedules', label: 'Lịch khởi hành & Slot', icon: Calendar },
-  { href: '/admin/bookings', label: 'Quản lý Đơn & Sao kê', icon: Ticket },
-  { href: '/admin/payments', label: 'Thanh toán & Hoàn tiền', icon: CreditCard },
-  { href: '/admin/system', label: 'Cấu hình AI & Hệ thống', icon: Cpu },
-  { href: '/admin/audit-logs', label: 'Nhật ký kiểm toán', icon: FileText },
+  { href: '/admin/tours', label: 'Quản lý Tour', icon: Compass, badge: 'CHÍNH', adminOnly: false },
+  { href: '/admin/schedules', label: 'Lịch khởi hành & Slot', icon: Calendar, adminOnly: false },
+  { href: '/admin/bookings', label: 'Quản lý Đơn & Sao kê', icon: Ticket, adminOnly: false },
+  { href: '/admin/payments', label: 'Thanh toán & Hoàn tiền', icon: CreditCard, adminOnly: false },
+  { href: '/admin/system', label: 'AI & trạng thái hệ thống', icon: Cpu, adminOnly: false },
+  { href: '/admin/audit-logs', label: 'Nhật ký kiểm toán', icon: FileText, adminOnly: true },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -85,7 +85,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="px-3 py-2 text-[10px] font-black uppercase tracking-wider text-neutral-500">
                 Menu Quản Trị Hệ Thống
               </div>
-              {ADMIN_NAV_LINKS.map((link) => {
+              {ADMIN_NAV_LINKS.filter((link) => !link.adminOnly || user?.role === 'ADMIN').map((link) => {
                 const Icon = link.icon;
                 const isActive =
                   pathname === link.href ||

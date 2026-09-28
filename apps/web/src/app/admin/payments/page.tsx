@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/providers/auth-provider';
 import Link from 'next/link';
 import { adminApi } from '@/lib/api';
 import type { Payment } from '@tour/shared';
@@ -27,6 +28,7 @@ const PAYMENT_STATUS_STYLE: Record<string, string> = {
 };
 
 export default function AdminPaymentsPage() {
+  const { user } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -161,7 +163,7 @@ export default function AdminPaymentsPage() {
                     </td>
                     <td className="py-4 px-6">
                       <Link
-                        href={`/bookings/${p.bookingId}`}
+                        href={`/admin/bookings/${p.bookingId}`}
                         className="font-mono text-amber-800 hover:underline"
                       >
                         {p.bookingId.slice(0, 8)}...
@@ -191,15 +193,20 @@ export default function AdminPaymentsPage() {
                             Xác nhận thu tiền
                           </Button>
                         )}
-                        {p.status === 'REFUND_REQUIRED' && (
-                          <Button
-                            size="sm"
-                            onClick={() => setRefundPaymentId(p.id)}
-                            className="bg-amber-800 hover:bg-amber-900 text-white text-[11px] h-7 px-3"
-                          >
-                            Ghi nhận hoàn tiền
-                          </Button>
-                        )}
+                        {p.status === 'REFUND_REQUIRED' &&
+                          (user?.role === 'ADMIN' ? (
+                            <Button
+                              size="sm"
+                              onClick={() => setRefundPaymentId(p.id)}
+                              className="bg-amber-800 hover:bg-amber-900 text-white text-[11px] h-7 px-3"
+                            >
+                              Ghi nhận hoàn tiền
+                            </Button>
+                          ) : (
+                            <span className="text-[10px] font-semibold text-stone-500">
+                              Cần quyền ADMIN để ghi nhận hoàn tiền
+                            </span>
+                          ))}
                       </div>
                     </td>
                   </tr>
