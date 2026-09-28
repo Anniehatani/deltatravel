@@ -2,7 +2,10 @@
 
 import { chromium, firefox } from 'playwright';
 
-const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(/\/$/, '');
+const WEB = (process.env.LIVE_WEB_URL || 'https://delta-travel-web.onrender.com').replace(
+  /\/$/,
+  '',
+);
 const routes = ['/', '/tours', '/assistant', '/login', '/register'];
 
 async function runEngine(name, engine, viewport) {
@@ -22,7 +25,8 @@ async function runEngine(name, engine, viewport) {
       }
       await page.waitForTimeout(500);
       const body = (await page.locator('body').innerText()).trim();
-      if (body.length < 20) throw new Error(`${name} ${route} rendered unexpectedly little content`);
+      if (body.length < 20)
+        throw new Error(`${name} ${route} rendered unexpectedly little content`);
       console.log(`PASS  ${name} ${viewport.width}x${viewport.height} ${route}`);
     }
 
