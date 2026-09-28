@@ -8,6 +8,8 @@ Ba gateway VNPay, MoMo và ZaloPay vẫn cần merchant sandbox credentials th�
 
 ## Các lệnh
 
+`npm run verify:browser`: browser smoke trên deployment public. `npm run verify:a11y`: axe accessibility audit trên desktop/mobile deployment public.
+
 `npm test`: các bài unit, HTTP boundary và timeout dispatcher. `npm run test:integration`: nghiệp vụ với Prisma và DB thật. Không kết nối DB dữ liệu thật, test yêu cầu URL chứa `tour_booking_test` và chỉ xóa dữ liệu do test tạo.
 
 Tạo database test trong Docker local:
