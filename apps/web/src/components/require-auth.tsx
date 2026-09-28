@@ -16,6 +16,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
   if (loading) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 select-none">
+        <h1 className="sr-only">{t('auth_checking')}</h1>
         <div className="h-10 w-10 rounded-full border-2 border-stone-200 border-t-black animate-spin mb-4" />
         <p className="text-xs font-bold text-neutral-500 tracking-wider uppercase">
           {t('auth_checking')}
