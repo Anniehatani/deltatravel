@@ -9,7 +9,35 @@ permissions:
   contents: read
 
 jobs:
+  wait-for-deploy:
+    if: contains(github.event.head_commit.message, '[live-acceptance]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Wait until Render serves this exact commit
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          RELEASE_URL: https://delta-travel-web.onrender.com/api/release
+        run: |
+          for attempt in $(seq 1 50); do
+            BODY="$(curl -fsS --max-time 15 "$RELEASE_URL" || true)"
+            ACTUAL="$(printf '%s' "$BODY" | python3 -c 'import json,sys; 
+try:
+ print(json.load(sys.stdin).get("commit") or "")
+except Exception:
+ print("")')"
+            echo "attempt=$attempt expected=$EXPECTED_SHA actual=$ACTUAL"
+            if [ "$ACTUAL" = "$EXPECTED_SHA" ]; then
+              echo "Render is serving the exact release commit."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Timed out waiting for the exact Render commit." >&2
+          exit 1
+
   live:
+    needs: wait-for-deploy
     if: contains(github.event.head_commit.message, '[live-acceptance]')
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -24,6 +52,7 @@ jobs:
           LIVE_API_URL: https://delta-travel-api.onrender.com/api/v1
 
   browser:
+    needs: wait-for-deploy
     if: contains(github.event.head_commit.message, '[live-acceptance]')
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -39,6 +68,7 @@ jobs:
           LIVE_WEB_URL: https://delta-travel-web.onrender.com
 
   accessibility:
+    needs: wait-for-deploy
     if: contains(github.event.head_commit.message, '[live-acceptance]')
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -54,6 +84,7 @@ jobs:
           LIVE_WEB_URL: https://delta-travel-web.onrender.com
 
   staging-mutation:
+    needs: wait-for-deploy
     if: contains(github.event.head_commit.message, '[live-acceptance]')
     runs-on: ubuntu-latest
     timeout-minutes: 15
