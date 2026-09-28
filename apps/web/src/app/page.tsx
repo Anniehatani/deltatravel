@@ -290,8 +290,6 @@ function HomeContent() {
 
   return (
     <div className="bg-white text-black">
-      <h1 className="sr-only">Delta Travel, đặt tour du lịch Việt Nam cùng AI Agent</h1>
-
       {/* Luxury Cinematic Preloader & 3D Asset Warming Engine */}
       <LuxuryPreloader />
 
@@ -307,9 +305,9 @@ function HomeContent() {
                 <Sparkles className="h-4 w-4" />
                 DELTA AI AGENT • PRIMARY EXPERIENCE
               </div>
-              <h2 className="mt-4 max-w-3xl text-2xl font-black tracking-tight text-white sm:text-4xl">
+              <h1 className="mt-4 max-w-3xl text-2xl font-black tracking-tight text-white sm:text-4xl">
                 Nói chuyến đi bạn muốn. AI tự tìm, lập kế hoạch và đặt tour cùng bạn.
-              </h2>
+              </h1>
               <p className="mt-4 max-w-2xl text-sm leading-6 text-white/75">
                 AI kiểm tra tour, ngày khởi hành, ngân sách và số chỗ thật. Trước mọi hành động tạo
                 booking hoặc thanh toán, hệ thống dừng ở checkpoint để bạn quyết định Cho phép hoặc
