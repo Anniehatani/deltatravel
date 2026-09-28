@@ -763,7 +763,7 @@ Response:
 
 ## POST /bookings/{id}/cancel
 
-Quyền: User. HTTP thành công: 200. Chỉ PENDING_PAYMENT hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.
+Quyền: User. HTTP thành công: 200. Chỉ PENDING_PAYMENT, AWAITING_CASH hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.
 
 Request (CancelSchema):
 

@@ -52,7 +52,7 @@ Nếu chạy lại createdb và báo database đã tồn tại, giữ database t
 | STOCK-03    | Cùng key khác số người                              | 409                                                       | Integration                                 |
 | TIME-01     | Deadline đơn                                        | expiresAt-createdAt = 900000ms                            | SQL CHECK + integration                     |
 | TIME-02     | Worker bị trễ hoặc Redis lỗi                        | DB chặn thanh toán quá hạn, sweep/reclaim trả chỗ         | Unit + integration; staging restart test    |
-| CANCEL-01   | PENDING_PAYMENT/AWAITING_CASH/PAID tại đúng 72h      | Được hủy                                                  | Unit boundary                               |
+| CANCEL-01   | PENDING_PAYMENT/AWAITING_CASH/PAID tại đúng 72h     | Được hủy                                                  | Unit boundary                               |
 | CANCEL-02   | Còn 72h trừ 1ms                                     | Không hủy                                                 | Unit boundary                               |
 | CANCEL-03   | CONFIRMED/COMPLETED khách tự hủy                    | Không cho; Operations có audit theo quyết định SRS        | Unit + integration                          |
 | CANCEL-04   | Hai lần hủy đồng thời                               | Chỗ trả một lần                                           | Integration native bắt buộc                 |
@@ -63,7 +63,7 @@ Nếu chạy lại createdb và báo database đã tồn tại, giữ database t
 | PAY-05      | Browser return báo success giả                      | UI đọc backend, không đổi trạng thái                      | Review + E2E staging                        |
 | PAY-06      | Đơn 0 VND                                           | PAID nội bộ với audit, không gọi cổng                     | Integration                                 |
 | CASH-01     | Chọn CASH                                           | Booking -> AWAITING_CASH, payment chưa SUCCEEDED          | Integration + staging E2E                   |
-| CASH-02     | Operations ghi receipt hợp lệ                        | Payment SUCCEEDED, booking PAID, có audit                 | Integration                                 |
+| CASH-02     | Operations ghi receipt hợp lệ                       | Payment SUCCEEDED, booking PAID, có audit                 | Integration                                 |
 | CASH-03     | Quá cashDueAt                                       | Hủy giữ chỗ và không tự coi đã thanh toán                 | Integration / recovery                      |
 | ADMIN-01    | Giảm tổng chỗ dưới đã giữ/đặt                       | 409                                                       | Integration                                 |
 | STATE-01    | Nhảy chờ thanh toán -> hoàn thành                   | 409                                                       | Integration                                 |

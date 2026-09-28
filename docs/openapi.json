@@ -4919,7 +4919,7 @@
     },
     "/bookings/{id}/cancel": {
       "post": {
-        "summary": "Chỉ PENDING_PAYMENT hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.",
+        "summary": "Chỉ PENDING_PAYMENT, AWAITING_CASH hoặc PAID và còn >=72 giờ. Replay đơn đã hủy không hoàn chỗ thêm.",
         "operationId": "post_bookings__id__cancel",
         "tags": ["bookings"],
         "security": [

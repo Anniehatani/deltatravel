@@ -88,7 +88,6 @@ Xem `docs/VERIFICATION.md` để biết bằng chứng đã chạy, `docs/PRODUC
 
 Tài liệu dự án hiện có chỉ xác nhận phạm vi SRS đã được trích trong quá trình phát triển. Chưa có toàn văn SRS hoặc rubric chính thức trong Project để đối chiếu thêm, vì vậy các yêu cầu ngoài phạm vi nguồn phải được giảng viên xác nhận trước khi coi là bắt buộc.
 
-
 ## Verification bổ sung
 
 `npm run verify:live`, `npm run verify:browser`, `npm run verify:a11y` dùng để kiểm tra deployment public.
