@@ -1,0 +1,36 @@
+name: Temporary Contract Regeneration
+
+on:
+  push:
+    branches:
+      - manh/final-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: manh/final-hardening
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format
+      - run: npm run docs:generate
+      - run: npm run verify:contract
+      - run: npx prettier --write docs/API_CONTRACT.md docs/openapi.json
+      - run: rm .github/workflows/temp-contract-regeneration.yml
+      - name: Commit generated contract
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: regenerate complete API contract"
+          git push origin HEAD:manh/final-hardening
