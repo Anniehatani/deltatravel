@@ -163,6 +163,26 @@ if (booking.status !== 'AWAITING_CASH') {
 }
 pass('booking persisted', booking.status);
 
+const concierge = await request('/assistant/chat', {
+  method: 'POST',
+  token,
+  body: {
+    message: `Tóm tắt booking ${booking.id} của tôi và cho biết bước tiếp theo`,
+    history: [],
+    lang: 'vi',
+  },
+});
+if (
+  !Array.isArray(concierge.sources) ||
+  !concierge.sources.some((source) => source.type === 'BOOKING' && source.id === booking.id)
+) {
+  throw new Error('Contextual booking concierge did not ground itself in the requested booking');
+}
+if (!concierge.reply || concierge.reply.length < 20) {
+  throw new Error('Contextual booking concierge returned an unexpectedly short answer');
+}
+pass('contextual booking AI concierge', `mode=${concierge.mode}`);
+
 const cancelled = await request('/bookings/' + booking.id + '/cancel', {
   method: 'POST',
   token,

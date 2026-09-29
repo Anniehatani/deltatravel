@@ -2,6 +2,12 @@
 
 Website quảng bá và đặt tour du lịch nội địa Việt Nam, triển khai theo kiến trúc monorepo TypeScript.
 
+## AI First
+
+DELTA TRAVEL dùng AI như lớp điều phối chính trên homepage, catalog tour, chi tiết tour, checkout, booking và admin operations. Global AI Command Center hiểu route hiện tại, còn Action Agent có thể lập kế hoạch và tạo booking/payment sau explicit approval checkpoint. Manual UI vẫn được giữ nguyên để người dùng luôn có quyền kiểm soát.
+
+Xem `docs/AI_FIRST_ARCHITECTURE.md` để biết kiến trúc, grounding và acceptance gate.
+
 ## Trạng thái hiện tại
 
 Bản phát hành ngày 28/09/2026 đã có frontend, backend, PostgreSQL, Redis, AI Agent, xác thực, quản trị, booking, thanh toán CASH, email reset password và avatar storage. Code phát hành đã qua CI đầy đủ và đã được smoke test trên môi trường public.

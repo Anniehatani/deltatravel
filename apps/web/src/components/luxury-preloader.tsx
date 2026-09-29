@@ -251,9 +251,9 @@ export function LuxuryPreloader() {
           <Sparkles className="w-3 h-3 text-amber-400" />
         </div>
 
-        <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
           {t('preloader_headline')}
-        </h2>
+        </h1>
         <p className="mt-2 text-xs sm:text-sm text-white/80 max-w-md font-medium leading-relaxed drop-shadow-md">
           {t('preloader_desc')}
         </p>

@@ -154,7 +154,7 @@ export class CatalogAgent {
 export class CustomerAgent {
   constructor(private readonly bookings: BookingsService) {}
 
-  async myBookings(user: AppRequest['user']): Promise<AgentPayload> {
+  async myBookings(user: AppRequest['user'], bookingId?: string): Promise<AgentPayload> {
     if (!user) {
       return {
         reply: 'Bạn cần đăng nhập để xem các đơn đặt tour của mình.',
@@ -163,10 +163,13 @@ export class CustomerAgent {
       };
     }
 
-    const rows = await this.bookings.list({ page: 1, pageSize: 5 }, user.id);
+    const items = bookingId
+      ? [await this.bookings.get(bookingId, user.id)]
+      : (await this.bookings.list({ page: 1, pageSize: 5 }, user.id)).items;
+
     return {
-      reply: rows.items.length
-        ? rows.items
+      reply: items.length
+        ? items
             .map(
               (b) =>
                 b.tourTitle +
@@ -174,21 +177,23 @@ export class CustomerAgent {
                 BOOKING_LABELS[b.status] +
                 ', ' +
                 b.totalAmount.toLocaleString('vi-VN') +
-                ' VND.',
+                ' VND, khởi hành ' +
+                new Date(b.departureAt).toLocaleString('vi-VN') +
+                '.',
             )
             .join('\n')
         : 'Bạn chưa có đơn đặt tour.',
-      actions: rows.items.map((b) => ({
+      actions: items.map((b) => ({
         label: 'Xem ' + b.tourTitle,
         href: '/bookings/' + b.id,
         requiresConfirmation: false,
       })),
-      sources: rows.items.map((b) => ({
+      sources: items.map((b) => ({
         type: 'BOOKING' as const,
         id: b.id,
         label: b.tourTitle,
       })),
-      facts: rows.items,
+      facts: items,
     };
   }
 }
@@ -234,7 +239,14 @@ export class OperationsAgent {
     if (!user || !['ADMIN', 'OPERATIONS'].includes(user.role)) {
       fail(403, 'FORBIDDEN', 'Chỉ bộ phận vận hành được xem dữ liệu quản trị');
     }
-    const summary = await this.admin.summary();
+    const overview = await this.admin.operationsOverview();
+    const summary = overview.summary;
+    const statusLine = Object.entries(overview.bookingStatusCounts)
+      .map(([status, count]) => status + ': ' + count)
+      .join(', ');
+    const lowInventory = overview.lowInventorySchedules.length
+      ? ' Có ' + overview.lowInventorySchedules.length + ' lịch sắp hết chỗ cần theo dõi.'
+      : '';
     return {
       reply:
         'Có ' +
@@ -243,7 +255,10 @@ export class OperationsAgent {
         summary.bookings +
         ' đơn và ' +
         summary.pendingRefunds +
-        ' giao dịch cần xử lý hoàn tiền.',
+        ' giao dịch cần xử lý hoàn tiền. Trạng thái booking: ' +
+        statusLine +
+        '.' +
+        lowInventory,
       actions: [
         { label: 'Quản lý tour', href: '/admin/tours', requiresConfirmation: false },
         {
@@ -263,7 +278,7 @@ export class OperationsAgent {
         },
       ],
       sources: [{ type: 'OPERATIONS', id: 'summary', label: 'Thống kê vận hành' }],
-      facts: summary,
+      facts: overview,
     };
   }
 }

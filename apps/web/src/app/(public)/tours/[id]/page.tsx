@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { getTourImage, getTourLuxuryTag, getTourItinerary } from '@/lib/tour-assets';
 import { getLocalizedTour } from '@/lib/fallback-data';
 import { LiquidGlassBadge } from '@/components/ui/liquid-glass-badge';
+import { AiContextCard } from '@/components/ai-context-card';
 import {
   MapPin,
   Calendar,
@@ -249,6 +250,32 @@ export default function TourDetailPage({ params }: { params: Promise<{ id: strin
           </p>
         </div>
       </div>
+
+      <AiContextCard
+        eyebrow="DELTA AI • TOUR FIT ADVISOR"
+        title="AI đã đọc tour này trước khi bạn phải tự cân nhắc"
+        description="AI dùng dữ liệu tour production để giải thích độ phù hợp, lịch nên chọn và bước tiếp theo. Toàn bộ thiết kế chi tiết tour hiện tại vẫn được giữ nguyên."
+        prompt={`Đánh giá tour “${displayTour.title}” ở ${displayTour.destination}. Hãy giải thích tour phù hợp với kiểu khách nào, điều gì cần chú ý và nên chọn lịch ra sao dựa trên dữ liệu hiện có.`}
+        context={`Tour ID ${tour.id}; điểm đến ${tour.destination}; thời lượng ${tour.durationDays} ngày; có ${schedules.length} lịch trong hệ thống.`}
+        suggestions={[
+          'Tour này có phù hợp với 2 người lớn không?',
+          'Lịch nào đang hợp lý nhất về giá và số chỗ?',
+          'Nếu ngân sách 8 triệu thì tôi nên chọn phương án nào?',
+        ]}
+        autoRun
+        agentHref={
+          '/assistant?prompt=' +
+          encodeURIComponent(`Tôi muốn AI lập kế hoạch để đặt tour ${displayTour.title}.`) +
+          (selectedScheduleId ? '&scheduleId=' + encodeURIComponent(selectedScheduleId) : '') +
+          '&destination=' +
+          encodeURIComponent(displayTour.destination) +
+          '&adults=' +
+          adults +
+          '&children=' +
+          childrenCount
+        }
+        className="mb-12"
+      />
 
       {/* Main Grid: Details + Booking Widget */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

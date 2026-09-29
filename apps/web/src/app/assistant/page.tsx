@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import type { AssistantResult } from '@tour/shared';
 import { assistantApi } from '@/lib/api';
@@ -32,10 +32,30 @@ export default function AssistantPage() {
   const { t, lang } = useLanguage();
 
   const userAvatar = user?.avatarUrl || '';
+  const [agentSeed, setAgentSeed] = useState({
+    message: '',
+    scheduleId: '',
+    destination: '',
+    adults: 2,
+    children: 0,
+  });
   const [inputMessage, setInputMessage] = useState('');
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const adults = Number(params.get('adults') || '2');
+    const children = Number(params.get('children') || '0');
+    setAgentSeed({
+      message: params.get('prompt') || '',
+      scheduleId: params.get('scheduleId') || '',
+      destination: params.get('destination') || '',
+      adults: Number.isInteger(adults) && adults > 0 ? adults : 2,
+      children: Number.isInteger(children) && children >= 0 ? children : 0,
+    });
+  }, []);
 
   const suggestedQuestions = [t('asst_q1'), t('asst_q2'), t('asst_q3'), t('asst_q4')];
 
@@ -87,7 +107,13 @@ export default function AssistantPage() {
   return (
     <PageShell badge={t('asst_badge')} title={t('asst_title')} description={t('asst_desc')}>
       <div className="mx-auto max-w-5xl space-y-8">
-        <AgentBookingPanel />
+        <AgentBookingPanel
+          initialMessage={agentSeed.message || undefined}
+          initialScheduleId={agentSeed.scheduleId || undefined}
+          initialDestination={agentSeed.destination || undefined}
+          initialAdults={agentSeed.adults}
+          initialChildren={agentSeed.children}
+        />
 
         <div className="flex items-center gap-3">
           <div className="h-px flex-1 bg-stone-200" />

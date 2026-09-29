@@ -8,6 +8,7 @@ import { BOOKING_LABELS } from '@tour/shared';
 import { formatVND, formatDate } from '@/lib/format';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { AiContextCard } from '@/components/ai-context-card';
 import { useLanguage } from '@/providers/language-provider';
 import {
   Ticket,
@@ -131,6 +132,21 @@ export default function BookingsListPage() {
       title={t('bk_list_title')}
       description={t('bk_list_desc')}
     >
+      <AiContextCard
+        eyebrow="DELTA AI • TRIP CONCIERGE"
+        title="AI theo dõi toàn bộ chuyến đi của bạn"
+        description="AI đọc booking theo chính quyền của tài khoản hiện tại để tóm tắt việc cần làm, trạng thái thanh toán và chính sách liên quan."
+        prompt="Tóm tắt các booking của tôi, ưu tiên những đơn đang cần hành động hoặc sắp đến hạn. Nói rõ bước tiếp theo."
+        context={`Trang My Bookings; frontend hiện đã tải ${bookings.length} booking từ API.`}
+        suggestions={[
+          'Đơn nào của tôi đang chờ thanh toán?',
+          'Booking nào có thể hủy và điều kiện là gì?',
+          'Tôi cần làm gì tiếp theo cho chuyến đi sắp tới?',
+        ]}
+        autoRun={!loading && !error}
+        className="mb-8"
+      />
+
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (

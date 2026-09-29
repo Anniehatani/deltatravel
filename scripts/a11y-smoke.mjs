@@ -33,6 +33,9 @@ try {
     const context = await browser.newContext({
       viewport: { width: viewport.width, height: viewport.height },
     });
+    await context.addInitScript(() => {
+      window.sessionStorage.setItem('delta_intro_played', 'true');
+    });
     const page = await context.newPage();
 
     for (const route of routes) {

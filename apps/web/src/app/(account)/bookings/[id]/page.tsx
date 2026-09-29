@@ -8,6 +8,7 @@ import { BOOKING_LABELS } from '@tour/shared';
 import { formatVND, formatDate, formatDateTime } from '@/lib/format';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { AiContextCard } from '@/components/ai-context-card';
 import {
   Calendar,
   Clock,
@@ -352,6 +353,21 @@ export default function BookingDetailPage({ params }: { params: Promise<{ id: st
         </div>
       }
     >
+      <AiContextCard
+        eyebrow="DELTA AI • BOOKING CONCIERGE"
+        title="AI giải thích đơn này và chủ động chỉ ra bước tiếp theo"
+        description="AI chỉ đọc dữ liệu mà tài khoản của bạn được phép thấy. Hủy hoặc thanh toán vẫn đi qua quy tắc backend và thao tác xác nhận riêng."
+        prompt={`Tóm tắt booking ${booking.id}: trạng thái ${booking.status}, tour ${booking.tourTitle}, khởi hành ${booking.departureAt}, tổng tiền ${booking.totalAmount.toLocaleString('vi-VN')} VND. Tôi cần làm gì tiếp theo và có điều gì cần chú ý?`}
+        context={`Booking detail ${booking.id}; status ${booking.status}; customer đang xem chính đơn của mình.`}
+        suggestions={[
+          'Đơn này có thể hủy không?',
+          'Giải thích trạng thái thanh toán hiện tại.',
+          'Tôi cần chuẩn bị gì trước ngày khởi hành?',
+        ]}
+        autoRun
+        className="mb-8"
+      />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Left Column: Booking Details & Contact Info */}
         <div className="lg:col-span-2 space-y-8">

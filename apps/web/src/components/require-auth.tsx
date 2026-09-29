@@ -28,7 +28,7 @@ export function RequireAuth({ children, roles }: { children: ReactNode; roles?: 
   if (!user) {
     return (
       <div className="min-h-[75vh] flex items-center justify-center px-4 py-16 sm:py-24 select-none">
-        <div className="relative w-full max-w-md rounded-[32px] bg-white/85 backdrop-blur-2xl border border-black/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] p-8 sm:p-10 text-center animate-fade-in">
+        <div className="relative w-full max-w-md rounded-[32px] bg-white/85 backdrop-blur-2xl border border-black/[0.08] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12),inset_0_1.5px_2px_rgba(255,255,255,1)] p-8 sm:p-10 text-center">
           {/* Top Specular Rim */}
           <div className="absolute inset-x-8 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-white to-transparent pointer-events-none" />
 
