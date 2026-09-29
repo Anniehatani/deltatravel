@@ -46,13 +46,31 @@ export class AssistantService {
     }
 
     if (intent.intent === 'MY_BOOKINGS') {
-      const payload = await this.customer.myBookings(user);
-      return { ...payload, mode: planned.mode };
+      const payload = await this.customer.myBookings(user, intent.bookingId);
+      const synthesized = await this.ai.synthesize(
+        input.message,
+        payload.facts,
+        input.lang || 'vi',
+      );
+      return {
+        ...payload,
+        reply: synthesized?.reply || payload.reply,
+        mode: synthesized?.mode || planned.mode,
+      };
     }
 
     if (intent.intent === 'OPERATIONS') {
       const payload = await this.operations.run(user);
-      return { ...payload, mode: planned.mode };
+      const synthesized = await this.ai.synthesize(
+        input.message,
+        payload.facts,
+        input.lang || 'vi',
+      );
+      return {
+        ...payload,
+        reply: synthesized?.reply || payload.reply,
+        mode: synthesized?.mode || planned.mode,
+      };
     }
 
     if (intent.intent === 'AVAILABILITY') {

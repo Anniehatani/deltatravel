@@ -59,24 +59,38 @@ function statusText(status: AgentPlan['status']) {
   return labels[status];
 }
 
-export function AgentBookingPanel() {
+type AgentBookingPanelProps = {
+  initialMessage?: string;
+  initialScheduleId?: string;
+  initialDestination?: string;
+  initialAdults?: number;
+  initialChildren?: number;
+};
+
+export function AgentBookingPanel({
+  initialMessage,
+  initialScheduleId,
+  initialDestination,
+  initialAdults = 2,
+  initialChildren = 0,
+}: AgentBookingPanelProps = {}) {
   const { user } = useAuth();
   const [message, setMessage] = useState(
-    'Tìm giúp tôi một tour phù hợp, ưu tiên lịch hợp lý và giá tốt.',
+    initialMessage || 'Tìm giúp tôi một tour phù hợp, ưu tiên lịch hợp lý và giá tốt.',
   );
   const [plan, setPlan] = useState<AgentPlan | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
-  const [adults, setAdults] = useState('2');
-  const [children, setChildren] = useState('0');
+  const [adults, setAdults] = useState(String(initialAdults));
+  const [children, setChildren] = useState(String(initialChildren));
   const [phone, setPhone] = useState('');
   const [budget, setBudget] = useState('');
-  const [destination, setDestination] = useState('');
+  const [destination, setDestination] = useState(initialDestination || '');
   const [departureFrom, setDepartureFrom] = useState('');
   const [departureTo, setDepartureTo] = useState('');
   const [provider, setProvider] = useState<Provider | ''>('');
-  const [scheduleId, setScheduleId] = useState('');
+  const [scheduleId, setScheduleId] = useState(initialScheduleId || '');
 
   const editFormRef = useRef<HTMLFormElement>(null);
   const checkpointRef = useRef<HTMLDivElement>(null);
@@ -87,6 +101,15 @@ export function AgentBookingPanel() {
   const departureFromRef = useRef<HTMLInputElement>(null);
   const departureToRef = useRef<HTMLInputElement>(null);
   const providerRef = useRef<HTMLSelectElement>(null);
+
+  useEffect(() => {
+    if (plan) return;
+    if (initialMessage) setMessage(initialMessage);
+    if (initialScheduleId) setScheduleId(initialScheduleId);
+    if (initialDestination) setDestination(initialDestination);
+    setAdults(String(initialAdults));
+    setChildren(String(initialChildren));
+  }, [plan, initialMessage, initialScheduleId, initialDestination, initialAdults, initialChildren]);
 
   const phonePattern = /^(?:\+84|0)[0-9]{9,10}$/;
 
@@ -202,6 +225,7 @@ export function AgentBookingPanel() {
         ...(departureTo ? { departureTo } : {}),
         ...(phone.trim() ? { contactPhone: phone.trim() } : {}),
         ...(provider ? { provider } : {}),
+        ...(scheduleId ? { scheduleId } : {}),
       });
       setPlan(next);
       window.setTimeout(() => {

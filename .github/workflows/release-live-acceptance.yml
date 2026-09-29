@@ -109,3 +109,19 @@ jobs:
         env:
           LIVE_WEB_URL: https://delta-travel-web.onrender.com
           LIVE_API_URL: https://delta-travel-api.onrender.com/api/v1
+
+  ai-first:
+    needs: wait-for-deploy
+    if: contains(github.event.head_commit.message, '[live-acceptance]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm install --no-save --ignore-scripts playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: npm run verify:ai-first-live
+        env:
+          LIVE_WEB_URL: https://delta-travel-web.onrender.com

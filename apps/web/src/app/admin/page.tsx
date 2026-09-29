@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { adminApi, assistantApi, paymentApi, systemApi } from '@/lib/api';
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { AiContextCard } from '@/components/ai-context-card';
 import {
   Activity,
   Bot,
@@ -80,6 +81,21 @@ export default function AdminDashboardPage() {
         </Button>
       }
     >
+      <AiContextCard
+        eyebrow="DELTA AI • OPERATIONS COPILOT"
+        title="AI đọc tình hình vận hành trước khi bạn mở từng bảng"
+        description="Copilot chạy qua backend theo quyền ADMIN/OPERATIONS, ưu tiên booking, refund và trạng thái hệ thống cần chú ý."
+        prompt="Tóm tắt tình hình vận hành hiện tại của Delta Travel. Hãy ưu tiên việc cần xử lý ngay, booking đáng chú ý, hoàn tiền chờ xử lý và tình trạng hệ thống."
+        context={`Admin operations dashboard; summary hiện có ${snapshot.summary?.tours ?? 0} tour, ${snapshot.summary?.bookings ?? 0} booking và ${snapshot.summary?.pendingRefunds ?? 0} refund chờ xử lý.`}
+        suggestions={[
+          'Hôm nay có việc vận hành nào cần xử lý ngay?',
+          'Tóm tắt booking và hoàn tiền đáng chú ý.',
+          'Hệ thống AI và thanh toán đang ở trạng thái nào?',
+        ]}
+        autoRun={!loading && !error}
+        className="mb-6"
+      />
+
       {error && (
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0" />

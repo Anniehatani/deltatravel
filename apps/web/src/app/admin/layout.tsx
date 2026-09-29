@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { RequireAuth } from '@/components/require-auth';
 import { useAuth } from '@/providers/auth-provider';
+import { AdminAiCopilotStrip } from '@/components/admin-ai-copilot-strip';
 import {
   LayoutDashboard,
   Compass,
@@ -154,7 +155,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         {/* ─── RIGHT MAIN PANE: Page Content Display ─── */}
         <main className="min-h-screen flex-1 overflow-y-auto bg-stone-50/70 p-4 sm:p-6 lg:p-10">
-          <div className="max-w-7xl mx-auto">{children}</div>
+          <div className="max-w-7xl mx-auto">
+            <AdminAiCopilotStrip />
+            {children}
+          </div>
         </main>
       </div>
 

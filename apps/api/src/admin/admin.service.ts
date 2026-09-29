@@ -128,6 +128,77 @@ export class AdminService {
     await this.cache.write('operations:summary', value, 15);
     return value;
   }
+  async operationsOverview() {
+    const summary = await this.summary();
+    const now = new Date();
+
+    const [statusGroups, refunds, openSchedules] = await Promise.all([
+      this.db.booking.groupBy({
+        by: ['status'],
+        _count: { _all: true },
+      }),
+      this.db.payment.findMany({
+        where: { status: 'REFUND_REQUIRED' },
+        take: 5,
+        orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+        select: {
+          id: true,
+          bookingId: true,
+          provider: true,
+          amount: true,
+          createdAt: true,
+        },
+      }),
+      this.db.schedule.findMany({
+        where: {
+          status: 'OPEN',
+          departureAt: { gt: now },
+          tour: { deletedAt: null, status: 'ACTIVE', countryCode: 'VN' },
+        },
+        take: 100,
+        orderBy: [{ departureAt: 'asc' }, { id: 'asc' }],
+        select: {
+          id: true,
+          tourId: true,
+          departureAt: true,
+          totalSeats: true,
+          reservedSeats: true,
+          tour: { select: { title: true } },
+        },
+      }),
+    ]);
+
+    const bookingStatusCounts = Object.fromEntries(
+      statusGroups.map((item) => [item.status, item._count._all]),
+    );
+
+    const pendingRefunds = refunds.map((item) => ({
+      id: item.id,
+      bookingId: item.bookingId,
+      provider: item.provider,
+      amount: Number(item.amount),
+      createdAt: item.createdAt.toISOString(),
+    }));
+
+    const lowInventorySchedules = openSchedules
+      .map((item) => ({
+        id: item.id,
+        tourId: item.tourId,
+        tourTitle: item.tour.title,
+        departureAt: item.departureAt.toISOString(),
+        availableSeats: item.totalSeats - item.reservedSeats,
+      }))
+      .filter((item) => item.availableSeats <= 5)
+      .slice(0, 5);
+
+    return {
+      summary,
+      bookingStatusCounts,
+      pendingRefunds,
+      lowInventorySchedules,
+    };
+  }
+
   async payments(q: z.infer<typeof PaginationSchema>) {
     const [items, total] = await this.db.$transaction([
       this.db.payment.findMany({

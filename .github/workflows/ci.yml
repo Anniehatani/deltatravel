@@ -41,6 +41,7 @@ jobs:
       - run: npm run db:migrate
       - run: npm run format:check
       - run: npm run typecheck
+      - run: npm run verify:ai-first
       - run: npm run docs:generate
       - run: npm run verify:contract
       - name: Verify generated contract is committed

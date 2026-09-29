@@ -14,6 +14,7 @@ type QuoteResult = z.infer<typeof QuoteResultSchema>;
 
 import { PageShell } from '@/components/page-shell';
 import { Button } from '@/components/ui/button';
+import { AiContextCard } from '@/components/ai-context-card';
 import { useLanguage } from '@/providers/language-provider';
 import {
   Calendar,
@@ -139,261 +140,294 @@ function CheckoutContent({ scheduleId }: { scheduleId: string }) {
   const isSeatExceeded = schedule ? totalGuests > schedule.availableSeats : false;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-      {/* Left: Contact Form & Passenger Config */}
-      <div className="lg:col-span-2 space-y-8">
-        <form onSubmit={handleSubmitBooking} className="space-y-8">
-          {/* Passenger Count Selector */}
-          <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
-            <h2 className="font-serif text-xl font-bold text-stone-900 mb-6 flex items-center gap-2 pb-4 border-b border-stone-100">
-              <Users className="h-5 w-5 text-amber-700" />
-              <span>{t('chk_passenger_section')}</span>
-            </h2>
+    <div className="space-y-8">
+      <AiContextCard
+        eyebrow="DELTA AI • PRE-BOOKING REVIEW"
+        title="AI kiểm tra đơn trước khi bạn giữ chỗ"
+        description="AI đọc lịch, số chỗ và báo giá hiện tại. Backend vẫn là lớp quyết định cuối cùng khi tạo booking, nên AI không thể bỏ qua kiểm tra nghiệp vụ."
+        prompt={
+          schedule && quote
+            ? `Kiểm tra giúp tôi trước khi đặt lịch ${scheduleId}: ${adults} người lớn, ${childrenCount} trẻ em, tổng báo giá ${quote.totalAmount.toLocaleString('vi-VN')} VND, hiện còn ${schedule.availableSeats} chỗ. Hãy nêu điều cần chú ý và bước tiếp theo.`
+            : `Kiểm tra giúp tôi lịch ${scheduleId} trước khi đặt tour.`
+        }
+        context={
+          schedule
+            ? `Checkout schedule ${scheduleId}; departure ${schedule.departureAt}; availableSeats ${schedule.availableSeats}; quote được lấy trực tiếp từ backend.`
+            : `Checkout schedule ${scheduleId}; hệ thống đang tải availability.`
+        }
+        suggestions={[
+          'Kiểm tra lại giá và số chỗ cho tôi.',
+          'Giải thích quy trình giữ chỗ 15 phút.',
+          'Tôi muốn AI tiếp tục thực hiện việc đặt tour.',
+        ]}
+        agentHref={
+          '/assistant?scheduleId=' +
+          encodeURIComponent(scheduleId) +
+          '&adults=' +
+          adults +
+          '&children=' +
+          childrenCount +
+          '&prompt=' +
+          encodeURIComponent('Tiếp tục lập kế hoạch đặt lịch tôi đang checkout.')
+        }
+      />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-stone-900 block text-sm">
-                    {t('bk_adult_unit')}
-                  </span>
-                  <span className="text-xs text-stone-500">{t('chk_adult_desc')}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Left: Contact Form & Passenger Config */}
+        <div className="lg:col-span-2 space-y-8">
+          <form onSubmit={handleSubmitBooking} className="space-y-8">
+            {/* Passenger Count Selector */}
+            <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
+              <h2 className="font-serif text-xl font-bold text-stone-900 mb-6 flex items-center gap-2 pb-4 border-b border-stone-100">
+                <Users className="h-5 w-5 text-amber-700" />
+                <span>{t('chk_passenger_section')}</span>
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-stone-900 block text-sm">
+                      {t('bk_adult_unit')}
+                    </span>
+                    <span className="text-xs text-stone-500">{t('chk_adult_desc')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      disabled={adults <= 1}
+                      onClick={() => setAdults((prev) => Math.max(1, prev - 1))}
+                      className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
+                    >
+                      -
+                    </button>
+                    <span className="w-5 text-center font-bold text-sm">{adults}</span>
+                    <button
+                      type="button"
+                      disabled={adults >= 100}
+                      onClick={() => setAdults((prev) => prev + 1)}
+                      className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={adults <= 1}
-                    onClick={() => setAdults((prev) => Math.max(1, prev - 1))}
-                    className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
-                  >
-                    -
-                  </button>
-                  <span className="w-5 text-center font-bold text-sm">{adults}</span>
-                  <button
-                    type="button"
-                    disabled={adults >= 100}
-                    onClick={() => setAdults((prev) => prev + 1)}
-                    className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
-                  >
-                    +
-                  </button>
+
+                <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-stone-900 block text-sm">
+                      {t('bk_child_unit')}
+                    </span>
+                    <span className="text-xs text-stone-500">{t('chk_child_desc')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      disabled={childrenCount <= 0}
+                      onClick={() => setChildrenCount((prev) => Math.max(0, prev - 1))}
+                      className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
+                    >
+                      -
+                    </button>
+                    <span className="w-5 text-center font-bold text-sm">{childrenCount}</span>
+                    <button
+                      type="button"
+                      disabled={childrenCount >= 100}
+                      onClick={() => setChildrenCount((prev) => prev + 1)}
+                      className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-stone-200 bg-[#faf9f5] p-5 flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-stone-900 block text-sm">
-                    {t('bk_child_unit')}
+              {/* Realtime availability badge */}
+              <div className="mt-6 flex items-center justify-between text-xs px-1">
+                <span className="text-stone-500">{t('chk_realtime_seats')}</span>
+                {availabilityError ? (
+                  <span className="font-medium text-amber-700">{t('chk_cant_check_seats')}</span>
+                ) : schedule ? (
+                  <span
+                    className={`font-semibold ${
+                      isSeatExceeded ? 'text-neutral-500 line-through' : 'text-black'
+                    }`}
+                  >
+                    {schedule.availableSeats > 0
+                      ? `${t('chk_remaining_seats')} ${schedule.availableSeats} ${t('chk_seats_unit')}`
+                      : t('chk_sold_out')}
                   </span>
-                  <span className="text-xs text-stone-500">{t('chk_child_desc')}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={childrenCount <= 0}
-                    onClick={() => setChildrenCount((prev) => Math.max(0, prev - 1))}
-                    className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
-                  >
-                    -
-                  </button>
-                  <span className="w-5 text-center font-bold text-sm">{childrenCount}</span>
-                  <button
-                    type="button"
-                    disabled={childrenCount >= 100}
-                    onClick={() => setChildrenCount((prev) => prev + 1)}
-                    className="h-8 w-8 rounded-full border border-stone-300 bg-white flex items-center justify-center font-bold text-stone-700 disabled:opacity-30"
-                  >
-                    +
-                  </button>
-                </div>
+                ) : (
+                  <span className="text-stone-400">{t('chk_checking_seats')}</span>
+                )}
               </div>
-            </div>
 
-            {/* Realtime availability badge */}
-            <div className="mt-6 flex items-center justify-between text-xs px-1">
-              <span className="text-stone-500">{t('chk_realtime_seats')}</span>
-              {availabilityError ? (
-                <span className="font-medium text-amber-700">{t('chk_cant_check_seats')}</span>
-              ) : schedule ? (
-                <span
-                  className={`font-semibold ${
-                    isSeatExceeded ? 'text-neutral-500 line-through' : 'text-black'
-                  }`}
-                >
-                  {schedule.availableSeats > 0
-                    ? `${t('chk_remaining_seats')} ${schedule.availableSeats} ${t('chk_seats_unit')}`
-                    : t('chk_sold_out')}
-                </span>
-              ) : (
-                <span className="text-stone-400">{t('chk_checking_seats')}</span>
+              {isSeatExceeded && (
+                <p role="alert" className="mt-2 text-xs text-red-600 font-medium">
+                  {t('chk_seat_exceeded_detail')}
+                </p>
               )}
             </div>
 
-            {isSeatExceeded && (
-              <p role="alert" className="mt-2 text-xs text-red-600 font-medium">
-                {t('chk_seat_exceeded_detail')}
-              </p>
-            )}
-          </div>
+            {/* Contact Information Form */}
+            <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
+              <h2 className="font-serif text-xl font-bold text-stone-900 mb-2">
+                {t('chk_contact_section')}
+              </h2>
+              <p className="text-xs text-stone-500 mb-6">{t('chk_contact_sub')}</p>
 
-          {/* Contact Information Form */}
-          <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-luxury">
-            <h2 className="font-serif text-xl font-bold text-stone-900 mb-2">
-              {t('chk_contact_section')}
-            </h2>
-            <p className="text-xs text-stone-500 mb-6">{t('chk_contact_sub')}</p>
-
-            <div className="space-y-5">
-              <div>
-                <label htmlFor="contactName">{t('chk_rep_name_label')}</label>
-                <input
-                  id="contactName"
-                  type="text"
-                  required
-                  minLength={2}
-                  maxLength={100}
-                  placeholder={lang === 'en' ? 'e.g. John Doe' : 'Ví dụ: Nguyễn Minh Anh'}
-                  value={contactName}
-                  onChange={(e) => setContactName(e.target.value)}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-5">
                 <div>
-                  <label htmlFor="contactEmail">{t('chk_rep_email_label')}</label>
+                  <label htmlFor="contactName">{t('chk_rep_name_label')}</label>
                   <input
-                    id="contactEmail"
-                    type="email"
+                    id="contactName"
+                    type="text"
                     required
-                    placeholder="guest@example.com"
-                    value={contactEmail}
-                    onChange={(e) => setContactEmail(e.target.value)}
+                    minLength={2}
+                    maxLength={100}
+                    placeholder={lang === 'en' ? 'e.g. John Doe' : 'Ví dụ: Nguyễn Minh Anh'}
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="contactPhone">{t('chk_rep_phone_label')}</label>
-                  <input
-                    id="contactPhone"
-                    type="tel"
-                    required
-                    pattern="^(?:\+84|0)[0-9]{9,10}$"
-                    placeholder="0912345678"
-                    value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
-                  />
-                  <span className="text-[11px] text-stone-400 mt-1 block">
-                    {t('chk_phone_format_hint')}
-                  </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div>
+                    <label htmlFor="contactEmail">{t('chk_rep_email_label')}</label>
+                    <input
+                      id="contactEmail"
+                      type="email"
+                      required
+                      placeholder="guest@example.com"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="contactPhone">{t('chk_rep_phone_label')}</label>
+                    <input
+                      id="contactPhone"
+                      type="tel"
+                      required
+                      pattern="^(?:\+84|0)[0-9]{9,10}$"
+                      placeholder="0912345678"
+                      value={contactPhone}
+                      onChange={(e) => setContactPhone(e.target.value)}
+                    />
+                    <span className="text-[11px] text-stone-400 mt-1 block">
+                      {t('chk_phone_format_hint')}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {submitError && (
-            <div
-              className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700 flex items-start gap-2"
-              role="alert"
-            >
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{submitError}</span>
-            </div>
-          )}
-
-          {/* Submit Action */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-            <div className="flex items-center gap-2 text-xs text-stone-500">
-              <Lock className="h-4 w-4 text-stone-400" />
-              <span>{t('chk_security_note')}</span>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={
-                submitting ||
-                quoteLoading ||
-                !quote ||
-                isSeatExceeded ||
-                !contactName ||
-                !contactEmail ||
-                !contactPhone
-              }
-              className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-xl shadow-md text-sm font-semibold"
-            >
-              {submitting ? t('chk_holding') : t('chk_btn_hold')}
-            </Button>
-          </div>
-        </form>
-      </div>
-
-      {/* Right: Booking Summary Card */}
-      <div className="lg:col-span-1">
-        <div className="sticky top-24 rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury">
-          <h3 className="font-serif text-xl font-bold text-stone-900 pb-4 border-b border-stone-100">
-            {t('chk_summary_section')}
-          </h3>
-
-          <div className="mt-5 space-y-4 text-xs">
-            {schedule && (
-              <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#faf9f5] border border-stone-200/80">
-                <Calendar className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold text-stone-900 block text-sm">
-                    {t('chk_departure_prefix')} {formatDate(schedule.departureAt)}
-                  </span>
-                  <span className="text-stone-500 mt-0.5 block">{t('chk_dep_location')}</span>
-                </div>
+            {submitError && (
+              <div
+                className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700 flex items-start gap-2"
+                role="alert"
+              >
+                <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>{submitError}</span>
               </div>
             )}
 
-            <div className="space-y-2 py-3 border-y border-stone-100 text-stone-600">
-              <div className="flex justify-between">
-                <span>
-                  {t('bk_ticket_adult')} ({adults} {t('chk_seats_unit')}):
-                </span>
-                <span className="font-medium text-stone-900">
-                  {formatVND(adults * (quote?.adultPrice ?? schedule?.adultPrice ?? 0))}
-                </span>
+            {/* Submit Action */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+              <div className="flex items-center gap-2 text-xs text-stone-500">
+                <Lock className="h-4 w-4 text-stone-400" />
+                <span>{t('chk_security_note')}</span>
               </div>
-              {childrenCount > 0 && (
+
+              <Button
+                type="submit"
+                disabled={
+                  submitting ||
+                  quoteLoading ||
+                  !quote ||
+                  isSeatExceeded ||
+                  !contactName ||
+                  !contactEmail ||
+                  !contactPhone
+                }
+                className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white px-8 py-3 rounded-xl shadow-md text-sm font-semibold"
+              >
+                {submitting ? t('chk_holding') : t('chk_btn_hold')}
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Right: Booking Summary Card */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-24 rounded-2xl border border-stone-200/80 bg-white p-6 shadow-luxury">
+            <h3 className="font-serif text-xl font-bold text-stone-900 pb-4 border-b border-stone-100">
+              {t('chk_summary_section')}
+            </h3>
+
+            <div className="mt-5 space-y-4 text-xs">
+              {schedule && (
+                <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#faf9f5] border border-stone-200/80">
+                  <Calendar className="h-4 w-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold text-stone-900 block text-sm">
+                      {t('chk_departure_prefix')} {formatDate(schedule.departureAt)}
+                    </span>
+                    <span className="text-stone-500 mt-0.5 block">{t('chk_dep_location')}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2 py-3 border-y border-stone-100 text-stone-600">
                 <div className="flex justify-between">
                   <span>
-                    {t('bk_ticket_child')} ({childrenCount} {t('chk_seats_unit')}):
+                    {t('bk_ticket_adult')} ({adults} {t('chk_seats_unit')}):
                   </span>
                   <span className="font-medium text-stone-900">
-                    {formatVND(childrenCount * (quote?.childPrice ?? schedule?.childPrice ?? 0))}
+                    {formatVND(adults * (quote?.adultPrice ?? schedule?.adultPrice ?? 0))}
                   </span>
                 </div>
-              )}
-            </div>
+                {childrenCount > 0 && (
+                  <div className="flex justify-between">
+                    <span>
+                      {t('bk_ticket_child')} ({childrenCount} {t('chk_seats_unit')}):
+                    </span>
+                    <span className="font-medium text-stone-900">
+                      {formatVND(childrenCount * (quote?.childPrice ?? schedule?.childPrice ?? 0))}
+                    </span>
+                  </div>
+                )}
+              </div>
 
-            <div className="pt-2 flex items-baseline justify-between">
-              <div>
-                <span className="font-semibold text-stone-900 block text-sm">
-                  {t('bk_total_summary')}
+              <div className="pt-2 flex items-baseline justify-between">
+                <div>
+                  <span className="font-semibold text-stone-900 block text-sm">
+                    {t('bk_total_summary')}
+                  </span>
+                  <span className="text-[10px] text-stone-400">{t('chk_tax_included')}</span>
+                </div>
+                <span className="font-serif text-2xl font-bold text-amber-900">
+                  {quoteLoading
+                    ? t('chk_calculating')
+                    : quote
+                      ? formatVND(quote.totalAmount)
+                      : schedule
+                        ? formatVND(
+                            adults * schedule.adultPrice + childrenCount * schedule.childPrice,
+                          )
+                        : '—'}
                 </span>
-                <span className="text-[10px] text-stone-400">{t('chk_tax_included')}</span>
               </div>
-              <span className="font-serif text-2xl font-bold text-amber-900">
-                {quoteLoading
-                  ? t('chk_calculating')
-                  : quote
-                    ? formatVND(quote.totalAmount)
-                    : schedule
-                      ? formatVND(
-                          adults * schedule.adultPrice + childrenCount * schedule.childPrice,
-                        )
-                      : '—'}
-              </span>
-            </div>
 
-            {quoteError && <p className="text-xs text-red-600">{quoteError}</p>}
+              {quoteError && <p className="text-xs text-red-600">{quoteError}</p>}
 
-            <div className="mt-6 rounded-xl bg-amber-50/60 border border-amber-200/60 p-4 space-y-2 text-stone-600">
-              <div className="flex items-center gap-1.5 font-semibold text-amber-900 text-xs">
-                <Clock className="h-3.5 w-3.5" />
-                <span>{t('chk_hold_rule_title')}</span>
+              <div className="mt-6 rounded-xl bg-amber-50/60 border border-amber-200/60 p-4 space-y-2 text-stone-600">
+                <div className="flex items-center gap-1.5 font-semibold text-amber-900 text-xs">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>{t('chk_hold_rule_title')}</span>
+                </div>
+                <p className="text-[11px] leading-relaxed">{t('chk_hold_rule_desc')}</p>
               </div>
-              <p className="text-[11px] leading-relaxed">{t('chk_hold_rule_desc')}</p>
             </div>
           </div>
         </div>
